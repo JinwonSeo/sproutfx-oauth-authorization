@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: sproutfx-oauth-authorization
+  profiles:
+    active: local
+  cloud:
+    config:
+      enabled: false
+  #config:
+  #  import: 
+  #  - optional:configserver:http://127.0.0.1:8888
