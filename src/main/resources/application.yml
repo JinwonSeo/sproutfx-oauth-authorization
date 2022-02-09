@@ -3,9 +3,6 @@ spring:
     name: sproutfx-oauth-authorization
   profiles:
     active: local
-  cloud:
-    config:
-      enabled: false
-  #config:
-  #  import: 
-  #  - optional:configserver:http://127.0.0.1:8888
+  config:
+    import: 
+    - configserver:http://config.sproutfx.kr
