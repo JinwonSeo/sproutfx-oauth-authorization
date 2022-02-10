@@ -23,8 +23,8 @@ import kr.sproutfx.oauth.authorization.api.authorize.model.request.ClientKeyWith
 import kr.sproutfx.oauth.authorization.api.authorize.model.request.ClientKeyWithRefreshToken;
 import kr.sproutfx.oauth.authorization.api.authorize.model.response.ClientKeyWithSignedAuthorizeClient;
 import kr.sproutfx.oauth.authorization.api.authorize.model.response.TokenWithSignedMember;
-import kr.sproutfx.oauth.authorization.api.client.model.entity.Client;
-import kr.sproutfx.oauth.authorization.api.client.model.enumeration.ClientStatus;
+import kr.sproutfx.oauth.authorization.api.client.entity.Client;
+import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
 import kr.sproutfx.oauth.authorization.api.client.service.ClientService;
 import kr.sproutfx.oauth.authorization.api.member.model.entity.Member;
 import kr.sproutfx.oauth.authorization.api.member.model.enumeration.MemberStatus;

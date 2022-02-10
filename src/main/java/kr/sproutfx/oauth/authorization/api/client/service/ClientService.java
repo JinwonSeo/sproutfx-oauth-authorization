@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
 
 import kr.sproutfx.oauth.authorization.api.client.exception.ClientNotFoundException;
-import kr.sproutfx.oauth.authorization.api.client.model.entity.Client;
-import kr.sproutfx.oauth.authorization.api.client.model.enumeration.ClientStatus;
+import kr.sproutfx.oauth.authorization.api.client.entity.Client;
+import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
 import kr.sproutfx.oauth.authorization.api.client.repository.ClientRepository;
 import kr.sproutfx.oauth.authorization.api.client.repository.specification.ClientSpecification;
 
@@ -43,38 +43,40 @@ public class ClientService {
     }
 
     @Transactional
-    public Client create(String name, String description) {
-        return this.clientRepository.save(Client.builder()
-            .code(UUID.randomUUID().toString().replace("-", StringUtils.EMPTY))
-            .name(name)
-            .secret(Base64Utils.encodeToUrlSafeString(RandomStringUtils.randomAlphanumeric(32).getBytes()))
-            .status(ClientStatus.PENDING_APPROVAL)
-            .accessTokenSecret(RandomStringUtils.randomAlphanumeric(96))
-            .accessTokenValidityInSeconds(7200)
-            .refreshTokenSecret(RandomStringUtils.randomAlphanumeric(96))
-            .refreshTokenValidityInSeconds(43200)
-            .description(description)
-            .build());
+    public UUID create(String name, String description) {
+        Client persistenceClient = this.clientRepository.save(
+            Client.builder()
+                .code(UUID.randomUUID().toString().replace("-", StringUtils.EMPTY))
+                .name(name)
+                .secret(Base64Utils.encodeToUrlSafeString(RandomStringUtils.randomAlphanumeric(32).getBytes()))
+                .status(ClientStatus.PENDING_APPROVAL)
+                .accessTokenSecret(RandomStringUtils.randomAlphanumeric(96))
+                .accessTokenValidityInSeconds(7200)
+                .refreshTokenSecret(RandomStringUtils.randomAlphanumeric(96))
+                .refreshTokenValidityInSeconds(43200)
+                .description(description)
+                .build());
+
+        return persistenceClient.getId();
     }
 
     @Transactional
-    public Client update(UUID id, String name, Long accessTokenValidityInSeconds, Long refreshTokenValidityInSeconds, String description) {
-        Client persistenceClient = this.clientRepository.findById(id).orElseThrow(ClientNotFoundException::new);
+    public UUID update(UUID id, String name, Long accessTokenValidityInSeconds, Long refreshTokenValidityInSeconds, String description) {
+        Client persistenceClient = this.clientRepository.findById(id).orElseThrow(() -> new ClientNotFoundException(id));
         
         persistenceClient.setName(name);
         persistenceClient.setAccessTokenValidityInSeconds(accessTokenValidityInSeconds);
         persistenceClient.setRefreshTokenValidityInSeconds(refreshTokenValidityInSeconds);
         persistenceClient.setDescription(description);
 
-        return persistenceClient;
+        return persistenceClient.getId();
     }
 
     @Transactional
-    public Client deleteById(UUID id) {
-        Client persistenceClient = this.clientRepository.findById(id).orElseThrow(ClientNotFoundException::new);
-        
+    public UUID deleteById(UUID id) {
+        Client persistenceClient = this.clientRepository.findById(id).orElseThrow(() -> new ClientNotFoundException(id));
         this.clientRepository.delete(persistenceClient);
-
-        return persistenceClient;
+        
+        return id;
     }
 }

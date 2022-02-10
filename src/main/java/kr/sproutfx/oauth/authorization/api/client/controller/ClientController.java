@@ -5,7 +5,10 @@ import java.util.UUID;
 
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
@@ -18,15 +21,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import kr.sproutfx.oauth.authorization.api.client.model.dto.ClientCreateRequest;
-import kr.sproutfx.oauth.authorization.api.client.model.dto.ClientUpdateRequest;
-import kr.sproutfx.oauth.authorization.api.client.model.enumeration.ClientStatus;
+import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
 import kr.sproutfx.oauth.authorization.api.client.service.ClientService;
 import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException;
 import kr.sproutfx.oauth.authorization.common.model.dto.Response;
 import kr.sproutfx.oauth.authorization.common.utility.ModelMapperUtils;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @RestController
 @RequestMapping("/clients")
@@ -35,48 +36,78 @@ public class ClientController {
     private final ClientService clientService;
     
     @Autowired
-    public ClientController(ModelMapper modelMapper, ClientService clientService) {
+    public ClientController(ClientService clientService) {
         this.clientService = clientService;
     }
 
     @GetMapping
-    public Response<List<ClientResponse>> findAll() {
-        return new Response<>(this.clientService.findAll()
-            .stream()
-            .map(source -> ModelMapperUtils.defaultMapper().map(source, ClientResponse.class))
-            .collect(Collectors.toList()));
+    public Response<List<ClientResponse>> getAll() {
+        return new Response<>(
+            this.clientService.findAll()
+                .stream()
+                .map(source -> ModelMapperUtils.defaultMapper().map(source, ClientResponse.class))
+                .collect(Collectors.toList()));
     }
 
     @GetMapping(value="/{id}")
-    public Response<ClientResponse> findById(@PathVariable("id") UUID id) {
-        return new Response<>(ModelMapperUtils.defaultMapper().map(
-            this.clientService.findById(id), ClientResponse.class));
+    public Response<ClientResponse> getById(@PathVariable("id") UUID id) {
+        return new Response<>(
+            ModelMapperUtils.defaultMapper().map(
+                this.clientService.findById(id), ClientResponse.class));
     }
 
     @PostMapping
     public Response<ClientResponse> postClient(@RequestBody @Validated ClientCreateRequest clientCreateRequest, Errors errors) {
         if (errors.hasErrors()) throw new InvalidArgumentException();
         
-        return new Response<>(ModelMapperUtils.defaultMapper().map(
-            this.clientService.create(clientCreateRequest.getName(), clientCreateRequest.getDescription()), ClientResponse.class));
+        UUID id = this.clientService.create(clientCreateRequest.getName(), clientCreateRequest.getDescription());
+
+        return new Response<>(
+            ModelMapperUtils.defaultMapper().map(
+                this.clientService.findById(id), ClientResponse.class));
     }
 
     @PutMapping(value="/{id}")
     public Response<ClientResponse> putClient(@PathVariable UUID id, @RequestBody @Validated ClientUpdateRequest clientUpdateRequest, Errors errors) {
         if (errors.hasErrors()) throw new InvalidArgumentException();
+        
+        this.clientService.update(id, 
+                clientUpdateRequest.getName(), 
+                clientUpdateRequest.getAccessTokenValidityInSeconds(), 
+                clientUpdateRequest.getRefreshTokenValidityInSeconds(), 
+                clientUpdateRequest.getDescription());
 
         return new Response<>(
-            ModelMapperUtils.defaultMapper().map(this.clientService.update(id, clientUpdateRequest.getName(), clientUpdateRequest.getAccessTokenValidityInSeconds(), clientUpdateRequest.getRefreshTokenValidityInSeconds(), clientUpdateRequest.getDescription()), ClientResponse.class));
+            ModelMapperUtils.defaultMapper().map(
+                this.clientService.findById(id), ClientResponse.class));
     }
 
     @DeleteMapping(value = "/{id}")
-    public Response<ClientResponse> deleteClient(@PathVariable UUID id) {
+    public Response<ClientDeleteResponse> deleteClient(@PathVariable UUID id) {
 
-        return new Response<>(
-            ModelMapperUtils.defaultMapper().map(this.clientService.deleteById(id), ClientResponse.class));
+        this.clientService.deleteById(id);
+
+        return new Response<>(new ClientDeleteResponse(id));
     }
 
-    @NoArgsConstructor
+    @Data
+    static class ClientCreateRequest {
+        @NotBlank
+        private String name;
+        private String description;
+    }
+
+    @Data
+    static class ClientUpdateRequest {
+        @NotBlank
+        private String name;
+        @Min(3600) @Max(7200)
+        private long accessTokenValidityInSeconds;
+        @Min(3600) @Max(86400)
+        private long refreshTokenValidityInSeconds;
+        private String description;
+    }
+
     @Data
     static class ClientResponse {
         private UUID id;
@@ -84,5 +115,11 @@ public class ClientController {
         private String name;
         private ClientStatus status;
         private String description;
+    }
+
+    @AllArgsConstructor
+    @Data
+    static class ClientDeleteResponse {
+        private UUID deletedClientId;
     }
 }
