@@ -9,5 +9,4 @@ public class ClientNotFoundException extends BaseException {
     public ClientNotFoundException() {
         super("client_not_found", "Client not found", HttpStatus.UNPROCESSABLE_ENTITY);
     }
-
 }

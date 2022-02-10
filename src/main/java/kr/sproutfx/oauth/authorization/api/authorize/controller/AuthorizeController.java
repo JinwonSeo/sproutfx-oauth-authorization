@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import kr.sproutfx.oauth.authorization.api.authorize.model.request.ClientKeyWithAuthentication;
-import kr.sproutfx.oauth.authorization.api.authorize.model.request.ClientKeyWithRefreshToken;
-import kr.sproutfx.oauth.authorization.api.authorize.model.response.ClientKeyWithSignedAuthorizeClient;
-import kr.sproutfx.oauth.authorization.api.authorize.model.response.TokenWithSignedMember;
+import kr.sproutfx.oauth.authorization.api.authorize.dto.ClientKeyWithAuthentication;
+import kr.sproutfx.oauth.authorization.api.authorize.dto.ClientKeyWithRefreshToken;
+import kr.sproutfx.oauth.authorization.api.authorize.dto.ClientKeyWithSignedAuthorizedClient;
+import kr.sproutfx.oauth.authorization.api.authorize.dto.AuthenticationWithSignedMember;
 import kr.sproutfx.oauth.authorization.api.authorize.service.AuthorizeService;
 import kr.sproutfx.oauth.authorization.common.model.dto.Response;
 
@@ -26,17 +26,17 @@ public class AuthorizeController {
     }
 
     @GetMapping("/authorize")
-    public Response<ClientKeyWithSignedAuthorizeClient> getAuthorize(@RequestParam String clientCode) {
+    public Response<ClientKeyWithSignedAuthorizedClient> getAuthorize(@RequestParam String clientCode) {
         return new Response<>(this.authorizeService.getAuthorize(clientCode));
     }
 
     @PostMapping("/token")
-    public Response<TokenWithSignedMember> postToken(@RequestBody ClientKeyWithAuthentication clientKeyWithAuthentication) {
+    public Response<AuthenticationWithSignedMember> postToken(@RequestBody ClientKeyWithAuthentication clientKeyWithAuthentication) {
         return new Response<>(this.authorizeService.postToken(clientKeyWithAuthentication));
     }
 
     @PostMapping("/refresh")
-    public Response<TokenWithSignedMember> postRefresh(@RequestBody ClientKeyWithRefreshToken clientKeyWithRefreshToken) {
+    public Response<AuthenticationWithSignedMember> postRefresh(@RequestBody ClientKeyWithRefreshToken clientKeyWithRefreshToken) {
         return new Response<>(this.authorizeService.postRefresh(clientKeyWithRefreshToken));
     }
 }

@@ -2,7 +2,7 @@ package kr.sproutfx.oauth.authorization.api.member.repository.specification;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import kr.sproutfx.oauth.authorization.api.member.model.entity.Member;
+import kr.sproutfx.oauth.authorization.api.member.entity.Member;
 
 public class MemberSpecification {
     private MemberSpecification() { 

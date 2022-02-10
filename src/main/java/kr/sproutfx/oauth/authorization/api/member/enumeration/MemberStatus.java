@@ -1,4 +1,4 @@
-package kr.sproutfx.oauth.authorization.api.member.model.enumeration;
+package kr.sproutfx.oauth.authorization.api.member.enumeration;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
