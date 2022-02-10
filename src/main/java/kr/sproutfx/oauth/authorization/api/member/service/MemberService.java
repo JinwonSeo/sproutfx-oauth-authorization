@@ -10,10 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import kr.sproutfx.oauth.authorization.api.member.exception.MemberNotFoundException;
-import kr.sproutfx.oauth.authorization.api.member.model.dto.MemberCreate;
-import kr.sproutfx.oauth.authorization.api.member.model.dto.MemberUpdate;
-import kr.sproutfx.oauth.authorization.api.member.model.entity.Member;
-import kr.sproutfx.oauth.authorization.api.member.model.enumeration.MemberStatus;
+import kr.sproutfx.oauth.authorization.api.member.entity.Member;
+import kr.sproutfx.oauth.authorization.api.member.enumeration.MemberStatus;
 import kr.sproutfx.oauth.authorization.api.member.repository.MemberRepository;
 import kr.sproutfx.oauth.authorization.api.member.repository.specification.MemberSpecification;
 
@@ -44,42 +42,41 @@ public class MemberService {
     }
 
     @Transactional
-    public Member create(MemberCreate memberCreate) {
-        return this.memberRepository.save(Member.builder()
-            .email(memberCreate.getEmail())
-            .name(memberCreate.getName())
-            .password(memberCreate.getPassword())
-            .passwordExpired(simpleDateFormat.format(System.currentTimeMillis()))
-            .status(MemberStatus.PENDING_APPROVAL)
-            .build());
+    public UUID create(String email, String name, String password, String description) {
+        Member persistenceMember = this.memberRepository.save(
+            Member.builder()
+                .email(email)
+                .name(name)
+                .password(password)
+                .passwordExpired(simpleDateFormat.format(System.currentTimeMillis()))
+                .status(MemberStatus.PENDING_APPROVAL)
+                .description(description)
+                .build());
+
+        return persistenceMember.getId();
     }
 
     @Transactional
-    public Member update(UUID id, MemberUpdate memberUpdate) {
+    public void update(UUID id, String email, String name, String description) {
         Member persistenceMember = this.memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
 
-        persistenceMember.setEmail(memberUpdate.getEmail());
-        persistenceMember.setName(memberUpdate.getName());
-        persistenceMember.setDescription(memberUpdate.getDescription());
-
-        return persistenceMember;
+        persistenceMember.setEmail(email);
+        persistenceMember.setName(name);
+        persistenceMember.setDescription(description);
     }
 
     @Transactional
-    public Member updateStatus(UUID id, MemberStatus memberStatus) {
+    public void updateStatus(UUID id, MemberStatus memberStatus) {
         Member persistenceMember = this.memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
 
         persistenceMember.setStatus(memberStatus);
-
-        return persistenceMember;
     }
 
     @Transactional
-    public Member deleteById(UUID id) {
+    public void deleteById(UUID id) {
         Member persistenceMember = this.memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
 
         this.memberRepository.delete(persistenceMember);
-
-        return persistenceMember;
     }
+
 }

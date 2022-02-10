@@ -1,4 +1,4 @@
-package kr.sproutfx.oauth.authorization.api.member.model.entity;
+package kr.sproutfx.oauth.authorization.api.member.entity;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -11,8 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
@@ -21,7 +19,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.Where;
 import org.hibernate.envers.Audited;
 
-import kr.sproutfx.oauth.authorization.api.member.model.enumeration.MemberStatus;
+import kr.sproutfx.oauth.authorization.api.member.enumeration.MemberStatus;
 import kr.sproutfx.oauth.authorization.common.model.entity.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -49,7 +47,6 @@ public class Member extends BaseEntity implements Serializable {
     @Column(nullable = false, columnDefinition = "varchar(255)")
     private String name;
 
-    @JsonIgnore
     @Column(nullable = false, columnDefinition = "varchar(255)")
     private String password;
 
