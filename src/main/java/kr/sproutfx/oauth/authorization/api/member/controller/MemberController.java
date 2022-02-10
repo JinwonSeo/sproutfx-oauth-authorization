@@ -41,22 +41,22 @@ public class MemberController {
     }
 
     @PostMapping
-    public Response<Member> postMember(@RequestBody MemberCreate memberCreate) {
+    public Response<Member> create(@RequestBody MemberCreate memberCreate) {
         return new Response<>(this.memberService.create(memberCreate));
     }
 
     @PutMapping("/{id}")
-    public Response<Member> putMember(@PathVariable UUID id, @RequestBody MemberUpdate memberUpdate) {
+    public Response<Member> update(@PathVariable UUID id, @RequestBody MemberUpdate memberUpdate) {
         return new Response<>(this.memberService.update(id, memberUpdate));
     }
 
     @PutMapping("/{id}/status")
-    public Response<Member> putMember(@PathVariable UUID id, @RequestBody MemberStatus memberStatus) {
+    public Response<Member> updateStatus(@PathVariable UUID id, @RequestBody MemberStatus memberStatus) {
         return new Response<>(this.memberService.updateStatus(id, memberStatus));
     }
 
     @DeleteMapping("/{id}")
-    public Response<Member> deleteMember(@PathVariable UUID id) {
+    public Response<Member> delete(@PathVariable UUID id) {
         return new Response<>(this.memberService.deleteById(id));
     }
 }

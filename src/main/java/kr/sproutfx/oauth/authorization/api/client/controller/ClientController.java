@@ -41,7 +41,7 @@ public class ClientController {
     }
 
     @GetMapping
-    public Response<List<ClientResponse>> getAll() {
+    public Response<List<ClientResponse>> findAll() {
         return new Response<>(
             this.clientService.findAll()
                 .stream()
@@ -50,14 +50,14 @@ public class ClientController {
     }
 
     @GetMapping(value="/{id}")
-    public Response<ClientResponse> getById(@PathVariable("id") UUID id) {
+    public Response<ClientResponse> findById(@PathVariable("id") UUID id) {
         return new Response<>(
             ModelMapperUtils.defaultMapper().map(
                 this.clientService.findById(id), ClientResponse.class));
     }
 
     @PostMapping
-    public Response<ClientResponse> postClient(@RequestBody @Validated ClientCreateRequest clientCreateRequest, Errors errors) {
+    public Response<ClientResponse> create(@RequestBody @Validated ClientCreateRequest clientCreateRequest, Errors errors) {
         if (errors.hasErrors()) throw new InvalidArgumentException();
         
         UUID id = this.clientService.create(clientCreateRequest.getName(), clientCreateRequest.getDescription());
@@ -68,7 +68,7 @@ public class ClientController {
     }
 
     @PutMapping(value="/{id}")
-    public Response<ClientResponse> putClient(@PathVariable UUID id, @RequestBody @Validated ClientUpdateRequest clientUpdateRequest, Errors errors) {
+    public Response<ClientResponse> update(@PathVariable UUID id, @RequestBody @Validated ClientUpdateRequest clientUpdateRequest, Errors errors) {
         if (errors.hasErrors()) throw new InvalidArgumentException();
         
         this.clientService.update(id, 
@@ -83,7 +83,7 @@ public class ClientController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public Response<ClientDeleteResponse> deleteClient(@PathVariable UUID id) {
+    public Response<ClientDeleteResponse> delete(@PathVariable UUID id) {
 
         this.clientService.deleteById(id);
 
