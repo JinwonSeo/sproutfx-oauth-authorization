@@ -19,16 +19,19 @@ import kr.sproutfx.oauth.authorization.api.authorize.exception.PendingApprovalCl
 import kr.sproutfx.oauth.authorization.api.authorize.exception.PendingApprovalMemberException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.TokenCreationFailedException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.UnauthorizedException;
-import kr.sproutfx.oauth.authorization.api.authorize.model.request.ClientKeyWithAuthentication;
-import kr.sproutfx.oauth.authorization.api.authorize.model.request.ClientKeyWithRefreshToken;
-import kr.sproutfx.oauth.authorization.api.authorize.model.response.ClientKeyWithSignedAuthorizeClient;
-import kr.sproutfx.oauth.authorization.api.authorize.model.response.TokenWithSignedMember;
+import kr.sproutfx.oauth.authorization.api.authorize.dto.ClientKeyWithAuthentication;
+import kr.sproutfx.oauth.authorization.api.authorize.dto.ClientKeyWithRefreshToken;
+import kr.sproutfx.oauth.authorization.api.authorize.dto.ClientKeyWithSignedAuthorizedClient;
+import kr.sproutfx.oauth.authorization.api.authorize.dto.SignedMember;
+import kr.sproutfx.oauth.authorization.api.authorize.dto.AuthenticationWithSignedMember;
+import kr.sproutfx.oauth.authorization.api.authorize.dto.AuthorizedClient;
 import kr.sproutfx.oauth.authorization.api.client.entity.Client;
 import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
 import kr.sproutfx.oauth.authorization.api.client.service.ClientService;
-import kr.sproutfx.oauth.authorization.api.member.model.entity.Member;
-import kr.sproutfx.oauth.authorization.api.member.model.enumeration.MemberStatus;
+import kr.sproutfx.oauth.authorization.api.member.entity.Member;
+import kr.sproutfx.oauth.authorization.api.member.enumeration.MemberStatus;
 import kr.sproutfx.oauth.authorization.api.member.service.MemberService;
+import kr.sproutfx.oauth.authorization.common.utility.ModelMapperUtils;
 import kr.sproutfx.oauth.authorization.common.utility.RegexUtils;
 import kr.sproutfx.oauth.authorization.configuration.crypto.CryptoUtils;
 import kr.sproutfx.oauth.authorization.configuration.security.jwt.JwtProvider;
@@ -51,18 +54,18 @@ public class AuthorizeService {
         this.jwtProvider = jwtProvider;
     }
 
-    public ClientKeyWithSignedAuthorizeClient getAuthorize(@RequestParam String clientCode) {
+    public ClientKeyWithSignedAuthorizedClient getAuthorize(@RequestParam String clientCode) {
         Client targetClient = this.clientService.findByCode(clientCode);
         
         if (Boolean.FALSE.equals(this.isValidatedClient(targetClient))) throw new ClientAccessDeniedException();
 
-        return ClientKeyWithSignedAuthorizeClient.builder()
+        return ClientKeyWithSignedAuthorizedClient.builder()
             .clientKey(this.cryptoUtils.encrypt(targetClient.getSecret()))
-            .authorizedClient(targetClient)
+            .authorizedClient(ModelMapperUtils.defaultMapper().map(targetClient, AuthorizedClient.class))
             .build();
     }
 
-    public TokenWithSignedMember postToken(ClientKeyWithAuthentication clientKeyWithAuthentication) {
+    public AuthenticationWithSignedMember postToken(ClientKeyWithAuthentication clientKeyWithAuthentication) {
         String clientKey = clientKeyWithAuthentication.getClientKey();
         String email = clientKeyWithAuthentication.getEmail();
         String password = clientKeyWithAuthentication.getPassword();
@@ -95,7 +98,7 @@ public class AuthorizeService {
         return createTokenWithSignedMember(targetClient, targetMember);
     }
 
-    public TokenWithSignedMember postRefresh(ClientKeyWithRefreshToken clientKeyWithRefreshToken) {
+    public AuthenticationWithSignedMember postRefresh(ClientKeyWithRefreshToken clientKeyWithRefreshToken) {
         String clientKey = clientKeyWithRefreshToken.getClientKey();
         String refreshToken = clientKeyWithRefreshToken.getRefreshToken();
 
@@ -126,7 +129,7 @@ public class AuthorizeService {
         return createTokenWithSignedMember(targetClient, targetMember);
     }
 
-    private TokenWithSignedMember createTokenWithSignedMember(Client client, Member member) {
+    private AuthenticationWithSignedMember createTokenWithSignedMember(Client client, Member member) {
         String subject = member.getId().toString();
         String audience = client.getCode();
         
@@ -143,13 +146,13 @@ public class AuthorizeService {
             throw new TokenCreationFailedException();
         }
 
-        return TokenWithSignedMember.builder()
+        return AuthenticationWithSignedMember.builder()
             .tokenType(this.jwtProvider.getAuthorizationType())
             .accessToken(accessToken)
             .accessTokenExpiresIn(this.jwtProvider.extractExpiresInSeconds(accessTokenSecret, audience, accessToken))
             .refreshToken(refreshToken)
             .refreshTokenExpiresIn(this.jwtProvider.extractExpiresInSeconds(refreshTokenSecret, audience, refreshToken))
-            .signedMember(member)
+            .signedMember(ModelMapperUtils.defaultMapper().map(member, SignedMember.class))
             .build();
     }
 
