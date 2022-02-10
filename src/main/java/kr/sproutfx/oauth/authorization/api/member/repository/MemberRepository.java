@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
-import kr.sproutfx.oauth.authorization.api.member.model.entity.Member;
+import kr.sproutfx.oauth.authorization.api.member.entity.Member;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, UUID>, JpaSpecificationExecutor<Member> {

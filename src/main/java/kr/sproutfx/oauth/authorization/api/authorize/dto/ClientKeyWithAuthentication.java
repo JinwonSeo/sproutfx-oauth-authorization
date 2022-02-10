@@ -1,10 +1,10 @@
-package kr.sproutfx.oauth.authorization.api.authorize.model.request;
+package kr.sproutfx.oauth.authorization.api.authorize.dto;
 
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Builder @Getter @Setter
+@Builder
+@Data
 public class ClientKeyWithAuthentication {
     private String clientKey;
     private String email;
