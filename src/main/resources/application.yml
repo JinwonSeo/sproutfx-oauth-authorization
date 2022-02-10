@@ -8,4 +8,4 @@ spring:
       enabled: true
   config:
     import: 
-    - optional:configserver:http://config.sproutfx.kr
+    - configserver:http://config.sproutfx.kr
