@@ -82,9 +82,17 @@ public class ClientController {
                 this.clientService.findById(id), ClientResponse.class));
     }
 
+    @PutMapping("/{id}/status")
+    public Response<ClientResponse> updateStatus(@PathVariable UUID id, @RequestBody ClientStatusUpdateRequest clientStatusUpdateRequest) {
+        this.clientService.updateStatus(id, clientStatusUpdateRequest.getClientStatus());
+        
+        return new Response<>(
+            ModelMapperUtils.defaultMapper().map(
+                this.clientService.findById(id), ClientResponse.class));
+    }
+
     @DeleteMapping(value = "/{id}")
     public Response<ClientDeleteResponse> delete(@PathVariable UUID id) {
-
         this.clientService.deleteById(id);
 
         return new Response<>(new ClientDeleteResponse(id));
@@ -106,6 +114,11 @@ public class ClientController {
         @Min(3600) @Max(86400)
         private long refreshTokenValidityInSeconds;
         private String description;
+    }
+
+    @Data
+    static class ClientStatusUpdateRequest {
+        private ClientStatus clientStatus;
     }
 
     @Data

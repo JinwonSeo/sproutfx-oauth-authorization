@@ -61,22 +61,26 @@ public class ClientService {
     }
 
     @Transactional
-    public UUID update(UUID id, String name, Long accessTokenValidityInSeconds, Long refreshTokenValidityInSeconds, String description) {
+    public void update(UUID id, String name, Long accessTokenValidityInSeconds, Long refreshTokenValidityInSeconds, String description) {
         Client persistenceClient = this.clientRepository.findById(id).orElseThrow(() -> new ClientNotFoundException(id));
         
         persistenceClient.setName(name);
         persistenceClient.setAccessTokenValidityInSeconds(accessTokenValidityInSeconds);
         persistenceClient.setRefreshTokenValidityInSeconds(refreshTokenValidityInSeconds);
         persistenceClient.setDescription(description);
-
-        return persistenceClient.getId();
     }
 
     @Transactional
-    public UUID deleteById(UUID id) {
+    public void updateStatus(UUID id, ClientStatus clientStatus) {
         Client persistenceClient = this.clientRepository.findById(id).orElseThrow(() -> new ClientNotFoundException(id));
+
+        persistenceClient.setStatus(clientStatus);
+    }
+
+    @Transactional
+    public void deleteById(UUID id) {
+        Client persistenceClient = this.clientRepository.findById(id).orElseThrow(() -> new ClientNotFoundException(id));
+
         this.clientRepository.delete(persistenceClient);
-        
-        return id;
     }
 }
