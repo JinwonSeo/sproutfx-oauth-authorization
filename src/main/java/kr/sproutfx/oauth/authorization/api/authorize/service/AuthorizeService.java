@@ -21,7 +21,7 @@ import kr.sproutfx.oauth.authorization.api.authorize.exception.TokenCreationFail
 import kr.sproutfx.oauth.authorization.api.authorize.exception.UnauthorizedException;
 import kr.sproutfx.oauth.authorization.api.authorize.dto.ClientKeyWithAuthentication;
 import kr.sproutfx.oauth.authorization.api.authorize.dto.ClientKeyWithRefreshToken;
-import kr.sproutfx.oauth.authorization.api.authorize.dto.ClientKeyWithSignedAuthorizedClient;
+import kr.sproutfx.oauth.authorization.api.authorize.dto.ClientKeyWithAuthorizedClient;
 import kr.sproutfx.oauth.authorization.api.authorize.dto.SignedMember;
 import kr.sproutfx.oauth.authorization.api.authorize.dto.AuthenticationWithSignedMember;
 import kr.sproutfx.oauth.authorization.api.authorize.dto.AuthorizedClient;
@@ -54,12 +54,12 @@ public class AuthorizeService {
         this.jwtProvider = jwtProvider;
     }
 
-    public ClientKeyWithSignedAuthorizedClient getAuthorize(@RequestParam String clientCode) {
+    public ClientKeyWithAuthorizedClient getAuthorize(@RequestParam String clientCode) {
         Client targetClient = this.clientService.findByCode(clientCode);
         
         if (Boolean.FALSE.equals(this.isValidatedClient(targetClient))) throw new ClientAccessDeniedException();
 
-        return ClientKeyWithSignedAuthorizedClient.builder()
+        return ClientKeyWithAuthorizedClient.builder()
             .clientKey(this.cryptoUtils.encrypt(targetClient.getSecret()))
             .authorizedClient(ModelMapperUtils.defaultMapper().map(targetClient, AuthorizedClient.class))
             .build();
