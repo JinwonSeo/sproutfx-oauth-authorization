@@ -20,7 +20,7 @@ import org.hibernate.annotations.Where;
 import org.hibernate.envers.Audited;
 
 import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
-import kr.sproutfx.oauth.authorization.common.model.entity.BaseEntity;
+import kr.sproutfx.oauth.authorization.common.entity.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

@@ -13,7 +13,7 @@ import kr.sproutfx.oauth.authorization.api.authorize.dto.ClientKeyWithRefreshTok
 import kr.sproutfx.oauth.authorization.api.authorize.dto.ClientKeyWithSignedAuthorizedClient;
 import kr.sproutfx.oauth.authorization.api.authorize.dto.AuthenticationWithSignedMember;
 import kr.sproutfx.oauth.authorization.api.authorize.service.AuthorizeService;
-import kr.sproutfx.oauth.authorization.common.model.dto.Response;
+import kr.sproutfx.oauth.authorization.common.dto.Response;
 
 @RestController
 @RequestMapping("/")

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import kr.sproutfx.oauth.authorization.common.exception.BaseException;
 import kr.sproutfx.oauth.authorization.common.exception.UnhandledException;
-import kr.sproutfx.oauth.authorization.common.model.dto.Response;
+import kr.sproutfx.oauth.authorization.common.dto.Response;
 
 @RestControllerAdvice
 public class ControllerAdvisor {

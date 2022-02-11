@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
 import kr.sproutfx.oauth.authorization.api.client.service.ClientService;
 import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException;
-import kr.sproutfx.oauth.authorization.common.model.dto.Response;
+import kr.sproutfx.oauth.authorization.common.dto.Response;
 import kr.sproutfx.oauth.authorization.common.utility.ModelMapperUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
