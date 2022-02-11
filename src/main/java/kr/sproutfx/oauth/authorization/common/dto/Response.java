@@ -1,4 +1,4 @@
-package kr.sproutfx.oauth.authorization.common.model.dto;
+package kr.sproutfx.oauth.authorization.common.dto;
 
 import kr.sproutfx.oauth.authorization.common.exception.BaseException;
 
