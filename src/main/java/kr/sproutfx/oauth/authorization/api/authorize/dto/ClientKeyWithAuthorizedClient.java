@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Builder
 @Data
-public class ClientKeyWithSignedAuthorizedClient {
+public class ClientKeyWithAuthorizedClient {
     private String clientKey;
     private AuthorizedClient authorizedClient;
 }
