@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import kr.sproutfx.oauth.authorization.api.authorize.dto.ClientKeyWithAuthentication;
 import kr.sproutfx.oauth.authorization.api.authorize.dto.ClientKeyWithRefreshToken;
-import kr.sproutfx.oauth.authorization.api.authorize.dto.ClientKeyWithSignedAuthorizedClient;
+import kr.sproutfx.oauth.authorization.api.authorize.dto.ClientKeyWithAuthorizedClient;
 import kr.sproutfx.oauth.authorization.api.authorize.dto.AuthenticationWithSignedMember;
 import kr.sproutfx.oauth.authorization.api.authorize.service.AuthorizeService;
 import kr.sproutfx.oauth.authorization.common.dto.Response;
@@ -26,7 +26,7 @@ public class AuthorizeController {
     }
 
     @GetMapping("/authorize")
-    public Response<ClientKeyWithSignedAuthorizedClient> getAuthorize(@RequestParam String clientCode) {
+    public Response<ClientKeyWithAuthorizedClient> getAuthorize(@RequestParam String clientCode) {
         return new Response<>(this.authorizeService.getAuthorize(clientCode));
     }
 
