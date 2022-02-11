@@ -1,4 +1,4 @@
-package kr.sproutfx.oauth.authorization.common.model.entity;
+package kr.sproutfx.oauth.authorization.common.entity;
 
 import java.sql.Timestamp;
 import java.util.UUID;
