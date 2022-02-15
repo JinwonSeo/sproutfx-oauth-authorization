@@ -28,7 +28,6 @@ import kr.sproutfx.oauth.authorization.api.member.service.MemberService;
 import kr.sproutfx.oauth.authorization.common.dto.Response;
 import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException;
 import kr.sproutfx.oauth.authorization.common.utility.ModelMapperUtils;
-import kr.sproutfx.oauth.authorization.configuration.crypto.CryptoUtils;
 
 import lombok.Builder;
 import lombok.Data;
@@ -39,14 +38,12 @@ public class AuthorizeController {
     private final AuthorizeService authorizeService;
     private final ClientService clientService;
     private final MemberService memberService;
-    private final CryptoUtils cryptoUtils;
 
     @Autowired
-    public AuthorizeController(AuthorizeService authorizeService, ClientService clientService, MemberService memberService, CryptoUtils cryptoUtils) {
+    public AuthorizeController(AuthorizeService authorizeService, ClientService clientService, MemberService memberService) {
         this.authorizeService = authorizeService;
         this.clientService = clientService;
         this.memberService = memberService;
-        this.cryptoUtils = cryptoUtils;
     }
 
     @GetMapping("/authorize")
@@ -58,8 +55,10 @@ public class AuthorizeController {
             throw new ClientAccessDeniedException();
         }
 
+        String encryptedClientSecret = this.authorizeService.encryptClientSecret(authorizedClient.getSecret());
+
         return new Response<>(ClientKeyWithAuthorizedClient.builder()
-            .encryptedClientSecret(this.cryptoUtils.encrypt(authorizedClient.getSecret()))
+            .encryptedClientSecret(encryptedClientSecret)
             .authorizedClient(ModelMapperUtils.defaultMapper().map(authorizedClient, AuthorizedClient.class))
             .build());
     }
@@ -72,7 +71,8 @@ public class AuthorizeController {
         String email = encryptedClientSecretWithAuthentication.getEmail();
         String password = encryptedClientSecretWithAuthentication.getPassword();
 
-        Client authorizedClient = this.clientService.findBySecret(this.cryptoUtils.decrypt(encryptedClientSecret));
+        String decryptedClientSecret = this.authorizeService.decryptClientSecret(encryptedClientSecret);
+        Client authorizedClient = this.clientService.findBySecret(decryptedClientSecret);
 
         if (Boolean.FALSE.equals(this.authorizeService.isValidatedClient(authorizedClient))) {
             throw new ClientAccessDeniedException();
@@ -119,7 +119,8 @@ public class AuthorizeController {
         
         String encryptedClientSecret = encryptedClientSecretWithRefreshToken.getEncryptedClientSecret();
         
-        Client authorizedClient = this.clientService.findBySecret(this.cryptoUtils.decrypt(encryptedClientSecret));
+        String decryptedClientSecret = this.authorizeService.decryptClientSecret(encryptedClientSecret);
+        Client authorizedClient = this.clientService.findBySecret(decryptedClientSecret);
 
         if (Boolean.FALSE.equals(this.authorizeService.isValidatedClient(authorizedClient))) {
             throw new ClientAccessDeniedException();

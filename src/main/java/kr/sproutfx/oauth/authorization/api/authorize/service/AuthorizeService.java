@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import kr.sproutfx.oauth.authorization.api.authorize.exception.BlockedClientException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.BlockedMemberException;
-import kr.sproutfx.oauth.authorization.api.authorize.exception.ClientAccessDeniedException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.DeactivatedClientException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.DeactivatedMemberException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.ExtractExpiresInSecondsFailedException;
@@ -18,7 +17,6 @@ import kr.sproutfx.oauth.authorization.api.authorize.exception.TokenCreationFail
 import kr.sproutfx.oauth.authorization.api.authorize.exception.UnauthorizedException;
 import kr.sproutfx.oauth.authorization.api.client.entity.Client;
 import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
-import kr.sproutfx.oauth.authorization.api.client.service.ClientService;
 import kr.sproutfx.oauth.authorization.api.member.entity.Member;
 import kr.sproutfx.oauth.authorization.api.member.enumeration.MemberStatus;
 import kr.sproutfx.oauth.authorization.configuration.crypto.CryptoUtils;
@@ -27,27 +25,23 @@ import kr.sproutfx.oauth.authorization.configuration.security.jwt.JwtProvider;
 @Service
 public class AuthorizeService {
 
-    private final ClientService clientService;
     private final CryptoUtils cryptoUtils;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
     @Autowired
-    public AuthorizeService(ClientService clientService, CryptoUtils cryptoUtils, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
-        this.clientService = clientService;
+    public AuthorizeService(CryptoUtils cryptoUtils, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
         this.cryptoUtils = cryptoUtils;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
     }
 
-    public String getEncryptedClientSecret(String clientCode) {
-        Client targetClient = this.clientService.findByCode(clientCode);
+    public String decryptClientSecret(String encryptedClientSecret) {
+        return this.cryptoUtils.decrypt(encryptedClientSecret);
+    }
 
-        if (Boolean.FALSE.equals(this.isValidatedClient(targetClient))) {
-            throw new ClientAccessDeniedException();
-        }
-
-        return this.cryptoUtils.encrypt(targetClient.getSecret());
+    public String encryptClientSecret(String clientSecret) {
+        return this.cryptoUtils.encrypt(clientSecret);
     }
 
     public String getTokenType() {
