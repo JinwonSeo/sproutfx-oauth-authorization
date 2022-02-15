@@ -51,7 +51,7 @@ public class JwtProvider {
         return this.createToken(subject, audience, this.convertBase64DecodedSecret(secret), validityInSeconds);
     }
 
-    private boolean validateToken(byte[] base64DecodedSecret, String audience, String token) {
+    private Boolean validateToken(byte[] base64DecodedSecret, String audience, String token) {
         try {
             if (StringUtils.isBlank(token)) return false;
             if (base64DecodedSecret == null || base64DecodedSecret.length <= 0) return false;
@@ -68,12 +68,12 @@ public class JwtProvider {
         }
     }
 
-    public boolean validateToken(String secret, String audience, String token) {
+    public Boolean validateToken(String secret, String audience, String token) {
         if (StringUtils.isBlank(secret) || StringUtils.isBlank(token)) return false;
         return this.validateToken(this.convertBase64DecodedSecret(secret), audience, token);
     }
 
-    public boolean validateAccessToken(String accessToken) {
+    public Boolean validateAccessToken(String accessToken) {
         return this.validateToken(this.authorizationProperties.getAccessTokenSecret(), this.authorizationProperties.getClientCode(), accessToken);
     }
 
@@ -115,11 +115,11 @@ public class JwtProvider {
             .getExpiration();
     }
 
-    public long extractExpiresInSeconds(byte[] base64DecodedSecret, String audience, String token) {
+    public Long extractExpiresInSeconds(byte[] base64DecodedSecret, String audience, String token) {
         return this.convertExpirationToExpiresInSeconds(this.extractExpiration(base64DecodedSecret, audience, token));
     }
 
-    public long extractExpiresInSeconds(String secret, String audience, String token) {
+    public Long extractExpiresInSeconds(String secret, String audience, String token) {
         return this.convertExpirationToExpiresInSeconds(this.extractExpiration(this.convertBase64DecodedSecret(secret), audience, token));
     }
 
@@ -127,7 +127,7 @@ public class JwtProvider {
         return this.extractExpiration(this.authorizationProperties.getAccessTokenSecret(), this.authorizationProperties.getClientCode(), accessToken);
     }
 
-    public long extractExpiresInSecondsFromAccessToken(String accessToken) {
+    public Long extractExpiresInSecondsFromAccessToken(String accessToken) {
         return this.convertExpirationToExpiresInSeconds(this.extractExpirationFromAccessToken(accessToken));
     }
 
@@ -143,7 +143,7 @@ public class JwtProvider {
         }
     }
 
-    private long convertExpirationToExpiresInSeconds(Date expiration) {
+    private Long convertExpirationToExpiresInSeconds(Date expiration) {
         return expiration == null ? -1 : (expiration.getTime() - new Date(System.currentTimeMillis()).getTime()) / 1000;
     }
 
