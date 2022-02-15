@@ -1,38 +1,26 @@
 package kr.sproutfx.oauth.authorization.api.authorize.service;
 
-import java.util.UUID;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import kr.sproutfx.oauth.authorization.api.authorize.exception.BlockedClientException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.BlockedMemberException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.ClientAccessDeniedException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.DeactivatedClientException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.DeactivatedMemberException;
-import kr.sproutfx.oauth.authorization.api.authorize.exception.EmailFormatMismatchException;
-import kr.sproutfx.oauth.authorization.api.authorize.exception.MissingAuthenticationException;
+import kr.sproutfx.oauth.authorization.api.authorize.exception.ExtractExpiresInSecondsFailedException;
+import kr.sproutfx.oauth.authorization.api.authorize.exception.ExtractSubjectFailedException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.PendingApprovalClientException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.PendingApprovalMemberException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.TokenCreationFailedException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.UnauthorizedException;
-import kr.sproutfx.oauth.authorization.api.authorize.dto.ClientKeyWithAuthentication;
-import kr.sproutfx.oauth.authorization.api.authorize.dto.ClientKeyWithRefreshToken;
-import kr.sproutfx.oauth.authorization.api.authorize.dto.ClientKeyWithAuthorizedClient;
-import kr.sproutfx.oauth.authorization.api.authorize.dto.SignedMember;
-import kr.sproutfx.oauth.authorization.api.authorize.dto.AuthenticationWithSignedMember;
-import kr.sproutfx.oauth.authorization.api.authorize.dto.AuthorizedClient;
 import kr.sproutfx.oauth.authorization.api.client.entity.Client;
 import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
 import kr.sproutfx.oauth.authorization.api.client.service.ClientService;
 import kr.sproutfx.oauth.authorization.api.member.entity.Member;
 import kr.sproutfx.oauth.authorization.api.member.enumeration.MemberStatus;
-import kr.sproutfx.oauth.authorization.api.member.service.MemberService;
-import kr.sproutfx.oauth.authorization.common.utility.ModelMapperUtils;
-import kr.sproutfx.oauth.authorization.common.utility.RegexUtils;
 import kr.sproutfx.oauth.authorization.configuration.crypto.CryptoUtils;
 import kr.sproutfx.oauth.authorization.configuration.security.jwt.JwtProvider;
 
@@ -40,123 +28,67 @@ import kr.sproutfx.oauth.authorization.configuration.security.jwt.JwtProvider;
 public class AuthorizeService {
 
     private final ClientService clientService;
-    private final MemberService memberService;
     private final CryptoUtils cryptoUtils;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
     @Autowired
-    public AuthorizeService(ClientService clientService, MemberService memberService, CryptoUtils cryptoUtils, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
+    public AuthorizeService(ClientService clientService, CryptoUtils cryptoUtils, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
         this.clientService = clientService;
-        this.memberService = memberService;
         this.cryptoUtils = cryptoUtils;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
     }
 
-    public ClientKeyWithAuthorizedClient getAuthorize(@RequestParam String clientCode) {
+    public String getEncryptedClientSecret(String clientCode) {
         Client targetClient = this.clientService.findByCode(clientCode);
-        
-        if (Boolean.FALSE.equals(this.isValidatedClient(targetClient))) throw new ClientAccessDeniedException();
-
-        return ClientKeyWithAuthorizedClient.builder()
-            .clientKey(this.cryptoUtils.encrypt(targetClient.getSecret()))
-            .authorizedClient(ModelMapperUtils.defaultMapper().map(targetClient, AuthorizedClient.class))
-            .build();
-    }
-
-    public AuthenticationWithSignedMember postToken(ClientKeyWithAuthentication clientKeyWithAuthentication) {
-        String clientKey = clientKeyWithAuthentication.getClientKey();
-        String email = clientKeyWithAuthentication.getEmail();
-        String password = clientKeyWithAuthentication.getPassword();
-
-        if (StringUtils.isBlank(clientKey) || StringUtils.isBlank(email) || StringUtils.isBlank(password)) {
-            throw new MissingAuthenticationException();
-        }
-
-        String clientSecret = this.cryptoUtils.decrypt(clientKey);
-        Client targetClient = this.clientService.findBySecret(clientSecret);
 
         if (Boolean.FALSE.equals(this.isValidatedClient(targetClient))) {
             throw new ClientAccessDeniedException();
         }
 
-        if (Boolean.FALSE.equals(RegexUtils.validateEmail(email))) {
-            throw new EmailFormatMismatchException();
-        }
-
-        Member targetMember = this.memberService.findByEmail(email);
-
-        if (!passwordEncoder.matches(password, targetMember.getPassword())) {
-            throw new UnauthorizedException();
-        }
-
-        if (Boolean.FALSE.equals(this.isValidatedMember(targetMember))) {
-            throw new UnauthorizedException();
-        }
-
-        return createTokenWithSignedMember(targetClient, targetMember);
+        return this.cryptoUtils.encrypt(targetClient.getSecret());
     }
 
-    public AuthenticationWithSignedMember postRefresh(ClientKeyWithRefreshToken clientKeyWithRefreshToken) {
-        String clientKey = clientKeyWithRefreshToken.getClientKey();
-        String refreshToken = clientKeyWithRefreshToken.getRefreshToken();
-
-        if (StringUtils.isBlank(clientKey) || StringUtils.isBlank(refreshToken)) {
-            throw new MissingAuthenticationException();
-        }
-
-        String clientSecret = this.cryptoUtils.decrypt(clientKey);
-        Client targetClient = this.clientService.findBySecret(clientSecret);
-
-        if (Boolean.FALSE.equals(this.isValidatedClient(targetClient)))
-        {
-            throw new ClientAccessDeniedException();
-        }
-
-        if (Boolean.FALSE.equals(this.jwtProvider.validateToken(targetClient.getRefreshTokenSecret(), targetClient.getCode(), refreshToken))){
-            throw new UnauthorizedException();
-        }
-
-        UUID memberId = UUID.fromString(this.jwtProvider.extractSubject(targetClient.getRefreshTokenSecret(), targetClient.getCode(), refreshToken));
-
-        Member targetMember = this.memberService.findById(memberId);
-
-        if (Boolean.FALSE.equals(this.isValidatedMember(targetMember))) {
-            throw new UnauthorizedException();
-        }
-
-        return createTokenWithSignedMember(targetClient, targetMember);
+    public String getTokenType() {
+        return this.jwtProvider.getAuthorizationType();
     }
 
-    private AuthenticationWithSignedMember createTokenWithSignedMember(Client client, Member member) {
-        String subject = member.getId().toString();
-        String audience = client.getCode();
-        
-        String accessTokenSecret = client.getAccessTokenSecret();
-        String refreshTokenSecret = client.getRefreshTokenSecret();
+    public String createToken(String subject, String audience, String secret, long validityInSeconds) {
+        String token = this.jwtProvider.createToken(subject, audience, secret, validityInSeconds);
 
-        long accessTokenValidityInSeconds = client.getAccessTokenValidityInSeconds();
-        long refreshTokenValidityInSeconds = client.getRefreshTokenValidityInSeconds();
-
-        String accessToken = this.jwtProvider.createToken(subject, audience, accessTokenSecret, accessTokenValidityInSeconds);
-        String refreshToken = this.jwtProvider.createToken(subject, audience, refreshTokenSecret, refreshTokenValidityInSeconds);
-
-        if (StringUtils.isBlank(accessToken) || StringUtils.isBlank(refreshToken)) {
+        if (StringUtils.isBlank(token)) {
             throw new TokenCreationFailedException();
         }
 
-        return AuthenticationWithSignedMember.builder()
-            .tokenType(this.jwtProvider.getAuthorizationType())
-            .accessToken(accessToken)
-            .accessTokenExpiresIn(this.jwtProvider.extractExpiresInSeconds(accessTokenSecret, audience, accessToken))
-            .refreshToken(refreshToken)
-            .refreshTokenExpiresIn(this.jwtProvider.extractExpiresInSeconds(refreshTokenSecret, audience, refreshToken))
-            .signedMember(ModelMapperUtils.defaultMapper().map(member, SignedMember.class))
-            .build();
+        return token;
     }
 
-    private boolean isValidatedClient(Client client) {
+    public String extractSubject(String secret, String audience, String token) {
+        String subject  = this.jwtProvider.extractSubject(secret, audience, token);
+
+        if (StringUtils.isBlank(token)) {
+            throw new ExtractSubjectFailedException();
+        }
+
+        return subject; 
+    }
+
+    public Long extractTokenExpiresInSeconds(String secret, String audience, String token) {
+        Long expiresInSeconds = this.jwtProvider.extractExpiresInSeconds(secret, audience, token);
+        
+        if (expiresInSeconds.equals(-1L)) {
+            throw new ExtractExpiresInSecondsFailedException();
+        }
+
+        return expiresInSeconds;
+    }
+
+    public Boolean validateToken(String secret, String audience, String token) {
+        return this.jwtProvider.validateToken(secret, audience, token);
+    }
+
+    public boolean isValidatedClient(Client client) {
         if (ClientStatus.ACTIVE.equals(client.getStatus())) {
             return true;
         } else if (ClientStatus.BLOCKED.equals(client.getStatus())) {
@@ -170,7 +102,7 @@ public class AuthorizeService {
         }
     }
 
-    private boolean isValidatedMember(Member member) {
+    public boolean isValidatedMember(Member member) {
         if (MemberStatus.ACTIVE.equals(member.getStatus())) {
             return true;
         } else if (MemberStatus.BLOCKED.equals(member.getStatus())) {
@@ -181,6 +113,14 @@ public class AuthorizeService {
             throw new PendingApprovalMemberException();
         } else {
             return false;
+        }
+    }
+
+    public boolean isMatchesMemberPassword(Member member, String password) {
+        if (passwordEncoder.matches(password, member.getPassword())) {
+            return true;
+        } else {
+            throw new UnauthorizedException();
         }
     }
 }
