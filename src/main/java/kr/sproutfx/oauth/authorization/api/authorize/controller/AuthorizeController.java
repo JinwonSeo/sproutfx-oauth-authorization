@@ -28,7 +28,6 @@ import kr.sproutfx.oauth.authorization.api.member.service.MemberService;
 import kr.sproutfx.oauth.authorization.common.dto.Response;
 import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException;
 import kr.sproutfx.oauth.authorization.common.utility.ModelMapperUtils;
-import kr.sproutfx.oauth.authorization.configuration.crypto.CryptoUtils;
 
 import lombok.Builder;
 import lombok.Data;
@@ -39,18 +38,16 @@ public class AuthorizeController {
     private final AuthorizeService authorizeService;
     private final ClientService clientService;
     private final MemberService memberService;
-    private final CryptoUtils cryptoUtils;
 
     @Autowired
-    public AuthorizeController(AuthorizeService authorizeService, ClientService clientService, MemberService memberService, CryptoUtils cryptoUtils) {
+    public AuthorizeController(AuthorizeService authorizeService, ClientService clientService, MemberService memberService) {
         this.authorizeService = authorizeService;
         this.clientService = clientService;
         this.memberService = memberService;
-        this.cryptoUtils = cryptoUtils;
     }
 
     @GetMapping("/authorize")
-    public Response<ClientKeyWithAuthorizedClient> getAuthorize(@RequestParam String clientCode) {
+    public Response<GetAuthorizeResponse> getAuthorize(@RequestParam String clientCode) {
 
         Client authorizedClient = this.clientService.findByCode(clientCode);
         
@@ -58,21 +55,24 @@ public class AuthorizeController {
             throw new ClientAccessDeniedException();
         }
 
-        return new Response<>(ClientKeyWithAuthorizedClient.builder()
-            .encryptedClientSecret(this.cryptoUtils.encrypt(authorizedClient.getSecret()))
+        String encryptedClientSecret = this.authorizeService.encryptClientSecret(authorizedClient.getSecret());
+
+        return new Response<>(GetAuthorizeResponse.builder()
+            .encryptedClientSecret(encryptedClientSecret)
             .authorizedClient(ModelMapperUtils.defaultMapper().map(authorizedClient, AuthorizedClient.class))
             .build());
     }
 
     @PostMapping("/token")
-    public Response<AuthenticationWithSignedMember> postToken(@RequestBody @Validated EncryptedClientSecretWithAuthentication encryptedClientSecretWithAuthentication, Errors errors) {
+    public Response<PostTokenResponse> postToken(@RequestBody @Validated PostTokenRequest postTokenRequest, Errors errors) {
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
-        String encryptedClientSecret = encryptedClientSecretWithAuthentication.getEncryptedClientSecret();
-        String email = encryptedClientSecretWithAuthentication.getEmail();
-        String password = encryptedClientSecretWithAuthentication.getPassword();
+        String encryptedClientSecret = postTokenRequest.getEncryptedClientSecret();
+        String email = postTokenRequest.getEmail();
+        String password = postTokenRequest.getPassword();
 
-        Client authorizedClient = this.clientService.findBySecret(this.cryptoUtils.decrypt(encryptedClientSecret));
+        String decryptedClientSecret = this.authorizeService.decryptClientSecret(encryptedClientSecret);
+        Client authorizedClient = this.clientService.findBySecret(decryptedClientSecret);
 
         if (Boolean.FALSE.equals(this.authorizeService.isValidatedClient(authorizedClient))) {
             throw new ClientAccessDeniedException();
@@ -103,7 +103,7 @@ public class AuthorizeController {
         String refreshToken = this.authorizeService.createToken(subject, audience, refreshTokenSecret, refreshTokenValidityInSeconds);
         Long refreshTokenExpiresInSeconds = this.authorizeService.extractTokenExpiresInSeconds(refreshTokenSecret, audience, refreshToken);
 
-        return new Response<>(AuthenticationWithSignedMember.builder()
+        return new Response<>(PostTokenResponse.builder()
             .tokenType(this.authorizeService.getTokenType())
             .accessToken(accessToken)
             .accessTokenExpiresIn(accessTokenExpiresInSeconds)
@@ -114,18 +114,19 @@ public class AuthorizeController {
     }
 
     @PostMapping("/refresh")
-    public Response<AuthenticationWithSignedMember> postRefresh(@RequestBody EncryptedClientSecretWithRefreshToken encryptedClientSecretWithRefreshToken, Errors errors) {
+    public Response<PostRefreshResponse> postRefresh(@RequestBody PostRefreshRequest postRefreshRequest, Errors errors) {
         if (errors.hasErrors()) throw new InvalidArgumentException();
         
-        String encryptedClientSecret = encryptedClientSecretWithRefreshToken.getEncryptedClientSecret();
+        String encryptedClientSecret = postRefreshRequest.getEncryptedClientSecret();
         
-        Client authorizedClient = this.clientService.findBySecret(this.cryptoUtils.decrypt(encryptedClientSecret));
+        String decryptedClientSecret = this.authorizeService.decryptClientSecret(encryptedClientSecret);
+        Client authorizedClient = this.clientService.findBySecret(decryptedClientSecret);
 
         if (Boolean.FALSE.equals(this.authorizeService.isValidatedClient(authorizedClient))) {
             throw new ClientAccessDeniedException();
         }
 
-        String refreshToken = encryptedClientSecretWithRefreshToken.getRefreshToken();
+        String refreshToken = postRefreshRequest.getRefreshToken();
         String audience = authorizedClient.getCode();
 
         String accessTokenSecret = authorizedClient.getAccessTokenSecret();
@@ -153,7 +154,7 @@ public class AuthorizeController {
         String accessToken = this.authorizeService.createToken(subject, audience, accessTokenSecret, accessTokenValidityInSeconds);
         Long accessTokenExpiresInSeconds = this.authorizeService.extractTokenExpiresInSeconds(accessTokenSecret, audience, accessToken);
 
-        return new Response<>(AuthenticationWithSignedMember.builder()
+        return new Response<>(PostRefreshResponse.builder()
             .tokenType(this.authorizeService.getTokenType())
             .accessToken(accessToken)
             .accessTokenExpiresIn(accessTokenExpiresInSeconds)
@@ -161,6 +162,54 @@ public class AuthorizeController {
             .refreshTokenExpiresIn(refreshTokenExpiresInSeconds)
             .signedMember(ModelMapperUtils.defaultMapper().map(signedMember, SignedMember.class))
             .build());
+    }
+
+    @Builder
+    @Data
+    static class GetAuthorizeResponse {
+        private String encryptedClientSecret;
+        private AuthorizedClient authorizedClient;
+    }
+
+    @Data
+    static class PostTokenRequest {
+        @NotBlank
+        private String encryptedClientSecret;
+        @Email
+        @NotBlank
+        private String email;
+        @NotBlank
+        private String password;
+    }
+
+    @Builder
+    @Data
+    static class PostTokenResponse {
+        private String tokenType;
+        private String accessToken;
+        private long accessTokenExpiresIn;
+        private String refreshToken;
+        private long refreshTokenExpiresIn;
+        private SignedMember signedMember;
+    }
+
+    @Data
+    static class PostRefreshRequest {
+        @NotBlank
+        private String encryptedClientSecret;
+        @NotBlank
+        private String refreshToken;
+    }
+
+    @Builder
+    @Data
+    static class PostRefreshResponse {
+        private String tokenType;
+        private String accessToken;
+        private long accessTokenExpiresIn;
+        private String refreshToken;
+        private long refreshTokenExpiresIn;
+        private SignedMember signedMember;
     }
 
     @Data
@@ -172,24 +221,6 @@ public class AuthorizeController {
         private String description;
     }
 
-    @Builder
-    @Data
-    static class ClientKeyWithAuthorizedClient {
-        private String encryptedClientSecret;
-        private AuthorizedClient authorizedClient;
-    }
-
-    @Data
-    static class EncryptedClientSecretWithAuthentication {
-        @NotBlank
-        private String encryptedClientSecret;
-        @Email
-        @NotBlank
-        private String email;
-        @NotBlank
-        private String password;
-    }
-
     @Data
     static class SignedMember {
         private UUID id;
@@ -198,22 +229,5 @@ public class AuthorizeController {
         private String passwordExpired;
         private MemberStatus status;
         private String description;
-    }
-
-    @Data
-    @Builder
-    static class AuthenticationWithSignedMember {
-        private String tokenType;
-        private String accessToken;
-        private long accessTokenExpiresIn;
-        private String refreshToken;
-        private long refreshTokenExpiresIn;
-        private SignedMember signedMember;
-    }
-
-    @Data
-    static class EncryptedClientSecretWithRefreshToken {
-        private String encryptedClientSecret;
-        private String refreshToken;
     }
 }
