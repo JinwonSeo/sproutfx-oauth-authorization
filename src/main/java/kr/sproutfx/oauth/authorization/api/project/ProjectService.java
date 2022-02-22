@@ -35,4 +35,12 @@ public class ProjectService {
 
         return persistenceProject.getId();
     }
+
+    @Transactional
+    public void update(UUID id ,String name, String description) {
+        Project persistenceProject = this.projectRepository.findById(id).orElseThrow(ProjectNotFoundException::new);
+
+        persistenceProject.setName(name);
+        persistenceProject.setDescription(description);
+    }
 }

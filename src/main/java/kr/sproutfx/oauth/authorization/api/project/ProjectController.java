@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,7 +53,16 @@ public class ProjectController {
         UUID id = this.projectService.create(projectCreateRequest.getName(), projectCreateRequest.getDescription());
         
         return new Response<>(new ProjectResponse(this.projectService.findById(id)));
-    } 
+    }
+
+    @PutMapping("/{id}")
+    public Response<ProjectResponse> update(@PathVariable UUID id, @RequestBody @Validated ProjectUpdateRequest projectUpdateRequest, Errors errors) {
+        if (errors.hasErrors()) throw new InvalidArgumentException();
+
+        this.projectService.update(id, projectUpdateRequest.getName(), projectUpdateRequest.getDescription());
+
+        return new Response<>(new ProjectResponse(this.projectService.findById(id)));
+    }   
 
     @Data
     @Builder
@@ -93,6 +103,13 @@ public class ProjectController {
 
     @Data
     static class ProjectCreateRequest {
+        @NotBlank
+        private String name;
+        private String description;
+    }
+
+    @Data
+    static class ProjectUpdateRequest {
         @NotBlank
         private String name;
         private String description;
