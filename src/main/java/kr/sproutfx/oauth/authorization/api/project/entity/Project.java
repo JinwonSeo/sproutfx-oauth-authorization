@@ -1,4 +1,4 @@
-package kr.sproutfx.oauth.authorization.api.project;
+package kr.sproutfx.oauth.authorization.api.project.entity;
 
 import java.io.Serializable;
 import java.util.List;
@@ -23,6 +23,7 @@ import org.hibernate.annotations.Where;
 import org.hibernate.envers.Audited;
 
 import kr.sproutfx.oauth.authorization.api.client.entity.Client;
+import kr.sproutfx.oauth.authorization.api.project.enumeration.ProjectStatus;
 import kr.sproutfx.oauth.authorization.common.entity.BaseEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

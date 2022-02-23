@@ -25,7 +25,7 @@ import org.hibernate.annotations.Where;
 import org.hibernate.envers.Audited;
 
 import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
-import kr.sproutfx.oauth.authorization.api.project.Project;
+import kr.sproutfx.oauth.authorization.api.project.entity.Project;
 import kr.sproutfx.oauth.authorization.common.entity.BaseEntity;
 
 import lombok.AllArgsConstructor;

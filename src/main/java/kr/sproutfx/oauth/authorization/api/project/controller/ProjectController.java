@@ -1,4 +1,4 @@
-package kr.sproutfx.oauth.authorization.api.project;
+package kr.sproutfx.oauth.authorization.api.project.controller;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import kr.sproutfx.oauth.authorization.api.client.entity.Client;
+import kr.sproutfx.oauth.authorization.api.project.entity.Project;
+import kr.sproutfx.oauth.authorization.api.project.service.ProjectService;
 import kr.sproutfx.oauth.authorization.common.dto.Response;
 import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException;
 

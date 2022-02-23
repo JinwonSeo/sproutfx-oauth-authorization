@@ -1,4 +1,4 @@
-package kr.sproutfx.oauth.authorization.api.project;
+package kr.sproutfx.oauth.authorization.api.project.exception;
 
 import org.springframework.http.HttpStatus;
 

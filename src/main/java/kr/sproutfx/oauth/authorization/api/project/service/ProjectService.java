@@ -1,4 +1,4 @@
-package kr.sproutfx.oauth.authorization.api.project;
+package kr.sproutfx.oauth.authorization.api.project.service;
 
 import java.util.List;
 import java.util.UUID;
@@ -6,6 +6,11 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import kr.sproutfx.oauth.authorization.api.project.entity.Project;
+import kr.sproutfx.oauth.authorization.api.project.enumeration.ProjectStatus;
+import kr.sproutfx.oauth.authorization.api.project.exception.ProjectNotFoundException;
+import kr.sproutfx.oauth.authorization.api.project.repository.ProjectRepository;
 
 @Service
 @Transactional(readOnly = true)
