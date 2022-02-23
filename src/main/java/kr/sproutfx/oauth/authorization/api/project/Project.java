@@ -35,7 +35,7 @@ import lombok.Setter;
 @Getter @Setter @Builder @AllArgsConstructor @NoArgsConstructor(access = AccessLevel.PROTECTED) @EqualsAndHashCode(of = "id", callSuper = false)
 @Entity @Table(name = "projects")
 @DynamicInsert @DynamicUpdate @Audited
-@SQLDelete(sql = "UPDATE project SET deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE projects SET deleted = true WHERE id = ?")
 @Where(clause = "deleted = false")
 public class Project extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;

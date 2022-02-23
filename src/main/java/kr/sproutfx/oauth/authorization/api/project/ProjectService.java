@@ -27,11 +27,11 @@ public class ProjectService {
 
     @Transactional
     public UUID create(String name, String description) {
-        Project persistenceProject = Project.builder()
+        Project persistenceProject = this.projectRepository.save(Project.builder()
             .name(name)
             .description(description)
             .status(ProjectStatus.PENDING_APPROVAL)
-            .build();
+            .build()); 
 
         return persistenceProject.getId();
     }
@@ -42,5 +42,12 @@ public class ProjectService {
 
         persistenceProject.setName(name);
         persistenceProject.setDescription(description);
+    }
+
+    @Transactional
+    public void delete(UUID id) {
+        Project persistenceProject = this.projectRepository.findById(id).orElseThrow(ProjectNotFoundException::new);
+
+        this.projectRepository.delete(persistenceProject);
     }
 }

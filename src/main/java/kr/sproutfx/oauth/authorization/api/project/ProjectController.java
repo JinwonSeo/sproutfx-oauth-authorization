@@ -9,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,10 +22,7 @@ import kr.sproutfx.oauth.authorization.api.client.entity.Client;
 import kr.sproutfx.oauth.authorization.common.dto.Response;
 import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @RestController
 @RequestMapping("projects")
@@ -62,12 +60,18 @@ public class ProjectController {
         this.projectService.update(id, projectUpdateRequest.getName(), projectUpdateRequest.getDescription());
 
         return new Response<>(new ProjectResponse(this.projectService.findById(id)));
-    }   
+    }
+
+    @DeleteMapping("/{id}")
+    public Response<ProjectDeleteResponse> delete(@PathVariable UUID id) {
+        
+        this.projectService.delete(id);
+
+        return new Response<>(new ProjectDeleteResponse(id));
+    }
+
 
     @Data
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
     static class ProjectResponse {
         private UUID id;
         private String name;
@@ -81,6 +85,15 @@ public class ProjectController {
             this.status = project.getStatus().toString();
             this.description = project.getDescription();
             this.clients = project.getClients().stream().map(ClientResponse::new).collect(Collectors.toList());
+        }
+    }
+
+    @Data
+    static class ProjectDeleteResponse {
+        private UUID deletedProjectId;
+
+        public ProjectDeleteResponse(UUID deletedProjectId) {
+            this.deletedProjectId = deletedProjectId;
         }
     }
 
