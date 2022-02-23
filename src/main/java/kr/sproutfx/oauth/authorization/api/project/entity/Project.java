@@ -1,20 +1,18 @@
-package kr.sproutfx.oauth.authorization.api.client.entity;
+package kr.sproutfx.oauth.authorization.api.project.entity;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -24,10 +22,10 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.Where;
 import org.hibernate.envers.Audited;
 
-import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
-import kr.sproutfx.oauth.authorization.api.project.entity.Project;
+import kr.sproutfx.oauth.authorization.api.client.entity.Client;
+import kr.sproutfx.oauth.authorization.api.project.enumeration.ProjectStatus;
 import kr.sproutfx.oauth.authorization.common.entity.BaseEntity;
-
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -35,14 +33,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Builder @Getter @Setter @NoArgsConstructor @AllArgsConstructor @EqualsAndHashCode(of = "id", callSuper = false)
-@Entity @Table(name = "clients")
+@Getter @Setter @Builder @AllArgsConstructor @NoArgsConstructor(access = AccessLevel.PROTECTED) @EqualsAndHashCode(of = "id", callSuper = false)
+@Entity @Table(name = "projects")
 @DynamicInsert @DynamicUpdate @Audited
-@SQLDelete(sql = "UPDATE clients SET deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE projects SET deleted = true WHERE id = ?")
 @Where(clause = "deleted = false")
-public class Client extends BaseEntity implements Serializable {
+public class Project extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
@@ -51,35 +49,15 @@ public class Client extends BaseEntity implements Serializable {
     private UUID id;
 
     @Column(nullable = false, columnDefinition = "varchar(255)")
-    private String code;
-
-    @Column(nullable = false, columnDefinition = "varchar(255)")
     private String name;
 
     @Column(nullable = false, columnDefinition = "varchar(255)")
-    private String secret;
-
-    @Column(nullable = false, columnDefinition = "varchar(255)")
-    private String accessTokenSecret;
-
-    @Column(nullable = false, columnDefinition = "integer")
-    private long accessTokenValidityInSeconds;
-
-    @Column(nullable = false, columnDefinition = "varchar(255)")
-    private String refreshTokenSecret;
-
-    @Column(nullable = false, columnDefinition = "integer")
-    private long refreshTokenValidityInSeconds;
-    
-    @Column(nullable = false, columnDefinition = "varchar(255)")
     @Enumerated(EnumType.STRING)
-    private ClientStatus status;
+    private ProjectStatus status;
 
     @Column(nullable = true, columnDefinition = "varchar(255)")
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
-    @JsonIgnore
-    private Project project;
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    private List<Client> clients;
 }
