@@ -1,6 +1,6 @@
 package kr.sproutfx.oauth.authorization.common.entity;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -26,7 +26,7 @@ public abstract class BaseEntity {
 
     @CreatedDate
     @Column(nullable = false, updatable = false, columnDefinition = "timestamp")
-    private Timestamp createdOn;
+    private LocalDateTime createdOn;
 
     @CreatedBy
     @Column(nullable = true, updatable = false, columnDefinition = "varchar(36)")
@@ -35,7 +35,7 @@ public abstract class BaseEntity {
 
     @LastModifiedDate
     @Column(nullable = true, columnDefinition = "timestamp")
-    private Timestamp lastModifiedOn;
+    private LocalDateTime lastModifiedOn;
 
     @LastModifiedBy
     @Column(nullable = true, columnDefinition = "varchar(36)")

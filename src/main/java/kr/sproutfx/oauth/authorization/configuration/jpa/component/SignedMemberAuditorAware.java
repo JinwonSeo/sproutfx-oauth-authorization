@@ -1,4 +1,4 @@
-package kr.sproutfx.oauth.authorization.configuration.jpa;
+package kr.sproutfx.oauth.authorization.configuration.jpa.component;
 
 import java.util.Optional;
 import java.util.UUID;
