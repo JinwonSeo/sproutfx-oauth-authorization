@@ -16,7 +16,7 @@ public class ControllerAdvisor {
         if (t instanceof BaseException) {
             return new ResponseEntity<>(new Response<>(t), ((BaseException) t).getHttpStatus());
         } else {
-            return new ResponseEntity<>(new Response<>(new UnhandledException((t.getCause() == null) ? t.getLocalizedMessage() : t.getCause().getLocalizedMessage())), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response<>(new UnhandledException((t == null) ? null : t.getLocalizedMessage())), HttpStatus.BAD_REQUEST);
         }
     }
 }
