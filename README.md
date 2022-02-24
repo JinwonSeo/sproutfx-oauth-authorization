@@ -7,7 +7,7 @@
   │   ├─ main
   │   │   ├─ java/kr/sproutfx/oauth/authorization
   │   │   │   ├─ api
-  │   │   │   │   ├─ authorize // 인증 관련 api
+  │   │   │   │   ├─ authorize // 인증, 토큰 발급 관련 API
   │   │   │   │   │   ├─ controller
   │   │   │   │   │   ├─ enumeration
   │   │   │   │   │   ├─ exception
@@ -24,7 +24,7 @@
   │   │   │   │   │   ├─ enumeration
   │   │   │   │   │   ├─ exception
   │   │   │   │   │   └─ service
-  │   │   │   │   └─ project # Project CRUD
+  │   │   │   │   └─ project // Project CRUD
   │   │   │   │       ├─ controller
   │   │   │   │       ├─ entity
   │   │   │   │       ├─ enumeration
@@ -61,4 +61,19 @@
   ├─ dockerfile
   ├─ pom.xml
   └─ README.md
+  ```
+
+* Dependency
+
+  ```xml
+  (생략)
+
+  <!-- Custom logging(using ELK) -->
+  <dependency>
+    <groupId>kr.sproutfx.common</groupId>
+    <artifactId>sproutfx-common-logging-spring-boot-stater</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </dependency>
+
+  (생략)
   ```
