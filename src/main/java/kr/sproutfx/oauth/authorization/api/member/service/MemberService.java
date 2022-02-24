@@ -47,7 +47,7 @@ public class MemberService {
             Member.builder()
                 .email(email)
                 .name(name)
-                .password(password)
+                .password(this.passwordEncoder.encode(password))
                 .passwordExpired(simpleDateFormat.format(System.currentTimeMillis()))
                 .status(MemberStatus.PENDING_APPROVAL)
                 .description(description)
@@ -63,6 +63,14 @@ public class MemberService {
         persistenceMember.setEmail(email);
         persistenceMember.setName(name);
         persistenceMember.setDescription(description);
+    }
+
+    @Transactional
+    public void updatePassword(UUID id, String newPassword) {
+        Member persistenceMember = this.memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
+
+        persistenceMember.setPassword(this.passwordEncoder.encode(newPassword));
+        persistenceMember.setPasswordExpired(simpleDateFormat.format(System.currentTimeMillis()));
     }
 
     @Transactional
