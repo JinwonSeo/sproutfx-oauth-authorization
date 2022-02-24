@@ -15,9 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import kr.sproutfx.oauth.authorization.api.authorize.exception.ClientAccessDeniedException;
-import kr.sproutfx.oauth.authorization.api.authorize.exception.MemberAccessDeniedException;
-import kr.sproutfx.oauth.authorization.api.authorize.exception.UnauthorizedException;
 import kr.sproutfx.oauth.authorization.api.authorize.service.AuthorizeService;
 import kr.sproutfx.oauth.authorization.api.client.entity.Client;
 import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
@@ -50,11 +47,9 @@ public class AuthorizeController {
     public Response<GetAuthorizeResponse> getAuthorize(@RequestParam String clientCode) {
 
         Client authorizedClient = this.clientService.findByCode(clientCode);
-        
-        if (Boolean.FALSE.equals(this.authorizeService.isValidatedClient(authorizedClient))) {
-            throw new ClientAccessDeniedException();
-        }
 
+        this.authorizeService.validateClientStatus(authorizedClient);
+       
         String encryptedClientSecret = this.authorizeService.encryptClientSecret(authorizedClient.getSecret());
 
         return new Response<>(GetAuthorizeResponse.builder()
@@ -74,19 +69,13 @@ public class AuthorizeController {
         String decryptedClientSecret = this.authorizeService.decryptClientSecret(encryptedClientSecret);
         Client authorizedClient = this.clientService.findBySecret(decryptedClientSecret);
 
-        if (Boolean.FALSE.equals(this.authorizeService.isValidatedClient(authorizedClient))) {
-            throw new ClientAccessDeniedException();
-        }
+        this.authorizeService.validateClientStatus(authorizedClient);
 
         Member signedMember = this.memberService.findByEmail(email);
 
-        if (Boolean.FALSE.equals(this.authorizeService.isValidatedMember(signedMember))) {
-            throw new MemberAccessDeniedException();
-        }
+        this.authorizeService.validateMemberStatus(signedMember);
 
-        if (Boolean.FALSE.equals(this.authorizeService.isMatchesMemberPassword(signedMember, password))) {
-            throw new UnauthorizedException();
-        }
+        this.authorizeService.validateMemberPassword(signedMember, password);
 
         String subject = signedMember.getId().toString();
         String audience = authorizedClient.getCode();
@@ -122,9 +111,7 @@ public class AuthorizeController {
         String decryptedClientSecret = this.authorizeService.decryptClientSecret(encryptedClientSecret);
         Client authorizedClient = this.clientService.findBySecret(decryptedClientSecret);
 
-        if (Boolean.FALSE.equals(this.authorizeService.isValidatedClient(authorizedClient))) {
-            throw new ClientAccessDeniedException();
-        }
+        this.authorizeService.validateClientStatus(authorizedClient);
 
         String refreshToken = postRefreshRequest.getRefreshToken();
         String audience = authorizedClient.getCode();
@@ -141,11 +128,8 @@ public class AuthorizeController {
 
         Member signedMember = this.memberService.findById(UUID.fromString(subject));
 
-        if (Boolean.FALSE.equals(this.authorizeService.isValidatedMember(signedMember))) {
-            throw new MemberAccessDeniedException();
-        }
+        this.authorizeService.validateMemberStatus(signedMember);
 
-        // TO-DO: refresh token의 남은 기간이 최초 발급 기간의 절반 미만인 경우 refresh token 새로 발급
         if (refreshTokenExpiresInSeconds < (refreshTokenValidityInSeconds * 0.5)) {
             refreshToken = this.authorizeService.createToken(subject, audience, refreshTokenSecret, refreshTokenValidityInSeconds);
             refreshTokenExpiresInSeconds = this.authorizeService.extractTokenExpiresInSeconds(refreshTokenSecret, audience, refreshToken);

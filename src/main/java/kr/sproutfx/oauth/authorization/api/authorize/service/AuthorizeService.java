@@ -1,5 +1,7 @@
 package kr.sproutfx.oauth.authorization.api.authorize.service;
 
+import java.text.SimpleDateFormat;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -7,10 +9,13 @@ import org.springframework.stereotype.Service;
 
 import kr.sproutfx.oauth.authorization.api.authorize.exception.BlockedClientException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.BlockedMemberException;
+import kr.sproutfx.oauth.authorization.api.authorize.exception.ClientAccessDeniedException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.DeactivatedClientException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.DeactivatedMemberException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.ExtractExpiresInSecondsFailedException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.ExtractSubjectFailedException;
+import kr.sproutfx.oauth.authorization.api.authorize.exception.MemberAccessDeniedException;
+import kr.sproutfx.oauth.authorization.api.authorize.exception.PasswordExpiredException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.PendingApprovalClientException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.PendingApprovalMemberException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.TokenCreationFailedException;
@@ -28,12 +33,14 @@ public class AuthorizeService {
     private final CryptoUtils cryptoUtils;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
+    private final SimpleDateFormat simpleDateFormat;
 
     @Autowired
-    public AuthorizeService(CryptoUtils cryptoUtils, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
+    public AuthorizeService(CryptoUtils cryptoUtils, PasswordEncoder passwordEncoder, JwtProvider jwtProvider, SimpleDateFormat simpleDateFormat) {
         this.cryptoUtils = cryptoUtils;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
+        this.simpleDateFormat = simpleDateFormat;
     }
 
     public String decryptClientSecret(String encryptedClientSecret) {
@@ -82,39 +89,35 @@ public class AuthorizeService {
         return this.jwtProvider.validateToken(secret, audience, token);
     }
 
-    public boolean isValidatedClient(Client client) {
-        if (ClientStatus.ACTIVE.equals(client.getStatus())) {
-            return true;
-        } else if (ClientStatus.BLOCKED.equals(client.getStatus())) {
+    public void validateClientStatus(Client client) {
+        if (ClientStatus.BLOCKED.equals(client.getStatus())) {
             throw new BlockedClientException();
         } else if (ClientStatus.DEACTIVATED.equals(client.getStatus())) {
             throw new DeactivatedClientException();
         } else if (ClientStatus.PENDING_APPROVAL.equals(client.getStatus())) {
             throw new PendingApprovalClientException();
-        } else {
-            return false;
+        } else if (!ClientStatus.ACTIVE.equals(client.getStatus())) {
+            throw new ClientAccessDeniedException();
         }
     }
 
-    public boolean isValidatedMember(Member member) {
-        if (MemberStatus.ACTIVE.equals(member.getStatus())) {
-            return true;
-        } else if (MemberStatus.BLOCKED.equals(member.getStatus())) {
+    public void validateMemberPassword(Member member, String password) {
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new UnauthorizedException();
+        } else if (member.getPasswordExpired().compareTo(simpleDateFormat.format(System.currentTimeMillis())) <= 0) {
+            throw new PasswordExpiredException();   
+        }
+    }
+
+    public void validateMemberStatus(Member member) {
+        if (MemberStatus.BLOCKED.equals(member.getStatus())) {
             throw new BlockedMemberException();
         } else if (MemberStatus.DEACTIVATED.equals(member.getStatus())) {
             throw new DeactivatedMemberException();
         } else if (MemberStatus.PENDING_APPROVAL.equals(member.getStatus())) {
             throw new PendingApprovalMemberException();
-        } else {
-            return false;
-        }
-    }
-
-    public boolean isMatchesMemberPassword(Member member, String password) {
-        if (passwordEncoder.matches(password, member.getPassword())) {
-            return true;
-        } else {
-            throw new UnauthorizedException();
+        } else if (!MemberStatus.ACTIVE.equals(member.getStatus())) {
+            throw new MemberAccessDeniedException();
         }
     }
 }
