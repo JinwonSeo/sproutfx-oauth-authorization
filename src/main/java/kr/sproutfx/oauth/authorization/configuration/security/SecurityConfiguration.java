@@ -10,9 +10,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsUtils;
 
+import kr.sproutfx.oauth.authorization.configuration.jwt.JwtAuthenticationFilter;
+import kr.sproutfx.oauth.authorization.configuration.jwt.JwtProvider;
 import kr.sproutfx.oauth.authorization.configuration.security.firewall.AnnotatingHttpFirewall;
-import kr.sproutfx.oauth.authorization.configuration.security.jwt.JwtAuthenticationFilter;
-import kr.sproutfx.oauth.authorization.configuration.security.jwt.JwtProvider;
 import kr.sproutfx.oauth.authorization.configuration.security.property.HttpSecurityPermitAllProperties;
 import kr.sproutfx.oauth.authorization.configuration.security.property.WebSecurityIgnoreProperties;
 

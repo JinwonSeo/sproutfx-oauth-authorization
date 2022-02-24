@@ -1,4 +1,4 @@
-package kr.sproutfx.oauth.authorization.configuration.security.jwt.property;
+package kr.sproutfx.oauth.authorization.configuration.jwt.property;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

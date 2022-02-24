@@ -1,4 +1,4 @@
-package kr.sproutfx.oauth.authorization.configuration.security.jwt;
+package kr.sproutfx.oauth.authorization.configuration.jwt;
 
 import java.io.IOException;
 import java.util.ArrayList;
