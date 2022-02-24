@@ -11,6 +11,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -146,6 +147,19 @@ public class AuthorizeController {
             .build());
     }
 
+    @PutMapping("/password")
+    public Response<MemberResponse> updateMemberPassword(@RequestBody @Validated UpdateMemberPasswordRequest updateMemberPasswordRequest, Errors errors) {
+        if (errors.hasErrors()) throw new InvalidArgumentException();
+
+        String email = updateMemberPasswordRequest.getEmail();
+        String currentPassword = updateMemberPasswordRequest.getCurrentPassword();
+        String newPassword = updateMemberPasswordRequest.getNewPassword();
+
+        UUID id = this.memberService.updatePassword(email, currentPassword, newPassword);
+
+        return new Response<>(new MemberResponse(this.memberService.findById(id)));
+    } 
+
     @Builder
     @Data
     static class GetAuthorizeResponse {
@@ -228,5 +242,34 @@ public class AuthorizeController {
             this.status = (member.getStatus() == null) ? null : member.getStatus().toString();
             this.description = member.getDescription();
         }
+    }
+
+    @Data
+    static class MemberResponse {
+        private UUID id;
+        private String email;
+        private String name;
+        private LocalDateTime passwordExpired;
+        private String status;
+        private String description;
+
+        public MemberResponse(Member member) {
+            this.id = member.getId();
+            this.email = member.getEmail();
+            this.name = member.getName();
+            this.passwordExpired = member.getPasswordExpired();
+            this.status = (member.getStatus() == null) ? null : member.getStatus().toString();
+            this.description = member.getDescription();
+        }
+    }
+
+    @Data
+    static class UpdateMemberPasswordRequest {
+        @NotBlank
+        private String email;
+        @NotBlank
+        private String currentPassword;
+        @NotBlank
+        private String newPassword;
     }
 }
