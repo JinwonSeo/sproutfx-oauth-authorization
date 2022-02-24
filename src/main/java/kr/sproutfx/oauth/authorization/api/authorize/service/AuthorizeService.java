@@ -25,7 +25,7 @@ import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
 import kr.sproutfx.oauth.authorization.api.member.entity.Member;
 import kr.sproutfx.oauth.authorization.api.member.enumeration.MemberStatus;
 import kr.sproutfx.oauth.authorization.configuration.crypto.CryptoUtils;
-import kr.sproutfx.oauth.authorization.configuration.security.jwt.JwtProvider;
+import kr.sproutfx.oauth.authorization.configuration.jwt.JwtProvider;
 
 @Service
 public class AuthorizeService {
