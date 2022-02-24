@@ -1,6 +1,6 @@
 package kr.sproutfx.oauth.authorization.api.authorize.service;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,14 +33,12 @@ public class AuthorizeService {
     private final CryptoUtils cryptoUtils;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
-    private final SimpleDateFormat simpleDateFormat;
 
     @Autowired
-    public AuthorizeService(CryptoUtils cryptoUtils, PasswordEncoder passwordEncoder, JwtProvider jwtProvider, SimpleDateFormat simpleDateFormat) {
+    public AuthorizeService(CryptoUtils cryptoUtils, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
         this.cryptoUtils = cryptoUtils;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
-        this.simpleDateFormat = simpleDateFormat;
     }
 
     public String decryptClientSecret(String encryptedClientSecret) {
@@ -104,7 +102,7 @@ public class AuthorizeService {
     public void validateMemberPassword(Member member, String password) {
         if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new UnauthorizedException();
-        } else if (member.getPasswordExpired().compareTo(simpleDateFormat.format(System.currentTimeMillis())) <= 0) {
+        } else if (member.getPasswordExpired().isBefore(LocalDateTime.now())) {
             throw new PasswordExpiredException();   
         }
     }

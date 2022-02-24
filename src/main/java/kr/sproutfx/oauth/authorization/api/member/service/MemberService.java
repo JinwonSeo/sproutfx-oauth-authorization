@@ -1,6 +1,6 @@
 package kr.sproutfx.oauth.authorization.api.member.service;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import kr.sproutfx.oauth.authorization.api.member.exception.MemberNotFoundException;
+import kr.sproutfx.oauth.authorization.api.member.exception.MemberPasswordNotMatchesException;
 import kr.sproutfx.oauth.authorization.api.member.entity.Member;
 import kr.sproutfx.oauth.authorization.api.member.enumeration.MemberStatus;
 import kr.sproutfx.oauth.authorization.api.member.repository.MemberRepository;
@@ -20,13 +21,11 @@ import kr.sproutfx.oauth.authorization.api.member.repository.specification.Membe
 public class MemberService {
     MemberRepository memberRepository;
     PasswordEncoder passwordEncoder;
-    SimpleDateFormat simpleDateFormat;
     
     @Autowired
-    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder, SimpleDateFormat simpleDateFormat) {
+    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
-        this.simpleDateFormat = simpleDateFormat;
     }
 
     public List<Member> findAll() {
@@ -47,8 +46,8 @@ public class MemberService {
             Member.builder()
                 .email(email)
                 .name(name)
-                .password(this.passwordEncoder.encode(password))
-                .passwordExpired(simpleDateFormat.format(System.currentTimeMillis()))
+                .password(this.passwordEncoder.encode(password)) 
+                .passwordExpired(LocalDateTime.now().plusDays(90)) // To-do: password 90일 하드코딩 password 정책관리 기능 추가 후 변수화
                 .status(MemberStatus.PENDING_APPROVAL)
                 .description(description)
                 .build());
@@ -66,11 +65,18 @@ public class MemberService {
     }
 
     @Transactional
-    public void updatePassword(UUID id, String newPassword) {
-        Member persistenceMember = this.memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
+    public UUID updatePassword(String email, String currentPassword, String newPassword) {
+        Member persistenceMember = this.memberRepository.findOne(MemberSpecification.equalEmail(email)).orElseThrow(MemberNotFoundException::new);
+
+        if (!this.passwordEncoder.matches(currentPassword, persistenceMember.getPassword())) {
+            throw new MemberPasswordNotMatchesException();
+        }
 
         persistenceMember.setPassword(this.passwordEncoder.encode(newPassword));
-        persistenceMember.setPasswordExpired(simpleDateFormat.format(System.currentTimeMillis()));
+        // To-do: password 90일 하드코딩 password 정책관리 기능 추가 후 변수화
+        persistenceMember.setPasswordExpired(LocalDateTime.now().plusDays(90));
+
+        return persistenceMember.getId();
     }
 
     @Transactional
@@ -86,5 +92,4 @@ public class MemberService {
 
         this.memberRepository.delete(persistenceMember);
     }
-
 }
