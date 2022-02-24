@@ -11,7 +11,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
 
-import kr.sproutfx.oauth.authorization.common.exception.EncryptFailException;
+import kr.sproutfx.oauth.authorization.configuration.crypto.exception.EncryptFailedException;
 import kr.sproutfx.oauth.authorization.configuration.crypto.property.CryptoProperties;
 
 @Component
@@ -41,7 +41,7 @@ public class CryptoUtils {
 
             return Base64Utils.encodeToUrlSafeString(cipher.doFinal(plainText.getBytes()));
         } catch (Exception e) {
-            throw new EncryptFailException();
+            throw new EncryptFailedException();
         }
     }
 

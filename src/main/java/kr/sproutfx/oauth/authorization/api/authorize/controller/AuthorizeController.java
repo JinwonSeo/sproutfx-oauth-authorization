@@ -1,5 +1,6 @@
 package kr.sproutfx.oauth.authorization.api.authorize.controller;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import javax.validation.constraints.Email;
@@ -17,14 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import kr.sproutfx.oauth.authorization.api.authorize.service.AuthorizeService;
 import kr.sproutfx.oauth.authorization.api.client.entity.Client;
-import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
 import kr.sproutfx.oauth.authorization.api.client.service.ClientService;
 import kr.sproutfx.oauth.authorization.api.member.entity.Member;
-import kr.sproutfx.oauth.authorization.api.member.enumeration.MemberStatus;
 import kr.sproutfx.oauth.authorization.api.member.service.MemberService;
 import kr.sproutfx.oauth.authorization.common.dto.Response;
 import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException;
-import kr.sproutfx.oauth.authorization.common.utility.ModelMapperUtils;
 
 import lombok.Builder;
 import lombok.Data;
@@ -54,7 +52,7 @@ public class AuthorizeController {
 
         return new Response<>(GetAuthorizeResponse.builder()
             .encryptedClientSecret(encryptedClientSecret)
-            .authorizedClient(ModelMapperUtils.defaultMapper().map(authorizedClient, AuthorizedClient.class))
+            .authorizedClient(new AuthorizedClient(authorizedClient))
             .build());
     }
 
@@ -98,7 +96,7 @@ public class AuthorizeController {
             .accessTokenExpiresIn(accessTokenExpiresInSeconds)
             .refreshToken(refreshToken)
             .refreshTokenExpiresIn(refreshTokenExpiresInSeconds)
-            .signedMember(ModelMapperUtils.defaultMapper().map(signedMember, SignedMember.class))
+            .signedMember(new SignedMember(signedMember))
             .build());
     }
 
@@ -144,7 +142,7 @@ public class AuthorizeController {
             .accessTokenExpiresIn(accessTokenExpiresInSeconds)
             .refreshToken(refreshToken)
             .refreshTokenExpiresIn(refreshTokenExpiresInSeconds)
-            .signedMember(ModelMapperUtils.defaultMapper().map(signedMember, SignedMember.class))
+            .signedMember(new SignedMember(signedMember))
             .build());
     }
 
@@ -201,8 +199,16 @@ public class AuthorizeController {
         private UUID id;
         private String code;
         private String name;
-        private ClientStatus status;
+        private String status;
         private String description;
+
+        public AuthorizedClient(Client client) {
+            this.id = client.getId();
+            this.code = client.getCode();
+            this.name = client.getName();
+            this.status = (client.getStatus() == null) ? null : client.getStatus().toString();
+            this.description = client.getDescription();
+        }
     }
 
     @Data
@@ -210,8 +216,17 @@ public class AuthorizeController {
         private UUID id;
         private String email;
         private String name;
-        private String passwordExpired;
-        private MemberStatus status;
+        private LocalDateTime passwordExpired;
+        private String status;
         private String description;
+
+        public SignedMember(Member member) {
+            this.id = member.getId();
+            this.email = member.getEmail();
+            this.name = member.getName();
+            this.passwordExpired = member.getPasswordExpired();
+            this.status = (member.getStatus() == null) ? null : member.getStatus().toString();
+            this.description = member.getDescription();
+        }
     }
 }

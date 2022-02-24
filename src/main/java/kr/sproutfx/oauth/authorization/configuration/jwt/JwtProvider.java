@@ -1,4 +1,4 @@
-package kr.sproutfx.oauth.authorization.configuration.security.jwt;
+package kr.sproutfx.oauth.authorization.configuration.jwt;
 
 import java.util.Base64;
 import java.util.Date;
@@ -11,7 +11,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import kr.sproutfx.oauth.authorization.configuration.security.jwt.property.AuthorizationProperties;
+import kr.sproutfx.oauth.authorization.configuration.jwt.property.AuthorizationProperties;
 
 @Component
 public class JwtProvider {
