@@ -43,17 +43,14 @@ public class MemberController {
     @GetMapping
     public Response<List<MemberResponse>> findAll() {
         return new Response<>(
-            this.memberService.findAll()
-                .stream()
-                .map(source -> ModelMapperUtils.defaultMapper().map(source, MemberResponse.class))
+            this.memberService.findAll().stream()
+                .map(MemberResponse::new)
                 .collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")
     public Response<MemberResponse> findById(@PathVariable UUID id) {
-        return new Response<>(
-            ModelMapperUtils.defaultMapper().map(
-                this.memberService.findById(id), MemberResponse.class));
+        return new Response<>(new MemberResponse(this.memberService.findById(id)));
     }
 
     @PostMapping
@@ -66,9 +63,7 @@ public class MemberController {
                 memberCreateRequest.getPassword(),
                 memberCreateRequest.getDescription());
         
-        return new Response<>(
-            ModelMapperUtils.defaultMapper().map(
-                this.memberService.findById(id), MemberResponse.class));
+        return new Response<>(new MemberResponse(this.memberService.findById(id)));
     }
 
     @PutMapping("/{id}")
@@ -80,9 +75,7 @@ public class MemberController {
                 memberUpdateRequest.getName(), 
                 memberUpdateRequest.getDescription());
         
-        return new Response<>(
-            ModelMapperUtils.defaultMapper().map(
-                this.memberService.findById(id), MemberResponse.class));
+        return new Response<>(new MemberResponse(this.memberService.findById(id)));
     }
 
     @PutMapping("/{id}/status")
@@ -92,9 +85,7 @@ public class MemberController {
         this.memberService.updateStatus(id, 
                 memberStatusUpdateRequest.getMemberStatus());
 
-        return new Response<>(
-            ModelMapperUtils.defaultMapper().map(
-                this.memberService.findById(id), MemberResponse.class));
+        return new Response<>(new MemberResponse(this.memberService.findById(id)));
     }
 
     @PutMapping("/{email}/password")
