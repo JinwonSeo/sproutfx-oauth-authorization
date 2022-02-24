@@ -1,6 +1,7 @@
 package kr.sproutfx.oauth.authorization.api.member.entity;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -50,8 +51,8 @@ public class Member extends BaseEntity implements Serializable {
     @Column(nullable = false, columnDefinition = "varchar(255)")
     private String password;
 
-    @Column(nullable = false, columnDefinition = "varchar(8)")
-    private String passwordExpired;
+    @Column(nullable = false, columnDefinition = "timestamp")
+    private LocalDateTime passwordExpired;
 
     @Column(nullable = false, columnDefinition = "varchar(255)")
     @Enumerated(EnumType.STRING)

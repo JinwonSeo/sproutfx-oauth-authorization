@@ -21,12 +21,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import kr.sproutfx.oauth.authorization.api.client.entity.Client;
 import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
 import kr.sproutfx.oauth.authorization.api.client.service.ClientService;
 import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException;
 import kr.sproutfx.oauth.authorization.common.dto.Response;
-import kr.sproutfx.oauth.authorization.common.utility.ModelMapperUtils;
-import lombok.AllArgsConstructor;
+
 import lombok.Data;
 
 @RestController
@@ -43,17 +43,14 @@ public class ClientController {
     @GetMapping
     public Response<List<ClientResponse>> findAll() {
         return new Response<>(
-            this.clientService.findAll()
-                .stream()
-                .map(source -> ModelMapperUtils.defaultMapper().map(source, ClientResponse.class))
+            this.clientService.findAll().stream()
+                .map(ClientResponse::new)
                 .collect(Collectors.toList()));
     }
 
     @GetMapping(value="/{id}")
     public Response<ClientResponse> findById(@PathVariable("id") UUID id) {
-        return new Response<>(
-            ModelMapperUtils.defaultMapper().map(
-                this.clientService.findById(id), ClientResponse.class));
+        return new Response<>(new ClientResponse(this.clientService.findById(id)));
     }
 
     @PostMapping
@@ -62,9 +59,7 @@ public class ClientController {
         
         UUID id = this.clientService.create(clientCreateRequest.getName(), clientCreateRequest.getDescription());
 
-        return new Response<>(
-            ModelMapperUtils.defaultMapper().map(
-                this.clientService.findById(id), ClientResponse.class));
+        return new Response<>(new ClientResponse(this.clientService.findById(id)));
     }
 
     @PutMapping(value="/{id}")
@@ -72,23 +67,19 @@ public class ClientController {
         if (errors.hasErrors()) throw new InvalidArgumentException();
         
         this.clientService.update(id, 
-                clientUpdateRequest.getName(), 
-                clientUpdateRequest.getAccessTokenValidityInSeconds(), 
-                clientUpdateRequest.getRefreshTokenValidityInSeconds(), 
-                clientUpdateRequest.getDescription());
+            clientUpdateRequest.getName(), 
+            clientUpdateRequest.getAccessTokenValidityInSeconds(), 
+            clientUpdateRequest.getRefreshTokenValidityInSeconds(), 
+            clientUpdateRequest.getDescription());
 
-        return new Response<>(
-            ModelMapperUtils.defaultMapper().map(
-                this.clientService.findById(id), ClientResponse.class));
+        return new Response<>(new ClientResponse(this.clientService.findById(id)));
     }
 
     @PutMapping("/{id}/status")
     public Response<ClientResponse> updateStatus(@PathVariable UUID id, @RequestBody ClientStatusUpdateRequest clientStatusUpdateRequest) {
         this.clientService.updateStatus(id, clientStatusUpdateRequest.getClientStatus());
         
-        return new Response<>(
-            ModelMapperUtils.defaultMapper().map(
-                this.clientService.findById(id), ClientResponse.class));
+        return new Response<>(new ClientResponse(this.clientService.findById(id)));
     }
 
     @DeleteMapping(value = "/{id}")
@@ -126,13 +117,24 @@ public class ClientController {
         private UUID id;
         private String code;
         private String name;
-        private ClientStatus status;
+        private String status;
         private String description;
+
+        public ClientResponse(Client client) {
+            this.id = client.getId();
+            this.code = client.getCode();
+            this.name = client.getName();
+            this.status = (client.getStatus() == null) ? null : client.getStatus().toString();
+            this.description = client.getDescription();
+        }
     }
 
-    @AllArgsConstructor
     @Data
     static class ClientDeleteResponse {
         private UUID deletedClientId;
+
+        public ClientDeleteResponse(UUID deletedClientId) {
+            this.deletedClientId = deletedClientId;
+        }
     }
 }
