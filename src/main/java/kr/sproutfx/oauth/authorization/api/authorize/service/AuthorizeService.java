@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import kr.sproutfx.common.security.configuration.jwt.component.JwtProvider;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.BlockedClientException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.BlockedMemberException;
 import kr.sproutfx.oauth.authorization.api.authorize.exception.ClientAccessDeniedException;
@@ -25,7 +26,6 @@ import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
 import kr.sproutfx.oauth.authorization.api.member.entity.Member;
 import kr.sproutfx.oauth.authorization.api.member.enumeration.MemberStatus;
 import kr.sproutfx.oauth.authorization.configuration.crypto.CryptoUtils;
-import kr.sproutfx.oauth.authorization.configuration.jwt.JwtProvider;
 
 @Service
 public class AuthorizeService {

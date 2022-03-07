@@ -16,7 +16,6 @@
 	<properties>
 		<java.version>11</java.version>
 		<spring-cloud.version>2020.0.5</spring-cloud.version>
-		<jjwt.version>0.11.2</jjwt.version>
 	</properties>
 	<repositories>
 		<repository>
@@ -71,27 +70,6 @@
 			<groupId>com.github.ben-manes.caffeine</groupId>
 			<artifactId>caffeine</artifactId>
 		</dependency>
-		<!-- Security -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-		<!--JWT-->
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-api</artifactId>
-			<version>${jjwt.version}</version>
-		</dependency>
-		<dependency>
-         	<groupId>io.jsonwebtoken</groupId>
-         	<artifactId>jjwt-impl</artifactId>
-         	<version>${jjwt.version}</version>
-      	</dependency>
-      	<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-jackson</artifactId>
-			<version>${jjwt.version}</version>
-      	</dependency>
 		<!-- JPA -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -133,6 +111,12 @@
 		<dependency>
 			<groupId>kr.sproutfx.common</groupId>
 			<artifactId>sproutfx-common-logging-spring-boot-stater</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<!-- Security -->
+		<dependency>
+			<groupId>kr.sproutfx.common</groupId>
+			<artifactId>sproutfx-common-security-spring-boot-starter</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<!-- Test -->
