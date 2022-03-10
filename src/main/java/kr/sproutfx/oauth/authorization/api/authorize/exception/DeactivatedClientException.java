@@ -2,7 +2,7 @@ package kr.sproutfx.oauth.authorization.api.authorize.exception;
 
 import org.springframework.http.HttpStatus;
 
-import kr.sproutfx.oauth.authorization.common.exception.BaseException;
+import kr.sproutfx.oauth.authorization.common.base.BaseException;
 
 public class DeactivatedClientException extends BaseException {
 

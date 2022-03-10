@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 
-import kr.sproutfx.oauth.authorization.common.exception.BaseException;
+import kr.sproutfx.oauth.authorization.common.base.BaseException;
 
 public class MemberNotFoundException extends BaseException {
 

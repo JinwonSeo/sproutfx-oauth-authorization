@@ -23,15 +23,15 @@ import org.springframework.web.bind.annotation.RestController;
 import kr.sproutfx.oauth.authorization.api.member.entity.Member;
 import kr.sproutfx.oauth.authorization.api.member.enumeration.MemberStatus;
 import kr.sproutfx.oauth.authorization.api.member.service.MemberService;
+import kr.sproutfx.oauth.authorization.common.base.BaseController;
 import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException;
-import kr.sproutfx.oauth.authorization.common.dto.Response;
 
 import lombok.Data;
 
 @RestController
 @RequestMapping("/members")
 @Validated
-public class MemberController {
+public class MemberController extends BaseController {
     private MemberService memberService;
 
     @Autowired
