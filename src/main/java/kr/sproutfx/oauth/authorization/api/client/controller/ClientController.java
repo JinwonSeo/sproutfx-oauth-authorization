@@ -25,14 +25,14 @@ import kr.sproutfx.oauth.authorization.api.client.entity.Client;
 import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
 import kr.sproutfx.oauth.authorization.api.client.service.ClientService;
 import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException;
-import kr.sproutfx.oauth.authorization.common.dto.Response;
+import kr.sproutfx.oauth.authorization.common.base.BaseController;
 
 import lombok.Data;
 
 @RestController
 @RequestMapping("/clients")
 @Validated
-public class ClientController {
+public class ClientController extends BaseController {
     private final ClientService clientService;
     
     @Autowired

@@ -21,7 +21,7 @@ import org.hibernate.annotations.Where;
 import org.hibernate.envers.Audited;
 
 import kr.sproutfx.oauth.authorization.api.member.enumeration.MemberStatus;
-import kr.sproutfx.oauth.authorization.common.entity.BaseEntity;
+import kr.sproutfx.oauth.authorization.configuration.jpa.entity.JpaBaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -34,7 +34,7 @@ import lombok.Setter;
 @DynamicInsert @DynamicUpdate @Audited
 @SQLDelete(sql = "UPDATE members SET deleted = true WHERE id = ?")
 @Where(clause = "deleted = false")
-public class Member extends BaseEntity implements Serializable {
+public class Member extends JpaBaseEntity implements Serializable {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")

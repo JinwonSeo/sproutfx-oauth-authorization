@@ -2,6 +2,8 @@ package kr.sproutfx.oauth.authorization.common.exception;
 
 import org.springframework.http.HttpStatus;
 
+import kr.sproutfx.oauth.authorization.common.base.BaseException;
+
 public class InvalidArgumentException extends BaseException {
 
     public InvalidArgumentException() {

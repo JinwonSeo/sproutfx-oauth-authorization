@@ -24,7 +24,7 @@ import org.hibernate.envers.Audited;
 
 import kr.sproutfx.oauth.authorization.api.client.entity.Client;
 import kr.sproutfx.oauth.authorization.api.project.enumeration.ProjectStatus;
-import kr.sproutfx.oauth.authorization.common.entity.BaseEntity;
+import kr.sproutfx.oauth.authorization.configuration.jpa.entity.JpaBaseEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,7 +38,7 @@ import lombok.Setter;
 @DynamicInsert @DynamicUpdate @Audited
 @SQLDelete(sql = "UPDATE projects SET deleted = true WHERE id = ?")
 @Where(clause = "deleted = false")
-public class Project extends BaseEntity implements Serializable {
+public class Project extends JpaBaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id

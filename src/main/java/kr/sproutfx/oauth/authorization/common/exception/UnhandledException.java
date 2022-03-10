@@ -1,5 +1,7 @@
 package kr.sproutfx.oauth.authorization.common.exception;
 
+import kr.sproutfx.oauth.authorization.common.base.BaseException;
+
 public class UnhandledException extends BaseException {
 
     public UnhandledException() {
