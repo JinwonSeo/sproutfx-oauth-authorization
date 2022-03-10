@@ -21,14 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 import kr.sproutfx.oauth.authorization.api.client.entity.Client;
 import kr.sproutfx.oauth.authorization.api.project.entity.Project;
 import kr.sproutfx.oauth.authorization.api.project.service.ProjectService;
-import kr.sproutfx.oauth.authorization.common.dto.Response;
+import kr.sproutfx.oauth.authorization.common.base.BaseController;
 import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException;
 
 import lombok.Data;
 
 @RestController
 @RequestMapping("projects")
-public class ProjectController {
+public class ProjectController extends BaseController {
     private final ProjectService projectService;
 
     @Autowired

@@ -1,13 +1,11 @@
-package kr.sproutfx.oauth.authorization.common.dto;
+package kr.sproutfx.oauth.authorization.common.base;
 
-import kr.sproutfx.oauth.authorization.common.exception.BaseException;
-
-public class Response<T> {
+public class BaseResponse<T> {
     private boolean succeeded;
     private T result;
     private Error error;
 
-    public Response(T result) {
+    public BaseResponse(T result) {
         if (result instanceof BaseException) {
             this.setSucceeded(false);
             this.setError(result);
@@ -67,4 +65,3 @@ public class Response<T> {
         }
     }
 }
-

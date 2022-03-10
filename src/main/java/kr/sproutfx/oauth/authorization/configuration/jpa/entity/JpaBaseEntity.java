@@ -1,4 +1,4 @@
-package kr.sproutfx.oauth.authorization.common.entity;
+package kr.sproutfx.oauth.authorization.configuration.jpa.entity;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -14,13 +14,9 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter @Setter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseEntity {
+public class JpaBaseEntity {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean deleted = Boolean.FALSE;
 

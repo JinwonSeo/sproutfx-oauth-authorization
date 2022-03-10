@@ -22,7 +22,7 @@ import kr.sproutfx.oauth.authorization.api.client.entity.Client;
 import kr.sproutfx.oauth.authorization.api.client.service.ClientService;
 import kr.sproutfx.oauth.authorization.api.member.entity.Member;
 import kr.sproutfx.oauth.authorization.api.member.service.MemberService;
-import kr.sproutfx.oauth.authorization.common.dto.Response;
+import kr.sproutfx.oauth.authorization.common.base.BaseController;
 import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException;
 
 import lombok.Builder;
@@ -30,7 +30,7 @@ import lombok.Data;
 
 @RestController
 @RequestMapping("/")
-public class AuthorizeController {
+public class AuthorizeController extends BaseController {
     private final AuthorizeService authorizeService;
     private final ClientService clientService;
     private final MemberService memberService;
