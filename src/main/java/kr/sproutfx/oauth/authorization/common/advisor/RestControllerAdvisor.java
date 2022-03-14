@@ -10,7 +10,7 @@ import kr.sproutfx.oauth.authorization.common.base.BaseResponse;
 import kr.sproutfx.oauth.authorization.common.exception.UnhandledException;
 
 @RestControllerAdvice
-public class ControllerAdvisor {
+public class RestControllerAdvisor {
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<BaseResponse<Object>> exception(final Throwable t) {
         if (t instanceof BaseException) {
