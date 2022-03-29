@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,7 +33,6 @@ import lombok.Data;
 public class MemberController extends BaseController {
     private MemberService memberService;
 
-    @Autowired
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
     }
