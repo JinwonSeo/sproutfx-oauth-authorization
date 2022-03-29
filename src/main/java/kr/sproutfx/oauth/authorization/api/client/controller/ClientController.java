@@ -9,7 +9,6 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,7 +34,6 @@ import lombok.Data;
 public class ClientController extends BaseController {
     private final ClientService clientService;
     
-    @Autowired
     public ClientController(ClientService clientService) {
         this.clientService = clientService;
     }
