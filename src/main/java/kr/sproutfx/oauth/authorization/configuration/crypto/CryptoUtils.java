@@ -6,7 +6,6 @@ import java.security.KeyStore;
 import java.security.cert.Certificate;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
@@ -18,7 +17,6 @@ import kr.sproutfx.oauth.authorization.configuration.crypto.property.CryptoPrope
 public class CryptoUtils {
     CryptoProperties cryptoProperties;
 
-    @Autowired
     public CryptoUtils(CryptoProperties cryptoProperties) {
         this.cryptoProperties = cryptoProperties;
     }

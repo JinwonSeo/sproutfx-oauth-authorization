@@ -87,6 +87,14 @@
 			<artifactId>mariadb-java-client</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		<!-- H2 -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.200</version>
+			<scope>runtime</scope>
+		</dependency>
+		
 		<!-- StringUtils -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>

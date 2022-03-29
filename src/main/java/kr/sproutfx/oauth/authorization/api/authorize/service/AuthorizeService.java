@@ -3,7 +3,6 @@ package kr.sproutfx.oauth.authorization.api.authorize.service;
 import java.time.LocalDateTime;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +33,6 @@ public class AuthorizeService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
-    @Autowired
     public AuthorizeService(CryptoUtils cryptoUtils, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
         this.cryptoUtils = cryptoUtils;
         this.passwordEncoder = passwordEncoder;

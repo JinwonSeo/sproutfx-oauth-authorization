@@ -6,7 +6,6 @@ import java.util.UUID;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +34,6 @@ public class AuthorizeController extends BaseController {
     private final ClientService clientService;
     private final MemberService memberService;
 
-    @Autowired
     public AuthorizeController(AuthorizeService authorizeService, ClientService clientService, MemberService memberService) {
         this.authorizeService = authorizeService;
         this.clientService = clientService;
