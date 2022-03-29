@@ -8,45 +8,29 @@
   │   │   ├─ java/kr/sproutfx/oauth/authorization
   │   │   │   ├─ api
   │   │   │   │   ├─ authorize // 인증, 토큰 발급 관련 API
-  │   │   │   │   │   ├─ controller
-  │   │   │   │   │   ├─ enumeration
-  │   │   │   │   │   ├─ exception
-  │   │   │   │   │   └─ service
+  │   │   │   │   │   └─ (생략)
   │   │   │   │   ├─ client // Client CRUD
-  │   │   │   │   │   ├─ controller
-  │   │   │   │   │   ├─ entity
-  │   │   │   │   │   ├─ enumeration
-  │   │   │   │   │   ├─ exception
-  │   │   │   │   │   └─ service
+  │   │   │   │   │   └─ (생략)
   │   │   │   │   ├─ member // Member CRUD
-  │   │   │   │   │   ├─ controller
-  │   │   │   │   │   ├─ entity
-  │   │   │   │   │   ├─ enumeration
-  │   │   │   │   │   ├─ exception
-  │   │   │   │   │   └─ service
+  │   │   │   │   │   └─ (생략)
   │   │   │   │   └─ project // Project CRUD
-  │   │   │   │       ├─ controller
-  │   │   │   │       ├─ entity
-  │   │   │   │       ├─ enumeration
-  │   │   │   │       ├─ exception
-  │   │   │   │       └─ service
+  │   │   │   │       └─ (생략)
   │   │   │   ├─ common
   │   │   │   │   ├─ advisor
-  │   │   │   │   │   └─ ControllerAdvisor.java // Exception 처리
-  │   │   │   │   ├─ dto
-  │   │   │   │   │   └─ Response.java // API Response 객체
-  │   │   │   │   ├─ entity
-  │   │   │   │   │   └─ BaseEntity.java // DB 기본 columns
+  │   │   │   │   │   └─ RestControllerAdvisor.java // Exception 처리
+  │   │   │   │   ├─ aspect
+  │   │   │   │   │   └─ RestControllerAspect.java // Rest controller logging 
+  │   │   │   │   ├─ base
+  │   │   │   │   │   ├─ BaseController.java
+  │   │   │   │   │   ├─ BaseEntity.java
+  │   │   │   │   │   ├─ BaseException.java
+  │   │   │   │   │   └─ BaseResponse.java
   │   │   │   │   └─ exception
   │   │   │   │       └─ BaseException.java // Custom exception
   │   │   │   ├─ configuration
   │   │   │   │   ├─ crypto // 암호화, 복호화
   │   │   │   │   │   └─ (생략)
-  │   │   │   │   ├─ jpa // JPA 설정
-  │   │   │   │   │   └─ (생략)
-  │   │   │   │   ├─ jwt // JWT 발급/검증 등
-  │   │   │   │   │   └─ (생략)
-  │   │   │   │   └─ security // Spring security 설정
+  │   │   │   │   └─ jpa // JPA 설정
   │   │   │   │       └─ (생략)
   │   │   │   └─ AuthServiceApplication.java
   │   │   └─ resources
@@ -74,6 +58,52 @@
     <artifactId>sproutfx-common-logging-spring-boot-stater</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </dependency>
+  <!-- Security -->
+  <dependency>
+    <groupId>kr.sproutfx.common</groupId>
+    <artifactId>sproutfx-common-security-spring-boot-starter</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </dependency>
 
   (생략)
+  ```
+
+* gitlab package registry 설정
+
+  ```xml
+  <!-- {maven_home}/conf/settings.xml -->
+  
+  (생략)
+
+  <servers>
+    <server>
+        <id>gitlab-maven</id>
+        <configuration>
+          <httpHeaders>
+            <property>
+              <name>Private-Token</name>
+              <value>{PRIVATE_TOKEN}</value>
+            </property>
+          </httpHeaders>
+        </configuration>
+      </server>
+  </servers>
+
+  (중략)
+
+  <mirrors>
+    <mirror>
+      <id>gitlab-maven</id>
+      <mirrorOf>snapshot, release</mirrorOf>
+      <url>https://gitlab.com/api/v4/groups/{GROUP_ID}/-/packages/maven/</url>
+    </mirror>
+  </mirrors>
+
+  (생략)
+  ```
+
+* Disable maven ssl validation options
+
+  ```sh
+  -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true
   ```
