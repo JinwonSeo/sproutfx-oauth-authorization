@@ -49,9 +49,9 @@ public class ClientService {
                 .secret(Base64Utils.encodeToUrlSafeString(RandomStringUtils.randomAlphanumeric(32).getBytes()))
                 .status(ClientStatus.PENDING_APPROVAL)
                 .accessTokenSecret(RandomStringUtils.randomAlphanumeric(96))
-                .accessTokenValidityInSeconds(7200)
+                .accessTokenValidityInSeconds(7200L)
                 .refreshTokenSecret(RandomStringUtils.randomAlphanumeric(96))
-                .refreshTokenValidityInSeconds(43200)
+                .refreshTokenValidityInSeconds(43200L)
                 .description(description)
                 .build());
 
