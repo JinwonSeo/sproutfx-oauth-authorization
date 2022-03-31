@@ -62,13 +62,13 @@ public class Client extends JpaBaseEntity implements Serializable {
     private String accessTokenSecret;
 
     @Column(nullable = false, columnDefinition = "integer")
-    private long accessTokenValidityInSeconds;
+    private Long accessTokenValidityInSeconds;
 
     @Column(nullable = false, columnDefinition = "varchar(255)")
     private String refreshTokenSecret;
 
     @Column(nullable = false, columnDefinition = "integer")
-    private long refreshTokenValidityInSeconds;
+    private Long refreshTokenValidityInSeconds;
     
     @Column(nullable = false, columnDefinition = "varchar(255)")
     @Enumerated(EnumType.STRING)
