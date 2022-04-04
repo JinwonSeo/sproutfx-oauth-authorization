@@ -6,6 +6,7 @@ import java.util.UUID;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +40,12 @@ public class AuthorizeController extends BaseController {
         this.clientService = clientService;
         this.memberService = memberService;
     }
+
+    @Value("${sproutfx.security.authorization.refresh-token-secret}")
+    private String refreshTokenSecret;
+
+    @Value("${sproutfx.security.authorization.refresh-token-validity-in-seconds}")
+    private Long refreshTokenValidityInSeconds;
 
     @GetMapping("/authorize")
     public Response<GetAuthorizeResponse> getAuthorize(@RequestParam String clientCode) {
@@ -80,9 +87,6 @@ public class AuthorizeController extends BaseController {
         String accessTokenSecret = authorizedClient.getAccessTokenSecret();
         long accessTokenValidityInSeconds = authorizedClient.getAccessTokenValidityInSeconds();
 
-        String refreshTokenSecret = authorizedClient.getRefreshTokenSecret();
-        long refreshTokenValidityInSeconds = authorizedClient.getRefreshTokenValidityInSeconds();
-
         String accessToken = this.authorizeService.createToken(subject, audience, accessTokenSecret, accessTokenValidityInSeconds);
         Long accessTokenExpiresInSeconds = this.authorizeService.extractTokenExpiresInSeconds(accessTokenSecret, audience, accessToken);
 
@@ -115,9 +119,6 @@ public class AuthorizeController extends BaseController {
 
         String accessTokenSecret = authorizedClient.getAccessTokenSecret();
         long accessTokenValidityInSeconds = authorizedClient.getAccessTokenValidityInSeconds();
-
-        String refreshTokenSecret = authorizedClient.getRefreshTokenSecret();
-        long refreshTokenValidityInSeconds = authorizedClient.getRefreshTokenValidityInSeconds();
 
         Long refreshTokenExpiresInSeconds = this.authorizeService.extractTokenExpiresInSeconds(refreshTokenSecret, audience, refreshToken);
 

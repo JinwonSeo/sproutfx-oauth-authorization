@@ -50,8 +50,6 @@ public class ClientService {
                 .status(ClientStatus.PENDING_APPROVAL)
                 .accessTokenSecret(RandomStringUtils.randomAlphanumeric(96))
                 .accessTokenValidityInSeconds(7200L)
-                .refreshTokenSecret(RandomStringUtils.randomAlphanumeric(96))
-                .refreshTokenValidityInSeconds(43200L)
                 .description(description)
                 .build());
 
@@ -64,7 +62,6 @@ public class ClientService {
         
         persistenceClient.setName(name);
         persistenceClient.setAccessTokenValidityInSeconds(accessTokenValidityInSeconds);
-        persistenceClient.setRefreshTokenValidityInSeconds(refreshTokenValidityInSeconds);
         persistenceClient.setDescription(description);
     }
 

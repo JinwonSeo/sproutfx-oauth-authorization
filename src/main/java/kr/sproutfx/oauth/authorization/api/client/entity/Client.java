@@ -63,13 +63,7 @@ public class Client extends JpaBaseEntity implements Serializable {
 
     @Column(nullable = false, columnDefinition = "integer")
     private Long accessTokenValidityInSeconds;
-
-    @Column(nullable = false, columnDefinition = "varchar(255)")
-    private String refreshTokenSecret;
-
-    @Column(nullable = false, columnDefinition = "integer")
-    private Long refreshTokenValidityInSeconds;
-    
+        
     @Column(nullable = false, columnDefinition = "varchar(255)")
     @Enumerated(EnumType.STRING)
     private ClientStatus status;
