@@ -21,6 +21,10 @@ public class ProjectService {
     }
 
     public List<Project> findAll() {
+        return this.projectRepository.findAll();
+    }
+
+    public List<Project> findAllWithClients() {
         return this.projectRepository.findAllWithClients();
     }
 

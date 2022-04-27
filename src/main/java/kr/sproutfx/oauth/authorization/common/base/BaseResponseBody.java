@@ -1,26 +1,19 @@
 package kr.sproutfx.oauth.authorization.common.base;
 
-public class BaseResponse<T> {
+public class BaseResponseBody<T> {
+
     private boolean succeeded;
-    private T result;
+    private Object result;
     private Error error;
-
-    public BaseResponse(T result) {
-        if (result instanceof BaseException) {
+        
+    public BaseResponseBody(T object) {
+        if (object instanceof Exception) {
             this.setSucceeded(false);
-            this.setError(result);
-        } else {
+            this.setError(object);
+        } else  {
             this.setSucceeded(true);
-            this.setResult(result);
+            this.setResult(object);
         }
-    }
-
-    public T getResult() {
-        return result;
-    }
-
-    public void setResult(T result) {
-        this.result = result;
     }
 
     public boolean isSucceeded() {
@@ -31,12 +24,20 @@ public class BaseResponse<T> {
         this.succeeded = succeeded;
     }
 
+    public Object getResult() {
+        return this.result;
+    }
+
+    public void setResult(Object result) {
+        this.result = result;
+    }
+
     public Error getError() {
         return error;
     }
 
-    public void setError(T result) {
-        this.error = new Error(((BaseException) result).getValue(), ((BaseException) result).getReason());
+    public void setError(T object) {
+        this.error = new Error(((BaseException) object).getValue(), ((BaseException) object).getReason());
     }
 
     class Error {
