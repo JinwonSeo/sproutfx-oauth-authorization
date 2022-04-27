@@ -1,11 +1,15 @@
 package kr.sproutfx.oauth.authorization.api.project.controller;
 
+import static java.util.stream.Collectors.toList;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.hateoas.Links;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,57 +38,104 @@ public class ProjectController extends BaseController {
         this.projectService = projectService;
     }
 
-    @GetMapping
-    public Response<List<ProjectResponse>> findAll() {
-        return new Response<>(this.projectService.findAll().stream().map(ProjectResponse::new).collect(Collectors.toList()));
+    private Links links(Project project) {
+        return Links.of(getSingleItemLinks(this.getClass(), project.getId()));
     }
 
+    @GetMapping
+    public ResponseEntity<ResponseBody<List<ObjectEntityModel<ProjectResponse>>>> 
+            findAll() {
+
+        return ResponseEntity.ok().body(
+            new ResponseBody<>(this.projectService.findAll().stream().map(project -> 
+                new ObjectEntityModel<>(new ProjectResponse(project), links(project))).collect(toList())));
+    }
+
+    @GetMapping(value = "/clients")
+    public ResponseEntity<ResponseBody<List<ObjectEntityModel<ProjectWithClientsResponse>>>> 
+            findAllWithClients() {
+
+        return ResponseEntity.ok().body(
+            new ResponseBody<>(this.projectService.findAllWithClients().stream().map(project -> 
+                new ObjectEntityModel<>(new ProjectWithClientsResponse(project), links(project))).collect(toList())));
+    }    
+
     @GetMapping("/{id}")
-    public Response<ProjectResponse> findById(@PathVariable UUID id) {
-        return new Response<>(new ProjectResponse(this.projectService.findById(id)));
+    public ResponseEntity<ResponseBody<ObjectEntityModel<ProjectResponse>>> 
+            findById(@PathVariable UUID id) {
+
+        Project selectedProject = this.projectService.findById(id);
+
+        return ResponseEntity.ok().body(
+            new ResponseBody<>(
+                new ObjectEntityModel<>(new ProjectResponse(selectedProject), links(selectedProject))));
     }
 
     @PostMapping
-    public Response<ProjectResponse> create(@RequestBody @Validated ProjectCreateRequest projectCreateRequest, Errors errors) {
+    public ResponseEntity<ResponseBody<ObjectEntityModel<ProjectResponse>>> 
+            create(@RequestBody @Validated ProjectCreateRequest projectCreateRequest, Errors errors) {
+
         if (errors.hasErrors()) throw new InvalidArgumentException();
         
         UUID id = this.projectService.create(projectCreateRequest.getName(), projectCreateRequest.getDescription());
         
-        return new Response<>(new ProjectResponse(this.projectService.findById(id)));
+        Project selectedProject = this.projectService.findById(id);
+
+        return ResponseEntity.created(linkTo(this.getClass()).slash(id).toUri()).body(
+            new ResponseBody<>(
+                new ObjectEntityModel<>(new ProjectResponse(selectedProject), links(selectedProject))));
     }
 
     @PutMapping("/{id}")
-    public Response<ProjectResponse> update(@PathVariable UUID id, @RequestBody @Validated ProjectUpdateRequest projectUpdateRequest, Errors errors) {
+    public ResponseEntity<ResponseBody<ObjectEntityModel<ProjectResponse>>> 
+            update(@PathVariable UUID id, @RequestBody @Validated ProjectUpdateRequest projectUpdateRequest, Errors errors) {
+                
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
         this.projectService.update(id, projectUpdateRequest.getName(), projectUpdateRequest.getDescription());
 
-        return new Response<>(new ProjectResponse(this.projectService.findById(id)));
+        Project selectedProject = this.projectService.findById(id);
+
+        return ResponseEntity.ok().body(
+            new ResponseBody<>(
+                new ObjectEntityModel<>(new ProjectResponse(selectedProject), links(selectedProject))));
     }
 
     @DeleteMapping("/{id}")
-    public Response<ProjectDeleteResponse> delete(@PathVariable UUID id) {
+    public ResponseEntity<Object> delete(@PathVariable UUID id) {
         
         this.projectService.delete(id);
 
-        return new Response<>(new ProjectDeleteResponse(id));
+        return ResponseEntity.noContent().build();
     }
 
-
     @Data
-    static class ProjectResponse {
+    static class ProjectWithClientsResponse {
         private UUID id;
         private String name;
         private String status;
         private String description;
         private List<ClientResponse> clients;
 
-        public ProjectResponse(Project project) {
+        public ProjectWithClientsResponse(Project project) {
             this.id = project.getId();
             this.name = project.getName();
             this.status = project.getStatus().toString();
             this.description = project.getDescription();
-            this.clients = project.getClients().stream().map(ClientResponse::new).collect(Collectors.toList());
+            this.clients = project.getClients().stream().map(ClientResponse::new).collect(toList());
+        }
+    }
+
+    @Data
+    static class ProjectResponse {
+        private String name;
+        private String status;
+        private String description;
+
+        public ProjectResponse(Project project) {
+            this.name = project.getName();
+            this.status = project.getStatus().toString();
+            this.description = project.getDescription();
         }
     }
 
@@ -99,14 +150,12 @@ public class ProjectController extends BaseController {
 
     @Data
     static class ClientResponse {
-        private UUID id;
         private String code;
         private String name;
         private String status;
         private String description;
 
         public ClientResponse(Client client) {
-            this.id = client.getId();
             this.code = client.getCode();
             this.name = client.getName();
             this.status = client.getStatus().toString();
