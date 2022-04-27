@@ -1,5 +1,8 @@
 package kr.sproutfx.oauth.authorization.api.member.controller;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -8,6 +11,9 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Links;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,21 +43,40 @@ public class MemberController extends BaseController {
         this.memberService = memberService;
     }
 
+    private Links links(Member member) {
+        Link[] additionalLinks = {
+            linkTo(methodOn(this.getClass()).updatePassword(member.getEmail(), new MemberPasswordUpdateRequest(), null)).withRel("update-password"),
+            linkTo(methodOn(this.getClass()).updateStatus(member.getId(), new MemberStatusUpdateRequest(), null)).withRel("update-status"),
+        };
+
+        return Links.of(getSingleItemLinks(this.getClass(), member.getId(), additionalLinks));
+    }
+
     @GetMapping
-    public Response<List<MemberResponse>> findAll() {
-        return new Response<>(
-            this.memberService.findAll().stream()
-                .map(MemberResponse::new)
-                .collect(Collectors.toList()));
+    public ResponseEntity<ResponseBody<List<ObjectEntityModel<MemberResponse>>>> 
+            findAll() {
+        
+        return ResponseEntity.ok().body(
+            new ResponseBody<>(this.memberService.findAll().stream().map(member -> 
+                new ObjectEntityModel<>(
+                    new MemberResponse(member), links(member))).collect(Collectors.toList())));
     }
 
     @GetMapping("/{id}")
-    public Response<MemberResponse> findById(@PathVariable UUID id) {
-        return new Response<>(new MemberResponse(this.memberService.findById(id)));
+    public ResponseEntity<ResponseBody<ObjectEntityModel<MemberResponse>>> findById(@PathVariable UUID id) {
+        
+        Member selectedMember = this.memberService.findById(id);
+        
+        return ResponseEntity.ok(
+            new ResponseBody<>(
+                new ObjectEntityModel<>(
+                    new MemberResponse(selectedMember), links(selectedMember))));
     }
 
     @PostMapping
-    public Response<MemberResponse> create(@RequestBody @Validated MemberCreateRequest memberCreateRequest, Errors errors) {
+    public ResponseEntity<ResponseBody<ObjectEntityModel<MemberResponse>>> 
+            create(@RequestBody @Validated MemberCreateRequest memberCreateRequest, Errors errors) {
+        
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
         UUID id = this.memberService.create(
@@ -59,34 +84,57 @@ public class MemberController extends BaseController {
                 memberCreateRequest.getName(),
                 memberCreateRequest.getPassword(),
                 memberCreateRequest.getDescription());
+
+        Member createdMember = this.memberService.findById(id);
         
-        return new Response<>(new MemberResponse(this.memberService.findById(id)));
+        return ResponseEntity.created(linkTo(methodOn(this.getClass()).findById(createdMember.getId())).toUri()).body(
+            new ResponseBody<>(
+                new ObjectEntityModel<>(
+                    new MemberResponse(createdMember), links(createdMember))));
     }
 
     @PutMapping("/{id}")
-    public Response<MemberResponse> update(@PathVariable UUID id, @RequestBody @Validated MemberUpdateRequest memberUpdateRequest, Errors errors) {
+    public ResponseEntity<ResponseBody<ObjectEntityModel<MemberResponse>>> 
+            update(@PathVariable UUID id, @RequestBody @Validated MemberUpdateRequest memberUpdateRequest, Errors errors) {
+        
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
-        this.memberService.update(id, 
-                memberUpdateRequest.getEmail(), 
-                memberUpdateRequest.getName(), 
-                memberUpdateRequest.getDescription());
+        String email = memberUpdateRequest.getEmail();
+        String name = memberUpdateRequest.getName();
+        String description = memberUpdateRequest.getDescription();
+
+        this.memberService.update(id, email, name, description);
+
+        Member updatedMember = this.memberService.findById(id);
         
-        return new Response<>(new MemberResponse(this.memberService.findById(id)));
+        return ResponseEntity.ok(
+            new ResponseBody<>(
+                new ObjectEntityModel<>(
+                    new MemberResponse(updatedMember), links(updatedMember))));
     }
 
     @PutMapping("/{id}/status")
-    public Response<MemberResponse> updateStatus(@PathVariable UUID id, @RequestBody @Validated MemberStatusUpdateRequest memberStatusUpdateRequest, Errors errors) {
+    public ResponseEntity<ResponseBody<ObjectEntityModel<MemberResponse>>> 
+            updateStatus(@PathVariable UUID id, @RequestBody @Validated MemberStatusUpdateRequest memberStatusUpdateRequest, Errors errors) {
+        
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
-        this.memberService.updateStatus(id, 
-                memberStatusUpdateRequest.getMemberStatus());
+        MemberStatus memberStatus = memberStatusUpdateRequest.getMemberStatus();
+        
+        this.memberService.updateStatus(id, memberStatus);
 
-        return new Response<>(new MemberResponse(this.memberService.findById(id)));
+        Member updatedMember = this.memberService.findById(id);
+
+        return ResponseEntity.ok(
+            new ResponseBody<>(
+                new ObjectEntityModel<>(
+                    new MemberResponse(updatedMember), links(updatedMember))));
     }
 
     @PutMapping("/{email}/password")
-    public Response<MemberResponse> updatePassword(@PathVariable String email, @RequestBody @Validated MemberPasswordUpdateRequest memberPasswordUpdateRequest, Errors errors) {
+    public ResponseEntity<ResponseBody<ObjectEntityModel<MemberResponse>>> 
+            updatePassword(@PathVariable String email, @RequestBody @Validated MemberPasswordUpdateRequest memberPasswordUpdateRequest, Errors errors) {
+        
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
         String currentPassword = memberPasswordUpdateRequest.getCurrentPassword();
@@ -94,15 +142,20 @@ public class MemberController extends BaseController {
 
         UUID id = this.memberService.updatePassword(email, currentPassword, newPassword);
 
-        return new Response<>(new MemberResponse(this.memberService.findById(id)));
+        Member updatedMember = this.memberService.findById(id);
+
+        return ResponseEntity.ok(
+            new ResponseBody<>(
+                new ObjectEntityModel<>(
+                    new MemberResponse(updatedMember), links(updatedMember))));
     }
 
     @DeleteMapping("/{id}")
-    public Response<MemberDeleteResponse> delete(@PathVariable UUID id) {
+    public ResponseEntity<Object> delete(@PathVariable UUID id) {
 
         this.memberService.deleteById(id);
 
-        return new Response<>(new MemberDeleteResponse(id));
+        return ResponseEntity.noContent().build();
     }
 
     @Data
@@ -138,7 +191,6 @@ public class MemberController extends BaseController {
 
     @Data
     static class MemberResponse {
-        private UUID id;
         private String email;
         private String name;
         private LocalDateTime passwordExpired;
@@ -146,21 +198,11 @@ public class MemberController extends BaseController {
         private String description;
 
         public MemberResponse(Member member) {
-            this.id = member.getId();
             this.email = member.getEmail();
             this.name = member.getName();
             this.passwordExpired = member.getPasswordExpired();
             this.status = (member.getStatus() == null) ? null : member.getStatus().toString();
             this.description = member.getDescription();
-        }
-    }
-
-    @Data
-    static class MemberDeleteResponse {
-        private UUID deletedMemberId;
-
-        public MemberDeleteResponse(UUID deletedMemberId) {
-            this.deletedMemberId = deletedMemberId;
         }
     }
 }

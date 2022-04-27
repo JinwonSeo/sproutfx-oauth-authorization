@@ -1,5 +1,8 @@
 package kr.sproutfx.oauth.authorization.api.client.controller;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -9,6 +12,9 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Links;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,64 +33,121 @@ import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException
 import kr.sproutfx.oauth.authorization.common.base.BaseController;
 
 import lombok.Data;
+import lombok.Getter;
 
 @RestController
 @RequestMapping("/clients")
 @Validated
 public class ClientController extends BaseController {
+
     private final ClientService clientService;
-    
+        
     public ClientController(ClientService clientService) {
         this.clientService = clientService;
     }
 
-    @GetMapping
-    public Response<List<ClientResponse>> findAll() {
-        return new Response<>(
-            this.clientService.findAll().stream()
-                .map(ClientResponse::new)
-                .collect(Collectors.toList()));
+    private Links links(Client client) {
+        Link[] additionalLinks = {
+            linkTo(methodOn(this.getClass()).updateStatus(client.getId(), new ClientStatusUpdateRequest())).withRel("update-status"),
+        };
+
+        return Links.of(getSingleItemLinks(this.getClass(), client.getId(), additionalLinks));
     }
 
-    @GetMapping(value="/{id}")
-    public Response<ClientResponse> findById(@PathVariable("id") UUID id) {
-        return new Response<>(new ClientResponse(this.clientService.findById(id)));
+    @GetMapping
+    public ResponseEntity<ResponseBody<List<ObjectEntityModel<ClientResponse>>>> 
+            findAll() {
+
+        return ResponseEntity.ok(
+            new ResponseBody<>(this.clientService.findAll().stream().map(client -> 
+                new ObjectEntityModel<>(
+                    new ClientResponse(client), links(client))).collect(Collectors.toList())));
+    }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<ResponseBody<ObjectEntityModel<ClientResponse>>>
+            findById(@PathVariable("id") UUID id) {
+
+        Client client = this.clientService.findById(id);
+        
+        return ResponseEntity.ok(
+            new ResponseBody<>(
+                new ObjectEntityModel<>(
+                    new ClientResponse(client), links(client))));
     }
 
     @PostMapping
-    public Response<ClientResponse> create(@RequestBody @Validated ClientCreateRequest clientCreateRequest, Errors errors) {
+    public ResponseEntity<ResponseBody<ObjectEntityModel<ClientResponse>>>
+            create(@RequestBody @Validated ClientCreateRequest clientCreateRequest, Errors errors) {
+
         if (errors.hasErrors()) throw new InvalidArgumentException();
         
         UUID id = this.clientService.create(clientCreateRequest.getName(), clientCreateRequest.getDescription());
 
-        return new Response<>(new ClientResponse(this.clientService.findById(id)));
+        Client updatedClient = this.clientService.findById(id);
+
+        return ResponseEntity.created(linkTo(this.getClass()).slash(id).toUri()).body(
+            new ResponseBody<>(
+                new ObjectEntityModel<>(
+                    new ClientResponse(updatedClient), links(updatedClient))));
     }
 
     @PutMapping(value="/{id}")
-    public Response<ClientResponse> update(@PathVariable UUID id, @RequestBody @Validated ClientUpdateRequest clientUpdateRequest, Errors errors) {
+    public ResponseEntity<ResponseBody<ObjectEntityModel<ClientResponse>>> 
+            update(@PathVariable UUID id, @RequestBody @Validated ClientUpdateRequest clientUpdateRequest, Errors errors) {
+                
         if (errors.hasErrors()) throw new InvalidArgumentException();
         
-        this.clientService.update(id, 
-            clientUpdateRequest.getName(), 
-            clientUpdateRequest.getAccessTokenValidityInSeconds(), 
-            clientUpdateRequest.getRefreshTokenValidityInSeconds(), 
-            clientUpdateRequest.getDescription());
+        String name = clientUpdateRequest.getName();
+        Long accessTokenValidityInSeconds = clientUpdateRequest.getAccessTokenValidityInSeconds();
+        Long refreshTokenValidityInSeconds = clientUpdateRequest.getRefreshTokenValidityInSeconds();
+        String description = clientUpdateRequest.getDescription();
 
-        return new Response<>(new ClientResponse(this.clientService.findById(id)));
+        this.clientService.update(id, name, accessTokenValidityInSeconds, refreshTokenValidityInSeconds, description);
+
+        Client updatedClient = this.clientService.findById(id);
+
+        return ResponseEntity.ok().body(
+            new ResponseBody<>(
+                new ObjectEntityModel<>(
+                    new ClientResponse(updatedClient), links(updatedClient))));
     }
 
     @PutMapping("/{id}/status")
-    public Response<ClientResponse> updateStatus(@PathVariable UUID id, @RequestBody ClientStatusUpdateRequest clientStatusUpdateRequest) {
+    public ResponseEntity<ResponseBody<ObjectEntityModel<ClientResponse>>>
+            updateStatus(@PathVariable UUID id, @RequestBody ClientStatusUpdateRequest clientStatusUpdateRequest) {
+
         this.clientService.updateStatus(id, clientStatusUpdateRequest.getClientStatus());
-        
-        return new Response<>(new ClientResponse(this.clientService.findById(id)));
+
+        Client updatedClient = this.clientService.findById(id);
+
+        return ResponseEntity.ok().body(
+            new ResponseBody<>(
+                new ObjectEntityModel<>(
+                    new ClientResponse(updatedClient), links(updatedClient))));
     }
 
     @DeleteMapping(value = "/{id}")
-    public Response<ClientDeleteResponse> delete(@PathVariable UUID id) {
+    public ResponseEntity<Object> delete(@PathVariable UUID id) {
+
         this.clientService.deleteById(id);
 
-        return new Response<>(new ClientDeleteResponse(id));
+        return ResponseEntity.noContent().build();
+    }
+
+    @Getter
+    static class ClientResponse {
+        private final String code;
+        private final String name;
+        private final String status;
+        private final String description;
+
+        public ClientResponse(Client client) {
+            this.code = client.getCode();
+            this.name = client.getName();
+            this.status = (client.getStatus() == null) ? null : client.getStatus().toString();
+            this.description = client.getDescription();
+        }
     }
 
     @Data
@@ -99,40 +162,14 @@ public class ClientController extends BaseController {
         @NotBlank
         private String name;
         @Min(3600) @Max(7200)
-        private long accessTokenValidityInSeconds;
+        private Long accessTokenValidityInSeconds;
         @Min(3600) @Max(86400)
-        private long refreshTokenValidityInSeconds;
+        private Long refreshTokenValidityInSeconds;
         private String description;
     }
 
     @Data
     static class ClientStatusUpdateRequest {
         private ClientStatus clientStatus;
-    }
-
-    @Data
-    static class ClientResponse {
-        private UUID id;
-        private String code;
-        private String name;
-        private String status;
-        private String description;
-
-        public ClientResponse(Client client) {
-            this.id = client.getId();
-            this.code = client.getCode();
-            this.name = client.getName();
-            this.status = (client.getStatus() == null) ? null : client.getStatus().toString();
-            this.description = client.getDescription();
-        }
-    }
-
-    @Data
-    static class ClientDeleteResponse {
-        private UUID deletedClientId;
-
-        public ClientDeleteResponse(UUID deletedClientId) {
-            this.deletedClientId = deletedClientId;
-        }
     }
 }
