@@ -58,7 +58,7 @@ eureka:
     registry-fetch-interval-seconds: 10
     disable-delta: false
     service-url:
-      defaultZone: http://127.0.0.1:8761/eureka/
+      defaultZone: http://discovery.sproutfx.kr/eureka/
 
 management:
   endpoints:
