@@ -93,6 +93,26 @@ public class ClientControllerTest {
     }
 
     @Test
+    void testFindById() throws Exception {
+        
+        // given
+        given(this.clientService.findById(MOCK_RECODE_1.getId())).willReturn(MOCK_RECODE_1);
+
+        // when
+        ResultActions resultActions = this.mockMvc.perform(get(String.format("/clients/%s", MOCK_RECODE_1.getId()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .characterEncoding(Charset.forName("UTF-8"))
+            .accept(MediaTypes.HAL_JSON));
+
+        // then
+        resultActions
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("succeeded").value(true))
+            .andExpect(jsonPath("result.code").exists())
+            .andDo(print());
+    }
+
+    @Test
     void testCreate() throws Exception {
         
         // given
@@ -128,10 +148,7 @@ public class ClientControllerTest {
 
     
 
-    @Test
-    void testFindById() {
-        
-    }
+   
 
     @Test
     void testUpdate() {
