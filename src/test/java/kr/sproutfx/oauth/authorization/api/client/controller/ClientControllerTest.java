@@ -2,6 +2,7 @@ package kr.sproutfx.oauth.authorization.api.client.controller;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -10,6 +11,8 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -23,6 +26,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import kr.sproutfx.oauth.authorization.api.client.controller.ClientController.ClientCreateRequest;
 import kr.sproutfx.oauth.authorization.api.client.entity.Client;
 import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
 import kr.sproutfx.oauth.authorization.api.client.service.ClientService;
@@ -37,6 +41,9 @@ public class ClientControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     Client MOCK_RECODE_1 = Client.builder()
         .id(UUID.fromString("00174dec-5665-4760-9255-6feb51a2b980"))
@@ -62,9 +69,8 @@ public class ClientControllerTest {
 
     @Test
     void testFindAll() throws Exception {
+                
         // given
-        String url = "/clients";
-
         List<Client> clients = new ArrayList<Client>();
 
         clients.add(MOCK_RECODE_1);
@@ -73,11 +79,10 @@ public class ClientControllerTest {
         given(this.clientService.findAll()).willReturn(clients);
 
         // when
-        ResultActions resultAction = this.mockMvc.perform(get(url)
+        ResultActions resultAction = this.mockMvc.perform(get("/clients")
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(Charset.forName("UTF-8"))
-            .accept(MediaTypes.HAL_JSON) 
-        );
+            .accept(MediaTypes.HAL_JSON));
 
         // then
         resultAction
@@ -88,8 +93,32 @@ public class ClientControllerTest {
     }
 
     @Test
-    void testCreate() {
+    void testCreate() throws Exception {
         
+        // given
+        ClientCreateRequest clientCreateRequest = new ClientCreateRequest();
+        clientCreateRequest.setName(MOCK_RECODE_1.getName());
+        clientCreateRequest.setDescription(MOCK_RECODE_1.getDescription());
+
+        given(this.clientService.create(clientCreateRequest.getName(), clientCreateRequest.getDescription()))
+            .willReturn(MOCK_RECODE_1.getId());
+
+        given(this.clientService.findById(MOCK_RECODE_1.getId()))
+            .willReturn(MOCK_RECODE_1);
+
+        // when
+        ResultActions resultActions = this.mockMvc.perform(post("/clients")
+            .contentType(MediaType.APPLICATION_JSON)
+            .characterEncoding(Charset.forName("UTF-8"))
+            .content(objectMapper.writeValueAsString(clientCreateRequest))
+            .accept(MediaTypes.HAL_JSON));
+
+        // then
+        resultActions
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("succeeded").value(true))
+            .andExpect(jsonPath("result.code").exists())
+            .andDo(print());
     }
 
     @Test
