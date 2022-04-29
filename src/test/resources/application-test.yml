@@ -14,7 +14,7 @@ spring:
     restart:
       log-condition-evaluation-delta: false
   rabbitmq:
-    host: sproutfx.kr # 127.0.0.1
+    host: sproutfx.kr
     port: 5672
     username: sproutfx-oauth-authorization
     password: sproutfx-oauth-authorization
@@ -94,26 +94,12 @@ sproutfx:
     web:
       ignore:
         patterns:
-        - '/actuator/**'
-        - '/configuration/ui'
-        - '/configuration/security'
-        - '/swagger-resources/**'
-        - '/swagger-ui.html'
-        - '/v3/api-docs'
-        - '/webjars/**'
-        - '/error'
-        - '/favicon'
-        - '/h2-console/**'
+        - '/**'
     http:
       authorize-requests:
         permit-all:
           patterns:
           - '/**'
-          # - '/swagger-ui/**'
-          # - '/authorize'
-          # - '/token'
-          # - '/refresh'
-          # - '/password'
 
   logging:
     identifier: sproutfx-oauth-authorization-local
