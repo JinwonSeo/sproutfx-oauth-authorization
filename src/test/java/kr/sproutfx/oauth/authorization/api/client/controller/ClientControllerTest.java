@@ -4,6 +4,8 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -201,7 +203,15 @@ public class ClientControllerTest {
     }
 
     @Test
-    void testDelete() {
+    void testDelete() throws Exception {
+        // when
+        ResultActions resultActions = this.mockMvc.perform(delete(String.format("/clients/%s", MOCK_RECODE_1.getId()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .characterEncoding(Charset.forName("UTF-8"))
+            .accept(MediaTypes.HAL_JSON));
 
+        // then
+        resultActions.andDo(print())
+            .andExpect(status().isNoContent());
     }   
 }
