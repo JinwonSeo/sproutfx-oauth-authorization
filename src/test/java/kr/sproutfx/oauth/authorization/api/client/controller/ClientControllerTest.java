@@ -186,7 +186,7 @@ public class ClientControllerTest {
         given(this.clientService.findById(MOCK_RECODE_1.getId())).willReturn(MOCK_RECODE_1);
 
         // when
-        ResultActions resultActions = this.mockMvc.perform(put(String.format("/clients/%s/status", MOCK_RECODE_1.getId()))
+        ResultActions resultActions = this.mockMvc.perform(patch(String.format("/clients/%s/status", MOCK_RECODE_1.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(Charset.forName("UTF-8"))
             .content(objectMapper.writeValueAsString(clientStatusUpdateRequest))
