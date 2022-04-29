@@ -3,6 +3,7 @@ package kr.sproutfx.oauth.authorization.api.client.controller;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.hamcrest.Matchers;
@@ -27,6 +29,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import kr.sproutfx.oauth.authorization.api.client.controller.ClientController.ClientCreateRequest;
+import kr.sproutfx.oauth.authorization.api.client.controller.ClientController.ClientStatusUpdateRequest;
+import kr.sproutfx.oauth.authorization.api.client.controller.ClientController.ClientUpdateRequest;
 import kr.sproutfx.oauth.authorization.api.client.entity.Client;
 import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
 import kr.sproutfx.oauth.authorization.api.client.service.ClientService;
@@ -69,7 +73,6 @@ public class ClientControllerTest {
 
     @Test
     void testFindAll() throws Exception {
-                
         // given
         List<Client> clients = new ArrayList<Client>();
 
@@ -85,16 +88,14 @@ public class ClientControllerTest {
             .accept(MediaTypes.HAL_JSON));
 
         // then
-        resultAction
+        resultAction.andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result", Matchers.hasSize(2)))
-            .andDo(print());
+            .andExpect(jsonPath("result", Matchers.hasSize(2)));
     }
 
     @Test
     void testFindById() throws Exception {
-        
         // given
         given(this.clientService.findById(MOCK_RECODE_1.getId())).willReturn(MOCK_RECODE_1);
 
@@ -105,16 +106,14 @@ public class ClientControllerTest {
             .accept(MediaTypes.HAL_JSON));
 
         // then
-        resultActions
+        resultActions.andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result.code").exists())
-            .andDo(print());
+            .andExpect(jsonPath("result.code").exists());
     }
 
     @Test
     void testCreate() throws Exception {
-        
         // given
         ClientCreateRequest clientCreateRequest = new ClientCreateRequest();
         clientCreateRequest.setName(MOCK_RECODE_1.getName());
@@ -134,29 +133,75 @@ public class ClientControllerTest {
             .accept(MediaTypes.HAL_JSON));
 
         // then
-        resultActions
+        resultActions.andDo(print())
             .andExpect(status().isCreated())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result.code").exists())
-            .andDo(print());
+            .andExpect(jsonPath("result.code").value(MOCK_RECODE_1.getCode()))
+            .andExpect(jsonPath("result.name").value(MOCK_RECODE_1.getName()))
+            .andExpect(jsonPath("result.status").value(MOCK_RECODE_1.getStatus().toString()))
+            .andExpect(jsonPath("result.description").value(MOCK_RECODE_1.getDescription()));
+    }
+
+    @Test
+    void testUpdate() throws JsonProcessingException, Exception {
+        // given
+        ClientUpdateRequest clientUpdateRequest = new ClientUpdateRequest();
+        clientUpdateRequest.setName("new name");
+        clientUpdateRequest.setDescription("new description");
+        clientUpdateRequest.setAccessTokenValidityInSeconds(3600L);
+
+        MOCK_RECODE_1.setName(clientUpdateRequest.getName());
+        MOCK_RECODE_1.setDescription(clientUpdateRequest.getDescription());
+        MOCK_RECODE_1.setAccessTokenValidityInSeconds(clientUpdateRequest.getAccessTokenValidityInSeconds());
+
+        given(this.clientService.findById(MOCK_RECODE_1.getId())).willReturn(MOCK_RECODE_1);
+
+        // when
+        ResultActions resultActions = this.mockMvc.perform(put(String.format("/clients/%s", MOCK_RECODE_1.getId()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .characterEncoding(Charset.forName("UTF-8"))
+            .content(objectMapper.writeValueAsString(clientUpdateRequest))
+            .accept(MediaTypes.HAL_JSON));
+
+        // then
+        resultActions.andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("succeeded").value(true))
+            .andExpect(jsonPath("result.code").value(MOCK_RECODE_1.getCode()))
+            .andExpect(jsonPath("result.name").value(MOCK_RECODE_1.getName()))
+            .andExpect(jsonPath("result.status").value(MOCK_RECODE_1.getStatus().toString()))
+            .andExpect(jsonPath("result.description").value(MOCK_RECODE_1.getDescription()));
+    }
+
+    @Test
+    void testUpdateStatus() throws JsonProcessingException, Exception {
+        // given
+        ClientStatusUpdateRequest clientStatusUpdateRequest = new ClientStatusUpdateRequest();
+        clientStatusUpdateRequest.setClientStatus(ClientStatus.ACTIVE);
+
+        MOCK_RECODE_1.setStatus(clientStatusUpdateRequest.getClientStatus());
+
+        given(this.clientService.findById(MOCK_RECODE_1.getId())).willReturn(MOCK_RECODE_1);
+
+        // when
+        ResultActions resultActions = this.mockMvc.perform(put(String.format("/clients/%s/status", MOCK_RECODE_1.getId()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .characterEncoding(Charset.forName("UTF-8"))
+            .content(objectMapper.writeValueAsString(clientStatusUpdateRequest))
+            .accept(MediaTypes.HAL_JSON));
+
+        // then
+        resultActions.andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("succeeded").value(true))
+            .andExpect(jsonPath("result.code").value(MOCK_RECODE_1.getCode()))
+            .andExpect(jsonPath("result.name").value(MOCK_RECODE_1.getName()))
+            .andExpect(jsonPath("result.status").value(MOCK_RECODE_1.getStatus().toString()))
+            .andExpect(jsonPath("result.description").value(MOCK_RECODE_1.getDescription()));
     }
 
     @Test
     void testDelete() {
 
-    }
-
-    
-
-   
-
-    @Test
-    void testUpdate() {
-
-    }
-
-    @Test
-    void testUpdateStatus() {
-
-    }
+    }   
 }
