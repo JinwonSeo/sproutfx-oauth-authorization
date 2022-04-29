@@ -52,9 +52,17 @@ public class ProjectService {
     }
 
     @Transactional
+    public void updateStatus(UUID id, ProjectStatus projectStatus) {
+        Project persistenceProject = this.projectRepository.findById(id).orElseThrow(ProjectNotFoundException::new);
+
+        persistenceProject.setStatus(projectStatus);
+    }
+
+    @Transactional
     public void delete(UUID id) {
         Project persistenceProject = this.projectRepository.findById(id).orElseThrow(ProjectNotFoundException::new);
 
         this.projectRepository.delete(persistenceProject);
     }
+
 }

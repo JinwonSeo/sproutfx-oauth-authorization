@@ -14,6 +14,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import kr.sproutfx.oauth.authorization.api.client.entity.Client;
 import kr.sproutfx.oauth.authorization.api.project.entity.Project;
+import kr.sproutfx.oauth.authorization.api.project.enumeration.ProjectStatus;
 import kr.sproutfx.oauth.authorization.api.project.service.ProjectService;
 import kr.sproutfx.oauth.authorization.common.base.BaseController;
 import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException;
@@ -93,6 +95,21 @@ public class ProjectController extends BaseController {
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
         this.projectService.update(id, projectUpdateRequest.getName(), projectUpdateRequest.getDescription());
+
+        Project selectedProject = this.projectService.findById(id);
+
+        return ResponseEntity.ok().body(
+            new ResponseBody<>(
+                new ObjectEntityModel<>(new ProjectResponse(selectedProject), links(selectedProject))));
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<ResponseBody<ObjectEntityModel<ProjectResponse>>> 
+            updateStatus(@PathVariable UUID id, @RequestBody @Validated ProjectStatusUpdateRequest projectStatusUpdateRequest, Errors errors) {
+
+        if (errors.hasErrors()) throw new InvalidArgumentException();
+
+        this.projectService.updateStatus(id, projectStatusUpdateRequest.getProjectStatus());
 
         Project selectedProject = this.projectService.findById(id);
 
@@ -175,5 +192,10 @@ public class ProjectController extends BaseController {
         @NotBlank
         private String name;
         private String description;
+    }
+
+    @Data
+    static class ProjectStatusUpdateRequest {
+        private ProjectStatus projectStatus;
     }
 }
