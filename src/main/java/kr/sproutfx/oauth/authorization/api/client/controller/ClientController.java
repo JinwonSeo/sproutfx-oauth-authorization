@@ -19,6 +19,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -100,10 +101,10 @@ public class ClientController extends BaseController {
         
         String name = clientUpdateRequest.getName();
         Long accessTokenValidityInSeconds = clientUpdateRequest.getAccessTokenValidityInSeconds();
-        Long refreshTokenValidityInSeconds = clientUpdateRequest.getRefreshTokenValidityInSeconds();
+
         String description = clientUpdateRequest.getDescription();
 
-        this.clientService.update(id, name, accessTokenValidityInSeconds, refreshTokenValidityInSeconds, description);
+        this.clientService.update(id, name, accessTokenValidityInSeconds, description);
 
         Client updatedClient = this.clientService.findById(id);
 
@@ -113,7 +114,7 @@ public class ClientController extends BaseController {
                     new ClientResponse(updatedClient), links(updatedClient))));
     }
 
-    @PutMapping("/{id}/status")
+    @PatchMapping("/{id}/status")
     public ResponseEntity<ResponseBody<ObjectEntityModel<ClientResponse>>>
             updateStatus(@PathVariable UUID id, @RequestBody ClientStatusUpdateRequest clientStatusUpdateRequest) {
 
@@ -163,8 +164,6 @@ public class ClientController extends BaseController {
         private String name;
         @Min(3600) @Max(7200)
         private Long accessTokenValidityInSeconds;
-        @Min(3600) @Max(86400)
-        private Long refreshTokenValidityInSeconds;
         private String description;
     }
 

@@ -57,7 +57,7 @@ public class ClientService {
     }
 
     @Transactional
-    public void update(UUID id, String name, Long accessTokenValidityInSeconds, Long refreshTokenValidityInSeconds, String description) {
+    public void update(UUID id, String name, Long accessTokenValidityInSeconds, String description) {
         Client persistenceClient = this.clientRepository.findById(id).orElseThrow(ClientNotFoundException::new);
         
         persistenceClient.setName(name);

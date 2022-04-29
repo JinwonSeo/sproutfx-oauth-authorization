@@ -11,7 +11,10 @@ INSERT INTO `clients` (`id`, `code`, `secret`, `name`, `access_token_secret`, `a
 
 -- members
 --DELETE FROM `members` WHERE `id`='0000f14c-e1d9-4908-8c0e-8abba741dd97';
-INSERT INTO `members` (`id`, `email`, `name`, `password`, `password_expired`, `status`, `description`, `deleted`, `created_by`, `created_on`, `last_modified_by`, `last_modified_on`) VALUES ('0000f14c-e1d9-4908-8c0e-8abba741dd97', 'administrator@sproutfx.kr', 'Administrator', '$2a$10$w2pkVplUQdYZAALam1RKze39L1.00AIEBWrIROc4qhpJsaSfog74y', '2022-06-27 11:54:15', 'ACTIVE', NULL, 0, NULL, '2022-03-29 13:47:29', NULL, '2022-03-29 11:54:15');
+INSERT INTO `members` (`id`, `email`, `name`, `password`, `password_expired`, `status`, `description`, `deleted`, `created_by`, `created_on`, `last_modified_by`, `last_modified_on`) VALUES ('0000f14c-e1d9-4908-8c0e-8abba741dd97', 'administrator@sproutfx.kr', 'Administrator', '$2a$10$w2pkVplUQdYZAALam1RKze39L1.00AIEBWrIROc4qhpJsaSfog74y', '2100-01-01 00:00:00', 'ACTIVE', NULL, 0, NULL, '2022-01-01 00:00:00', NULL, '2022-01-01 00:00:00');
 
 --DELETE FROM `members` WHERE `id`='00017619-6e64-4701-9eea-f4dc8c9fa8d5';
-INSERT INTO `members` (`id`, `email`, `name`, `password`, `password_expired`, `status`, `description`, `deleted`, `created_by`, `created_on`, `last_modified_by`, `last_modified_on`) VALUES ('00017619-6e64-4701-9eea-f4dc8c9fa8d5', 'jwseo@live.co.kr', 'Jinwon Seo', '$2a$10$l4qlIlSJPn0/u1RUOHf2I.2qdp6XXD.nyoDwN4xxC/OKSrHcrFDTi', '2022-06-27 11:41:39', 'ACTIVE', NULL, 0, NULL, '2022-03-29 13:47:31', NULL, '2022-03-29 11:41:39');
+INSERT INTO `members` (`id`, `email`, `name`, `password`, `password_expired`, `status`, `description`, `deleted`, `created_by`, `created_on`, `last_modified_by`, `last_modified_on`) VALUES ('00017619-6e64-4701-9eea-f4dc8c9fa8d5', 'jwseo@live.co.kr', 'Jinwon Seo', '$2a$10$l4qlIlSJPn0/u1RUOHf2I.2qdp6XXD.nyoDwN4xxC/OKSrHcrFDTi', '2100-01-01 00:00:00', 'ACTIVE', NULL, 0, NULL, '2022-01-01 00:00:00', NULL, '2022-01-01 00:00:00');
+
+--DELETE FROM `members` WHERE `id` = '0001e564-2a07-4fd3-b69a-188678f36f3f';
+INSERT INTO `members` (`id`, `email`, `name`, `password`, `password_expired`, `status`, `description`, `deleted`, `created_by`, `created_on`, `last_modified_by`, `last_modified_on`) VALUES ('0001e564-2a07-4fd3-b69a-188678f36f3f', 'test@sproutfx.kr', 'Test user', '$2a$10$t3gQckUS6jkheWvu51t7Ge/W7UTvZFotPcbYRLgEt3uCzYIxIUT7i', '2100-01-01 00:00:00', 'ACTIVE', NULL, 0, NULL, '2022-01-01 00:00:00', NULL, '2022-01-01 00:00:00');
