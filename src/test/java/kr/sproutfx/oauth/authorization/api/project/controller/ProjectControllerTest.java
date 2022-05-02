@@ -33,6 +33,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import kr.sproutfx.oauth.authorization.api.client.entity.Client;
 import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
 import kr.sproutfx.oauth.authorization.api.project.controller.ProjectController.ProjectCreateRequest;
+import kr.sproutfx.oauth.authorization.api.project.controller.ProjectController.ProjectUpdateRequest;
 import kr.sproutfx.oauth.authorization.api.project.entity.Project;
 import kr.sproutfx.oauth.authorization.api.project.enumeration.ProjectStatus;
 import kr.sproutfx.oauth.authorization.api.project.service.ProjectService;
@@ -117,7 +118,7 @@ public class ProjectControllerTest {
 
     Project[] mockupProjects = { mockupProject1, mockupProject2 };
 
-    Project createdProject = Project.builder()
+    Project mockupProject = Project.builder()
         .id(UUID.fromString("004544c0-766e-4ef6-a1eb-bd0c37100d0c"))
         .name("Created project name")
         .status(ProjectStatus.PENDING_APPROVAL)
@@ -167,15 +168,15 @@ public class ProjectControllerTest {
     @Test
     void testCreate() throws Exception {
         ProjectCreateRequest projectCreateRequest = new ProjectCreateRequest();
-        projectCreateRequest.setName(createdProject.getName());
-        projectCreateRequest.setDescription(createdProject.getDescription());
+        projectCreateRequest.setName(mockupProject.getName());
+        projectCreateRequest.setDescription(mockupProject.getDescription());
 
         // given
         given(this.projectService.create(projectCreateRequest.getName(), projectCreateRequest.getDescription()))
-            .willReturn(createdProject.getId());
+            .willReturn(mockupProject.getId());
 
-        given(this.projectService.findById(createdProject.getId()))
-            .willReturn(createdProject);
+        given(this.projectService.findById(mockupProject.getId()))
+            .willReturn(mockupProject);
         // when
 
         ResultActions resultActions = this.mockMvc.perform(post("/projects")
@@ -188,17 +189,17 @@ public class ProjectControllerTest {
         resultActions.andDo(print())
             .andExpect(status().isCreated())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result.name").value(createdProject.getName()));
+            .andExpect(jsonPath("result.name").value(mockupProject.getName()));
     }
 
     @Test
     void testFindById() throws Exception {
         // given
-        given(this.projectService.findById(createdProject.getId()))
-            .willReturn(createdProject);
+        given(this.projectService.findById(mockupProject.getId()))
+            .willReturn(mockupProject);
         
         // when
-        ResultActions resultActions = this.mockMvc.perform(get(String.format("/projects/%s", createdProject.getId()))
+        ResultActions resultActions = this.mockMvc.perform(get(String.format("/projects/%s", mockupProject.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(Charset.forName("UTF-8"))
             .accept(MediaTypes.HAL_JSON));
@@ -207,12 +208,35 @@ public class ProjectControllerTest {
         resultActions.andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result.name").value(createdProject.getName()));
+            .andExpect(jsonPath("result.name").value(mockupProject.getName()));
     }
 
     @Test
-    void testUpdate() {
+    void testUpdate() throws Exception {
+        // given
+        ProjectUpdateRequest request = new ProjectUpdateRequest();
+        request.setName("new Name");
+        request.setDescription("new Description");
 
+        mockupProject.setName(request.getName());
+        mockupProject.setDescription(request.getDescription());
+
+        given(this.projectService.findById(mockupProject.getId()))
+            .willReturn(mockupProject);
+
+        // when
+        ResultActions resultActions = this.mockMvc.perform(put(String.format("/projects/%s", mockupProject.getId()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .characterEncoding(Charset.forName("UTF-8"))
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaTypes.HAL_JSON));
+        
+        // then
+        resultActions.andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("succeeded").value(true))
+            .andExpect(jsonPath("result.name").value(request.getName()))
+            .andExpect(jsonPath("result.description").value(request.getDescription()));
     }
 
     @Test
