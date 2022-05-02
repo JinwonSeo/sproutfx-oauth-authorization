@@ -33,6 +33,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import kr.sproutfx.oauth.authorization.api.client.entity.Client;
 import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
 import kr.sproutfx.oauth.authorization.api.project.controller.ProjectController.ProjectCreateRequest;
+import kr.sproutfx.oauth.authorization.api.project.controller.ProjectController.ProjectStatusUpdateRequest;
 import kr.sproutfx.oauth.authorization.api.project.controller.ProjectController.ProjectUpdateRequest;
 import kr.sproutfx.oauth.authorization.api.project.entity.Project;
 import kr.sproutfx.oauth.authorization.api.project.enumeration.ProjectStatus;
@@ -240,8 +241,28 @@ public class ProjectControllerTest {
     }
 
     @Test
-    void testUpdateStatus() {
+    void testUpdateStatus() throws Exception {
+        // given
+        ProjectStatusUpdateRequest request = new ProjectStatusUpdateRequest();
+        request.setProjectStatus(ProjectStatus.ACTIVE);
 
+        mockupProject.setStatus(request.getProjectStatus());
+        
+        given(this.projectService.findById(mockupProject.getId()))
+            .willReturn(mockupProject);
+
+        // when
+        ResultActions resultActions = this.mockMvc.perform(patch(String.format("/projects/%s/status", mockupProject.getId()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .characterEncoding(Charset.forName("UTF-8"))
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaTypes.HAL_JSON));
+
+        // then
+        resultActions.andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("succeeded").value(true))
+            .andExpect(jsonPath("result.status").value(mockupProject.getStatus().toString()));
     }
 
     @Test
