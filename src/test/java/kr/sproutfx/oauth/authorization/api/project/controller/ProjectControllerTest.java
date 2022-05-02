@@ -11,8 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -266,8 +264,16 @@ public class ProjectControllerTest {
     }
 
     @Test
-    void testDelete() {
+    void testDelete() throws Exception {
+        // when
+        ResultActions resultActions = this.mockMvc.perform(delete(String.format("/projects/%s", mockupProject.getId()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .characterEncoding(Charset.forName("UTF-8"))
+            .accept(MediaTypes.HAL_JSON));
 
+        // then
+        resultActions.andDo(print())
+            .andExpect(status().isNoContent());
     }
 
     
