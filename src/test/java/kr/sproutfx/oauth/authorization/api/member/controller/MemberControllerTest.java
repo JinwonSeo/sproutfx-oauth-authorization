@@ -19,6 +19,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.google.common.collect.Lists;
+import kr.sproutfx.oauth.authorization.api.member.controller.MemberController.MemberUpdateRequest;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,6 +111,7 @@ public class MemberControllerTest {
 
         // then
         resultActions.andDo(print())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("succeeded").value(true))
                 .andExpect(jsonPath("result.name").value(mockupMember.getName()));
     }
@@ -165,8 +167,32 @@ public class MemberControllerTest {
     }
 
     @Test
-    void testUpdate() {
+    void testUpdate() throws Exception {
+        // given
+        MemberUpdateRequest request = new MemberUpdateRequest();
+        request.setEmail("updated-email@test.com");
+        request.setName("Updated name");
+        request.setDescription("Updated description");
 
+        mockupMember.setEmail(request.getEmail());
+        mockupMember.setName(request.getName());
+        mockupMember.setDescription(request.getDescription());
+
+        given(this.memberService.findById(mockupMember.getId()))
+                .willReturn(mockupMember);
+
+        // when
+        ResultActions resultActions = this.mockMvc.perform(put(String.format("/members/%s", mockupMember.getId()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding(StandardCharsets.UTF_8)
+                .content(objectMapper.writeValueAsString(request))
+                .accept(MediaTypes.HAL_JSON));
+
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("succeeded").value(true))
+                .andExpect(jsonPath("result.name").value(mockupMember.getName()));
     }
 
     @Test
