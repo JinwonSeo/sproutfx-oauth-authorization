@@ -177,8 +177,8 @@ public class ProjectControllerTest {
 
         given(this.projectService.findById(mockupProject.getId()))
                 .willReturn(mockupProject);
-        // when
 
+        // when
         ResultActions resultActions = this.mockMvc.perform(post("/projects")
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding(StandardCharsets.UTF_8)
