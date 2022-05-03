@@ -1,13 +1,12 @@
 package kr.sproutfx.oauth.authorization.common.advisor;
 
+import kr.sproutfx.oauth.authorization.common.base.BaseException;
+import kr.sproutfx.oauth.authorization.common.base.BaseResponseBody;
+import kr.sproutfx.oauth.authorization.common.exception.UnhandledException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import kr.sproutfx.oauth.authorization.common.base.BaseException;
-import kr.sproutfx.oauth.authorization.common.base.BaseResponseBody;
-import kr.sproutfx.oauth.authorization.common.exception.UnhandledException;
 
 @RestControllerAdvice
 public class RestControllerAdvisor {

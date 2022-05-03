@@ -1,22 +1,5 @@
 package kr.sproutfx.oauth.authorization.api.authorize.controller;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.validation.Errors;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import kr.sproutfx.oauth.authorization.api.authorize.service.AuthorizeService;
 import kr.sproutfx.oauth.authorization.api.client.entity.Client;
 import kr.sproutfx.oauth.authorization.api.client.service.ClientService;
@@ -24,9 +7,17 @@ import kr.sproutfx.oauth.authorization.api.member.entity.Member;
 import kr.sproutfx.oauth.authorization.api.member.service.MemberService;
 import kr.sproutfx.oauth.authorization.common.base.BaseController;
 import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException;
-
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/")
