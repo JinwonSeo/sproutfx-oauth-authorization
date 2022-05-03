@@ -1,15 +1,14 @@
 package kr.sproutfx.oauth.authorization.common.base;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Links;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Links;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 public class BaseController {
 
