@@ -2,6 +2,7 @@ package kr.sproutfx.oauth.authorization.api.client.enumeration;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
+
 public enum ClientStatus {
     ACTIVE,
     PENDING_APPROVAL,
