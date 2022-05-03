@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -84,7 +85,7 @@ public class MemberControllerTest {
             .build();
 
     @Test
-    void testCreate() throws JsonProcessingException, Exception {
+    void testCreate() throws Exception {
         // given
         String unEncodedPassword = "createdmemberpasswd";
         
@@ -103,7 +104,7 @@ public class MemberControllerTest {
         // when
         ResultActions resultActions = this.mockMvc.perform(post("/members")
                 .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding(Charset.forName("UTF-8"))
+                .characterEncoding(StandardCharsets.UTF_8)
                 .content(objectMapper.writeValueAsString(request))
                 .accept(MediaTypes.HAL_JSON));
 
@@ -118,7 +119,7 @@ public class MemberControllerTest {
         // when
         ResultActions perform = this.mockMvc.perform(delete(String.format("/members/%s", mockupMember.getId()))
                 .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding(Charset.forName("UTF-8"))
+                .characterEncoding(StandardCharsets.UTF_8)
                 .accept(MediaTypes.HAL_JSON));
         // then
         perform.andDo(print())
@@ -134,7 +135,7 @@ public class MemberControllerTest {
         // when
         ResultActions resultActions = this.mockMvc.perform(get("/members")
                 .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding(Charset.forName("UTF-8"))
+                .characterEncoding(StandardCharsets.UTF_8)
                 .accept(MediaTypes.HAL_JSON));
 
         // then
@@ -153,7 +154,7 @@ public class MemberControllerTest {
         // when
         ResultActions resultActions = this.mockMvc.perform(get(String.format("/members/%s", mockupMember.getId()))
                 .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding(Charset.forName("UTF-8"))
+                .characterEncoding(StandardCharsets.UTF_8)
                 .accept(MediaTypes.HAL_JSON));
 
         // then
