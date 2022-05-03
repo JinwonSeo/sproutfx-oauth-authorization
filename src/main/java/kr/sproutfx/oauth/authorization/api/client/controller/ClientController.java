@@ -1,40 +1,28 @@
 package kr.sproutfx.oauth.authorization.api.client.controller;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
-import java.util.List;
-import java.util.UUID;
-
-import java.util.stream.Collectors;
-
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-
+import kr.sproutfx.oauth.authorization.api.client.entity.Client;
+import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
+import kr.sproutfx.oauth.authorization.api.client.service.ClientService;
+import kr.sproutfx.oauth.authorization.common.base.BaseController;
+import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException;
+import lombok.Data;
+import lombok.Getter;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Links;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import kr.sproutfx.oauth.authorization.api.client.entity.Client;
-import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
-import kr.sproutfx.oauth.authorization.api.client.service.ClientService;
-import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException;
-import kr.sproutfx.oauth.authorization.common.base.BaseController;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
-import lombok.Data;
-import lombok.Getter;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/clients")
@@ -56,7 +44,7 @@ public class ClientController extends BaseController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseBody<List<ObjectEntityModel<ClientResponse>>>> 
+    public ResponseEntity<ResponseBody<List<ObjectEntityModel<ClientResponse>>>>
             findAll() {
 
         return ResponseEntity.ok(

@@ -1,37 +1,20 @@
 package kr.sproutfx.oauth.authorization.api.project.entity;
 
+import kr.sproutfx.oauth.authorization.api.client.entity.Client;
+import kr.sproutfx.oauth.authorization.api.project.enumeration.ProjectStatus;
+import kr.sproutfx.oauth.authorization.configuration.jpa.entity.JpaBaseEntity;
+import lombok.*;
+import org.hibernate.annotations.*;
+import org.hibernate.envers.Audited;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.Where;
-import org.hibernate.envers.Audited;
-
-import kr.sproutfx.oauth.authorization.api.client.entity.Client;
-import kr.sproutfx.oauth.authorization.api.project.enumeration.ProjectStatus;
-import kr.sproutfx.oauth.authorization.configuration.jpa.entity.JpaBaseEntity;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter @Setter @Builder @AllArgsConstructor @NoArgsConstructor(access = AccessLevel.PROTECTED) @EqualsAndHashCode(of = "id", callSuper = false)
 @Entity @Table(name = "projects")

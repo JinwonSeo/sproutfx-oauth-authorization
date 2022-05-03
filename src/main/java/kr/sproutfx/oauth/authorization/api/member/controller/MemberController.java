@@ -1,16 +1,11 @@
 package kr.sproutfx.oauth.authorization.api.member.controller;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-
+import kr.sproutfx.oauth.authorization.api.member.entity.Member;
+import kr.sproutfx.oauth.authorization.api.member.enumeration.MemberStatus;
+import kr.sproutfx.oauth.authorization.api.member.service.MemberService;
+import kr.sproutfx.oauth.authorization.common.base.BaseController;
+import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException;
+import lombok.Data;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Links;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +13,15 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import kr.sproutfx.oauth.authorization.api.member.entity.Member;
-import kr.sproutfx.oauth.authorization.api.member.enumeration.MemberStatus;
-import kr.sproutfx.oauth.authorization.api.member.service.MemberService;
-import kr.sproutfx.oauth.authorization.common.base.BaseController;
-import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
-import lombok.Data;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/members")

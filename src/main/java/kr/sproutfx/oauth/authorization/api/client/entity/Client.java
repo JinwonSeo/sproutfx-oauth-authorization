@@ -1,38 +1,18 @@
 package kr.sproutfx.oauth.authorization.api.client.entity;
 
-import java.io.Serializable;
-import java.util.UUID;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.Where;
-import org.hibernate.envers.Audited;
-
 import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
 import kr.sproutfx.oauth.authorization.api.project.entity.Project;
 import kr.sproutfx.oauth.authorization.configuration.jpa.entity.JpaBaseEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.*;
+import org.hibernate.envers.Audited;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.UUID;
 
 @Builder @Getter @Setter @NoArgsConstructor @AllArgsConstructor @EqualsAndHashCode(of = "id", callSuper = false)
 @Entity @Table(name = "clients")
