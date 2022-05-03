@@ -17,6 +17,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -51,7 +52,8 @@ public class ClientControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    Client MOCK_RECODE_1 = Client.builder()
+    // Mockup recode
+    Client mockupClient1 = Client.builder()
         .id(UUID.fromString("00174dec-5665-4760-9255-6feb51a2b980"))
         .code("d36c646af3104e4587e6a1dfd7a398d0")
         .secret("ejRTUHNKTldTcUJiVWh0c2dXRVNlMGhJMDdxWEJLM0M=")
@@ -62,7 +64,7 @@ public class ClientControllerTest {
         .description(null)
         .build();
 
-    Client MOCK_RECODE_2 = Client.builder()
+    Client mockupClient2 = Client.builder()
         .id(UUID.fromString("001cae5a-fd6b-43a5-ba74-07ce7bba256b"))
         .code("68c2e7fbf4044c6081ab68b742d65a3d")
         .secret("WHlzaE9oYWtoOElGR0k2SjE5Wnc2Vm5Ybkd2NVF6UVY=")
@@ -73,15 +75,13 @@ public class ClientControllerTest {
         .description(null)
         .build();
 
+    Client[] mockupClients = { mockupClient1, mockupClient2 };
+
     @Test
     void testFindAll() throws Exception {
         // given
-        List<Client> clients = new ArrayList<Client>();
-
-        clients.add(MOCK_RECODE_1);
-        clients.add(MOCK_RECODE_2); 
-
-        given(this.clientService.findAll()).willReturn(clients);
+        given(this.clientService.findAll())
+            .willReturn(Lists.newArrayList(mockupClients));
 
         // when
         ResultActions resultAction = this.mockMvc.perform(get("/clients")
@@ -99,10 +99,10 @@ public class ClientControllerTest {
     @Test
     void testFindById() throws Exception {
         // given
-        given(this.clientService.findById(MOCK_RECODE_1.getId())).willReturn(MOCK_RECODE_1);
+        given(this.clientService.findById(mockupClient1.getId())).willReturn(mockupClient1);
 
         // when
-        ResultActions resultActions = this.mockMvc.perform(get(String.format("/clients/%s", MOCK_RECODE_1.getId()))
+        ResultActions resultActions = this.mockMvc.perform(get(String.format("/clients/%s", mockupClient1.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(Charset.forName("UTF-8"))
             .accept(MediaTypes.HAL_JSON));
@@ -118,14 +118,14 @@ public class ClientControllerTest {
     void testCreate() throws Exception {
         // given
         ClientCreateRequest clientCreateRequest = new ClientCreateRequest();
-        clientCreateRequest.setName(MOCK_RECODE_1.getName());
-        clientCreateRequest.setDescription(MOCK_RECODE_1.getDescription());
+        clientCreateRequest.setName(mockupClient1.getName());
+        clientCreateRequest.setDescription(mockupClient1.getDescription());
 
         given(this.clientService.create(clientCreateRequest.getName(), clientCreateRequest.getDescription()))
-            .willReturn(MOCK_RECODE_1.getId());
+            .willReturn(mockupClient1.getId());
 
-        given(this.clientService.findById(MOCK_RECODE_1.getId()))
-            .willReturn(MOCK_RECODE_1);
+        given(this.clientService.findById(mockupClient1.getId()))
+            .willReturn(mockupClient1);
 
         // when
         ResultActions resultActions = this.mockMvc.perform(post("/clients")
@@ -138,10 +138,10 @@ public class ClientControllerTest {
         resultActions.andDo(print())
             .andExpect(status().isCreated())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result.code").value(MOCK_RECODE_1.getCode()))
-            .andExpect(jsonPath("result.name").value(MOCK_RECODE_1.getName()))
-            .andExpect(jsonPath("result.status").value(MOCK_RECODE_1.getStatus().toString()))
-            .andExpect(jsonPath("result.description").value(MOCK_RECODE_1.getDescription()));
+            .andExpect(jsonPath("result.code").value(mockupClient1.getCode()))
+            .andExpect(jsonPath("result.name").value(mockupClient1.getName()))
+            .andExpect(jsonPath("result.status").value(mockupClient1.getStatus().toString()))
+            .andExpect(jsonPath("result.description").value(mockupClient1.getDescription()));
     }
 
     @Test
@@ -152,14 +152,14 @@ public class ClientControllerTest {
         clientUpdateRequest.setDescription("new description");
         clientUpdateRequest.setAccessTokenValidityInSeconds(3600L);
 
-        MOCK_RECODE_1.setName(clientUpdateRequest.getName());
-        MOCK_RECODE_1.setDescription(clientUpdateRequest.getDescription());
-        MOCK_RECODE_1.setAccessTokenValidityInSeconds(clientUpdateRequest.getAccessTokenValidityInSeconds());
+        mockupClient1.setName(clientUpdateRequest.getName());
+        mockupClient1.setDescription(clientUpdateRequest.getDescription());
+        mockupClient1.setAccessTokenValidityInSeconds(clientUpdateRequest.getAccessTokenValidityInSeconds());
 
-        given(this.clientService.findById(MOCK_RECODE_1.getId())).willReturn(MOCK_RECODE_1);
+        given(this.clientService.findById(mockupClient1.getId())).willReturn(mockupClient1);
 
         // when
-        ResultActions resultActions = this.mockMvc.perform(put(String.format("/clients/%s", MOCK_RECODE_1.getId()))
+        ResultActions resultActions = this.mockMvc.perform(put(String.format("/clients/%s", mockupClient1.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(Charset.forName("UTF-8"))
             .content(objectMapper.writeValueAsString(clientUpdateRequest))
@@ -169,10 +169,10 @@ public class ClientControllerTest {
         resultActions.andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result.code").value(MOCK_RECODE_1.getCode()))
-            .andExpect(jsonPath("result.name").value(MOCK_RECODE_1.getName()))
-            .andExpect(jsonPath("result.status").value(MOCK_RECODE_1.getStatus().toString()))
-            .andExpect(jsonPath("result.description").value(MOCK_RECODE_1.getDescription()));
+            .andExpect(jsonPath("result.code").value(mockupClient1.getCode()))
+            .andExpect(jsonPath("result.name").value(mockupClient1.getName()))
+            .andExpect(jsonPath("result.status").value(mockupClient1.getStatus().toString()))
+            .andExpect(jsonPath("result.description").value(mockupClient1.getDescription()));
     }
 
     @Test
@@ -181,12 +181,12 @@ public class ClientControllerTest {
         ClientStatusUpdateRequest clientStatusUpdateRequest = new ClientStatusUpdateRequest();
         clientStatusUpdateRequest.setClientStatus(ClientStatus.ACTIVE);
 
-        MOCK_RECODE_1.setStatus(clientStatusUpdateRequest.getClientStatus());
+        mockupClient1.setStatus(clientStatusUpdateRequest.getClientStatus());
 
-        given(this.clientService.findById(MOCK_RECODE_1.getId())).willReturn(MOCK_RECODE_1);
+        given(this.clientService.findById(mockupClient1.getId())).willReturn(mockupClient1);
 
         // when
-        ResultActions resultActions = this.mockMvc.perform(patch(String.format("/clients/%s/status", MOCK_RECODE_1.getId()))
+        ResultActions resultActions = this.mockMvc.perform(patch(String.format("/clients/%s/status", mockupClient1.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(Charset.forName("UTF-8"))
             .content(objectMapper.writeValueAsString(clientStatusUpdateRequest))
@@ -196,16 +196,16 @@ public class ClientControllerTest {
         resultActions.andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result.code").value(MOCK_RECODE_1.getCode()))
-            .andExpect(jsonPath("result.name").value(MOCK_RECODE_1.getName()))
-            .andExpect(jsonPath("result.status").value(MOCK_RECODE_1.getStatus().toString()))
-            .andExpect(jsonPath("result.description").value(MOCK_RECODE_1.getDescription()));
+            .andExpect(jsonPath("result.code").value(mockupClient1.getCode()))
+            .andExpect(jsonPath("result.name").value(mockupClient1.getName()))
+            .andExpect(jsonPath("result.status").value(mockupClient1.getStatus().toString()))
+            .andExpect(jsonPath("result.description").value(mockupClient1.getDescription()));
     }
 
     @Test
     void testDelete() throws Exception {
         // when
-        ResultActions resultActions = this.mockMvc.perform(delete(String.format("/clients/%s", MOCK_RECODE_1.getId()))
+        ResultActions resultActions = this.mockMvc.perform(delete(String.format("/clients/%s", mockupClient1.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(Charset.forName("UTF-8"))
             .accept(MediaTypes.HAL_JSON));

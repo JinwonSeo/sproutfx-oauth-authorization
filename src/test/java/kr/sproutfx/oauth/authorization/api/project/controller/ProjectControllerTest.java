@@ -275,12 +275,4 @@ public class ProjectControllerTest {
         resultActions.andDo(print())
             .andExpect(status().isNoContent());
     }
-
-    
-
-    
-
-    
-
-    
 }
