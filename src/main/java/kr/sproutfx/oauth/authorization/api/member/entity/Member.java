@@ -1,33 +1,17 @@
 package kr.sproutfx.oauth.authorization.api.member.entity;
 
+import kr.sproutfx.oauth.authorization.api.member.enumeration.MemberStatus;
+import kr.sproutfx.oauth.authorization.configuration.jpa.entity.JpaBaseEntity;
+import lombok.*;
+import org.hibernate.annotations.*;
+import org.hibernate.envers.Audited;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.Where;
-import org.hibernate.envers.Audited;
-
-import kr.sproutfx.oauth.authorization.api.member.enumeration.MemberStatus;
-import kr.sproutfx.oauth.authorization.configuration.jpa.entity.JpaBaseEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Builder @Getter @Setter @NoArgsConstructor @AllArgsConstructor @EqualsAndHashCode(of = "id", callSuper = false)
 @Entity @Table(name = "members")

@@ -1,8 +1,7 @@
 package kr.sproutfx.oauth.authorization.api.member.exception;
 
-import org.springframework.http.HttpStatus;
-
 import kr.sproutfx.oauth.authorization.common.base.BaseException;
+import org.springframework.http.HttpStatus;
 
 public class MemberPasswordNotMatchesException extends BaseException {
 
