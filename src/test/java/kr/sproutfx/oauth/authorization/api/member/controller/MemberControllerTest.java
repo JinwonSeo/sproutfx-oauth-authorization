@@ -1,25 +1,13 @@
 package kr.sproutfx.oauth.authorization.api.member.controller;
 
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.google.common.collect.Lists;
+import kr.sproutfx.oauth.authorization.api.member.controller.MemberController.MemberCreateRequest;
+import kr.sproutfx.oauth.authorization.api.member.controller.MemberController.MemberPasswordUpdateRequest;
 import kr.sproutfx.oauth.authorization.api.member.controller.MemberController.MemberUpdateRequest;
+import kr.sproutfx.oauth.authorization.api.member.entity.Member;
+import kr.sproutfx.oauth.authorization.api.member.enumeration.MemberStatus;
+import kr.sproutfx.oauth.authorization.api.member.service.MemberService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +21,16 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import kr.sproutfx.oauth.authorization.api.member.controller.MemberController.MemberCreateRequest;
-import kr.sproutfx.oauth.authorization.api.member.entity.Member;
-import kr.sproutfx.oauth.authorization.api.member.enumeration.MemberStatus;
-import kr.sproutfx.oauth.authorization.api.member.service.MemberService;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import static kr.sproutfx.oauth.authorization.api.member.controller.MemberController.*;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles(value = "test")
 @AutoConfigureMockMvc
@@ -51,6 +45,9 @@ public class MemberControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // Mockup recode
     Member mockupMember1 = Member.builder()
@@ -81,7 +78,7 @@ public class MemberControllerTest {
             .name("Created member")
             .password("createdmemberpasswd")
             .passwordExpired(LocalDateTime.now().plusMonths(1))
-            .status(MemberStatus.ACTIVE)
+            .status(MemberStatus.PENDING_APPROVAL)
             .description(null)
             .build();
 
@@ -196,12 +193,25 @@ public class MemberControllerTest {
     }
 
     @Test
-    void testUpdatePassword() {
+    void testUpdateStatus() throws Exception {
+        // given
+        MemberStatusUpdateRequest request = new MemberStatusUpdateRequest();
+        request.setMemberStatus(MemberStatus.ACTIVE);
 
-    }
+        given(this.memberService.findById(mockupMember.getId()))
+                .willReturn(mockupMember);
 
-    @Test
-    void testUpdateStatus() {
+        // when
+        ResultActions resultActions = this.mockMvc.perform(patch(String.format("/members/%s/status", mockupMember.getId()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding(StandardCharsets.UTF_8)
+                .content(objectMapper.writeValueAsString(request))
+                .accept(MediaTypes.HAL_JSON));
 
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("succeeded").value(true))
+                .andExpect(jsonPath("result.name").value(mockupMember.getName()));
     }
 }
