@@ -16,14 +16,7 @@ import org.springframework.hateoas.Links;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import kr.sproutfx.oauth.authorization.api.member.entity.Member;
 import kr.sproutfx.oauth.authorization.api.member.enumeration.MemberStatus;
@@ -113,7 +106,7 @@ public class MemberController extends BaseController {
                     new MemberResponse(updatedMember), links(updatedMember))));
     }
 
-    @PutMapping("/{id}/status")
+    @PatchMapping(value = "/{id}/status")
     public ResponseEntity<ResponseBody<ObjectEntityModel<MemberResponse>>> 
             updateStatus(@PathVariable UUID id, @RequestBody @Validated MemberStatusUpdateRequest memberStatusUpdateRequest, Errors errors) {
         
@@ -131,7 +124,7 @@ public class MemberController extends BaseController {
                     new MemberResponse(updatedMember), links(updatedMember))));
     }
 
-    @PutMapping("/{email}/password")
+    @PatchMapping(value = "/{email}/password")
     public ResponseEntity<ResponseBody<ObjectEntityModel<MemberResponse>>> 
             updatePassword(@PathVariable String email, @RequestBody @Validated MemberPasswordUpdateRequest memberPasswordUpdateRequest, Errors errors) {
         
