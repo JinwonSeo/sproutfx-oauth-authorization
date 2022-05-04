@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: sproutfx-oauth-authorization
+  profiles:
+    active: test
+  cloud:
+    config:
+      enabled: false
+#  config:
+#    import:
+#      - configserver:http://config.sproutfx.kr
