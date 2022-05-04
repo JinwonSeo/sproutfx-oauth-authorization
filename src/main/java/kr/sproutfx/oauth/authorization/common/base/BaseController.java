@@ -6,6 +6,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Links;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -25,9 +26,7 @@ public class BaseController {
         if (!Links.of(links).hasLink(DELETE_LINK_REL_NAME))
             tempLinks.add(linkTo(controller).slash(id).withRel(DELETE_LINK_REL_NAME));
 
-        for (Link link : links) {
-            tempLinks.add(link);
-        }
+        tempLinks.addAll(Arrays.asList(links));
 
         return Links.of(tempLinks);
     }
@@ -45,15 +44,14 @@ public class BaseController {
         }
     }
 
-    protected class ResponseBody<T> extends BaseResponseBody<T> {
-        public ResponseBody(T object) {
-            super(object);
+    protected static class StructuredBody<T> extends BaseResponseBody<T> {
+        public StructuredBody(T contents) {
+            super(contents);
+        }
+
+        public static <T> StructuredBody<T> contents(T contents) {
+            return new StructuredBody<>(contents);
         }
     }
 
-    protected class Response<T> extends BaseResponseBody<T> {
-        public Response(T object) {
-            super(object);
-        }
-    }
 }

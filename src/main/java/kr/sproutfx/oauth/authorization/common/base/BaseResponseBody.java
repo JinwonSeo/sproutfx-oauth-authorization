@@ -40,7 +40,7 @@ public class BaseResponseBody<T> {
         this.error = new Error(((BaseException) object).getValue(), ((BaseException) object).getReason());
     }
 
-    class Error {
+    static class Error {
         private String value;
         private String reason;
 

@@ -44,27 +44,24 @@ public class ClientController extends BaseController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseBody<List<ObjectEntityModel<ClientResponse>>>> findAll() {
+    public ResponseEntity<StructuredBody<List<ObjectEntityModel<ClientResponse>>>> findAll() {
 
-        return ResponseEntity.ok(
-            new ResponseBody<>(this.clientService.findAll().stream().map(client ->
-                new ObjectEntityModel<>(
-                    new ClientResponse(client), links(client))).collect(Collectors.toList())));
+        return ResponseEntity.ok(StructuredBody.contents(
+            this.clientService.findAll().stream().map(client ->
+                new ObjectEntityModel<>(new ClientResponse(client), links(client))).collect(Collectors.toList())));
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<ResponseBody<ObjectEntityModel<ClientResponse>>> findById(@PathVariable("id") UUID id) {
+    public ResponseEntity<StructuredBody<ObjectEntityModel<ClientResponse>>> findById(@PathVariable("id") UUID id) {
 
         Client client = this.clientService.findById(id);
 
-        return ResponseEntity.ok(
-            new ResponseBody<>(
-                new ObjectEntityModel<>(
-                    new ClientResponse(client), links(client))));
+        return ResponseEntity.ok(StructuredBody.contents(
+            new ObjectEntityModel<>(new ClientResponse(client), links(client))));
     }
 
     @PostMapping
-    public ResponseEntity<ResponseBody<ObjectEntityModel<ClientResponse>>> create(@RequestBody @Validated ClientCreateRequest clientCreateRequest, Errors errors) {
+    public ResponseEntity<StructuredBody<ObjectEntityModel<ClientResponse>>> create(@RequestBody @Validated ClientCreateRequest clientCreateRequest, Errors errors) {
 
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
@@ -72,14 +69,12 @@ public class ClientController extends BaseController {
 
         Client updatedClient = this.clientService.findById(id);
 
-        return ResponseEntity.created(linkTo(this.getClass()).slash(id).toUri()).body(
-            new ResponseBody<>(
-                new ObjectEntityModel<>(
-                    new ClientResponse(updatedClient), links(updatedClient))));
+        return ResponseEntity.created(linkTo(this.getClass()).slash(id).toUri()).body(StructuredBody.contents(
+            new ObjectEntityModel<>(new ClientResponse(updatedClient), links(updatedClient))));
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<ResponseBody<ObjectEntityModel<ClientResponse>>> update(@PathVariable UUID id, @RequestBody @Validated ClientUpdateRequest clientUpdateRequest, Errors errors) {
+    public ResponseEntity<StructuredBody<ObjectEntityModel<ClientResponse>>> update(@PathVariable UUID id, @RequestBody @Validated ClientUpdateRequest clientUpdateRequest, Errors errors) {
 
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
@@ -92,23 +87,19 @@ public class ClientController extends BaseController {
 
         Client updatedClient = this.clientService.findById(id);
 
-        return ResponseEntity.ok().body(
-            new ResponseBody<>(
-                new ObjectEntityModel<>(
-                    new ClientResponse(updatedClient), links(updatedClient))));
+        return ResponseEntity.ok(StructuredBody.contents(
+            new ObjectEntityModel<>(new ClientResponse(updatedClient), links(updatedClient))));
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<ResponseBody<ObjectEntityModel<ClientResponse>>> updateStatus(@PathVariable UUID id, @RequestBody ClientStatusUpdateRequest clientStatusUpdateRequest) {
+    public ResponseEntity<StructuredBody<ObjectEntityModel<ClientResponse>>> updateStatus(@PathVariable UUID id, @RequestBody ClientStatusUpdateRequest clientStatusUpdateRequest) {
 
         this.clientService.updateStatus(id, clientStatusUpdateRequest.getClientStatus());
 
         Client updatedClient = this.clientService.findById(id);
 
-        return ResponseEntity.ok().body(
-            new ResponseBody<>(
-                new ObjectEntityModel<>(
-                    new ClientResponse(updatedClient), links(updatedClient))));
+        return ResponseEntity.ok(StructuredBody.contents(
+            new ObjectEntityModel<>(new ClientResponse(updatedClient), links(updatedClient))));
     }
 
     @DeleteMapping(value = "/{id}")

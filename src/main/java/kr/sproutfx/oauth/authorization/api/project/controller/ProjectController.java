@@ -34,37 +34,32 @@ public class ProjectController extends BaseController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseBody<List<ObjectEntityModel<ProjectResponse>>>>
-    findAll() {
+    public ResponseEntity<StructuredBody<List<ObjectEntityModel<ProjectResponse>>>> findAll() {
 
-        return ResponseEntity.ok().body(
-            new ResponseBody<>(this.projectService.findAll().stream().map(project ->
+        return ResponseEntity.ok(StructuredBody.contents(
+            this.projectService.findAll().stream().map(project ->
                 new ObjectEntityModel<>(new ProjectResponse(project), links(project))).collect(toList())));
     }
 
     @GetMapping(value = "/clients")
-    public ResponseEntity<ResponseBody<List<ObjectEntityModel<ProjectWithClientsResponse>>>>
-    findAllWithClients() {
+    public ResponseEntity<StructuredBody<List<ObjectEntityModel<ProjectWithClientsResponse>>>> findAllWithClients() {
 
-        return ResponseEntity.ok().body(
-            new ResponseBody<>(this.projectService.findAllWithClients().stream().map(project ->
+        return ResponseEntity.ok(StructuredBody.contents(
+            this.projectService.findAllWithClients().stream().map(project ->
                 new ObjectEntityModel<>(new ProjectWithClientsResponse(project), links(project))).collect(toList())));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseBody<ObjectEntityModel<ProjectResponse>>>
-    findById(@PathVariable UUID id) {
+    public ResponseEntity<StructuredBody<ObjectEntityModel<ProjectResponse>>> findById(@PathVariable UUID id) {
 
         Project selectedProject = this.projectService.findById(id);
 
-        return ResponseEntity.ok().body(
-            new ResponseBody<>(
-                new ObjectEntityModel<>(new ProjectResponse(selectedProject), links(selectedProject))));
+        return ResponseEntity.ok(StructuredBody.contents(
+            new ObjectEntityModel<>(new ProjectResponse(selectedProject), links(selectedProject))));
     }
 
     @PostMapping
-    public ResponseEntity<ResponseBody<ObjectEntityModel<ProjectResponse>>>
-    create(@RequestBody @Validated ProjectCreateRequest projectCreateRequest, Errors errors) {
+    public ResponseEntity<StructuredBody<ObjectEntityModel<ProjectResponse>>> create(@RequestBody @Validated ProjectCreateRequest projectCreateRequest, Errors errors) {
 
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
@@ -72,14 +67,12 @@ public class ProjectController extends BaseController {
 
         Project selectedProject = this.projectService.findById(id);
 
-        return ResponseEntity.created(linkTo(this.getClass()).slash(id).toUri()).body(
-            new ResponseBody<>(
-                new ObjectEntityModel<>(new ProjectResponse(selectedProject), links(selectedProject))));
+        return ResponseEntity.created(linkTo(this.getClass()).slash(id).toUri()).body(StructuredBody.contents(
+            new ObjectEntityModel<>(new ProjectResponse(selectedProject), links(selectedProject))));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseBody<ObjectEntityModel<ProjectResponse>>>
-    update(@PathVariable UUID id, @RequestBody @Validated ProjectUpdateRequest projectUpdateRequest, Errors errors) {
+    public ResponseEntity<StructuredBody<ObjectEntityModel<ProjectResponse>>> update(@PathVariable UUID id, @RequestBody @Validated ProjectUpdateRequest projectUpdateRequest, Errors errors) {
 
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
@@ -87,14 +80,12 @@ public class ProjectController extends BaseController {
 
         Project selectedProject = this.projectService.findById(id);
 
-        return ResponseEntity.ok().body(
-            new ResponseBody<>(
-                new ObjectEntityModel<>(new ProjectResponse(selectedProject), links(selectedProject))));
+        return ResponseEntity.ok(StructuredBody.contents(
+            new ObjectEntityModel<>(new ProjectResponse(selectedProject), links(selectedProject))));
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<ResponseBody<ObjectEntityModel<ProjectResponse>>>
-    updateStatus(@PathVariable UUID id, @RequestBody @Validated ProjectStatusUpdateRequest projectStatusUpdateRequest, Errors errors) {
+    public ResponseEntity<StructuredBody<ObjectEntityModel<ProjectResponse>>> updateStatus(@PathVariable UUID id, @RequestBody @Validated ProjectStatusUpdateRequest projectStatusUpdateRequest, Errors errors) {
 
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
@@ -102,9 +93,8 @@ public class ProjectController extends BaseController {
 
         Project selectedProject = this.projectService.findById(id);
 
-        return ResponseEntity.ok().body(
-            new ResponseBody<>(
-                new ObjectEntityModel<>(new ProjectResponse(selectedProject), links(selectedProject))));
+        return ResponseEntity.ok(StructuredBody.contents(
+            new ObjectEntityModel<>(new ProjectResponse(selectedProject), links(selectedProject))));
     }
 
     @DeleteMapping("/{id}")
