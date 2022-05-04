@@ -8,5 +8,5 @@ public class ExtractExpiresInSecondsFailedException extends BaseException {
     public ExtractExpiresInSecondsFailedException() {
         super("extract_failed", "Extract expires in seconds failed.", HttpStatus.UNAUTHORIZED);
     }
-    
+
 }

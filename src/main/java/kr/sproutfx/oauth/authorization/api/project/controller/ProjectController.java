@@ -34,26 +34,26 @@ public class ProjectController extends BaseController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseBody<List<ObjectEntityModel<ProjectResponse>>>> 
-            findAll() {
+    public ResponseEntity<ResponseBody<List<ObjectEntityModel<ProjectResponse>>>>
+    findAll() {
 
         return ResponseEntity.ok().body(
-            new ResponseBody<>(this.projectService.findAll().stream().map(project -> 
+            new ResponseBody<>(this.projectService.findAll().stream().map(project ->
                 new ObjectEntityModel<>(new ProjectResponse(project), links(project))).collect(toList())));
     }
 
     @GetMapping(value = "/clients")
-    public ResponseEntity<ResponseBody<List<ObjectEntityModel<ProjectWithClientsResponse>>>> 
-            findAllWithClients() {
+    public ResponseEntity<ResponseBody<List<ObjectEntityModel<ProjectWithClientsResponse>>>>
+    findAllWithClients() {
 
         return ResponseEntity.ok().body(
-            new ResponseBody<>(this.projectService.findAllWithClients().stream().map(project -> 
+            new ResponseBody<>(this.projectService.findAllWithClients().stream().map(project ->
                 new ObjectEntityModel<>(new ProjectWithClientsResponse(project), links(project))).collect(toList())));
-    }    
+    }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseBody<ObjectEntityModel<ProjectResponse>>> 
-            findById(@PathVariable UUID id) {
+    public ResponseEntity<ResponseBody<ObjectEntityModel<ProjectResponse>>>
+    findById(@PathVariable UUID id) {
 
         Project selectedProject = this.projectService.findById(id);
 
@@ -63,13 +63,13 @@ public class ProjectController extends BaseController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseBody<ObjectEntityModel<ProjectResponse>>> 
-            create(@RequestBody @Validated ProjectCreateRequest projectCreateRequest, Errors errors) {
+    public ResponseEntity<ResponseBody<ObjectEntityModel<ProjectResponse>>>
+    create(@RequestBody @Validated ProjectCreateRequest projectCreateRequest, Errors errors) {
 
         if (errors.hasErrors()) throw new InvalidArgumentException();
-        
+
         UUID id = this.projectService.create(projectCreateRequest.getName(), projectCreateRequest.getDescription());
-        
+
         Project selectedProject = this.projectService.findById(id);
 
         return ResponseEntity.created(linkTo(this.getClass()).slash(id).toUri()).body(
@@ -78,9 +78,9 @@ public class ProjectController extends BaseController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseBody<ObjectEntityModel<ProjectResponse>>> 
-            update(@PathVariable UUID id, @RequestBody @Validated ProjectUpdateRequest projectUpdateRequest, Errors errors) {
-                
+    public ResponseEntity<ResponseBody<ObjectEntityModel<ProjectResponse>>>
+    update(@PathVariable UUID id, @RequestBody @Validated ProjectUpdateRequest projectUpdateRequest, Errors errors) {
+
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
         this.projectService.update(id, projectUpdateRequest.getName(), projectUpdateRequest.getDescription());
@@ -93,8 +93,8 @@ public class ProjectController extends BaseController {
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<ResponseBody<ObjectEntityModel<ProjectResponse>>> 
-            updateStatus(@PathVariable UUID id, @RequestBody @Validated ProjectStatusUpdateRequest projectStatusUpdateRequest, Errors errors) {
+    public ResponseEntity<ResponseBody<ObjectEntityModel<ProjectResponse>>>
+    updateStatus(@PathVariable UUID id, @RequestBody @Validated ProjectStatusUpdateRequest projectStatusUpdateRequest, Errors errors) {
 
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
@@ -109,7 +109,7 @@ public class ProjectController extends BaseController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> delete(@PathVariable UUID id) {
-        
+
         this.projectService.delete(id);
 
         return ResponseEntity.noContent().build();

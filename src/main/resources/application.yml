@@ -7,5 +7,5 @@ spring:
     config:
       enabled: true
   config:
-    import: 
-    - configserver:http://config.sproutfx.kr
+    import:
+      - configserver:http://config.sproutfx.kr

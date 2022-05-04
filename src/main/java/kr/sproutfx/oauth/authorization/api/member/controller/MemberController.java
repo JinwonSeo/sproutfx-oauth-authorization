@@ -43,20 +43,20 @@ public class MemberController extends BaseController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseBody<List<ObjectEntityModel<MemberResponse>>>> 
-            findAll() {
-        
+    public ResponseEntity<ResponseBody<List<ObjectEntityModel<MemberResponse>>>>
+    findAll() {
+
         return ResponseEntity.ok().body(
-            new ResponseBody<>(this.memberService.findAll().stream().map(member -> 
+            new ResponseBody<>(this.memberService.findAll().stream().map(member ->
                 new ObjectEntityModel<>(
                     new MemberResponse(member), links(member))).collect(Collectors.toList())));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ResponseBody<ObjectEntityModel<MemberResponse>>> findById(@PathVariable UUID id) {
-        
+
         Member selectedMember = this.memberService.findById(id);
-        
+
         return ResponseEntity.ok(
             new ResponseBody<>(
                 new ObjectEntityModel<>(
@@ -64,19 +64,19 @@ public class MemberController extends BaseController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseBody<ObjectEntityModel<MemberResponse>>> 
-            create(@RequestBody @Validated MemberCreateRequest memberCreateRequest, Errors errors) {
-        
+    public ResponseEntity<ResponseBody<ObjectEntityModel<MemberResponse>>>
+    create(@RequestBody @Validated MemberCreateRequest memberCreateRequest, Errors errors) {
+
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
         UUID id = this.memberService.create(
-                memberCreateRequest.getEmail(),
-                memberCreateRequest.getName(),
-                memberCreateRequest.getPassword(),
-                memberCreateRequest.getDescription());
+            memberCreateRequest.getEmail(),
+            memberCreateRequest.getName(),
+            memberCreateRequest.getPassword(),
+            memberCreateRequest.getDescription());
 
         Member createdMember = this.memberService.findById(id);
-        
+
         return ResponseEntity.created(linkTo(methodOn(this.getClass()).findById(createdMember.getId())).toUri()).body(
             new ResponseBody<>(
                 new ObjectEntityModel<>(
@@ -84,9 +84,9 @@ public class MemberController extends BaseController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseBody<ObjectEntityModel<MemberResponse>>> 
-            update(@PathVariable UUID id, @RequestBody @Validated MemberUpdateRequest memberUpdateRequest, Errors errors) {
-        
+    public ResponseEntity<ResponseBody<ObjectEntityModel<MemberResponse>>>
+    update(@PathVariable UUID id, @RequestBody @Validated MemberUpdateRequest memberUpdateRequest, Errors errors) {
+
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
         String email = memberUpdateRequest.getEmail();
@@ -96,7 +96,7 @@ public class MemberController extends BaseController {
         this.memberService.update(id, email, name, description);
 
         Member updatedMember = this.memberService.findById(id);
-        
+
         return ResponseEntity.ok(
             new ResponseBody<>(
                 new ObjectEntityModel<>(
@@ -104,13 +104,13 @@ public class MemberController extends BaseController {
     }
 
     @PatchMapping(value = "/{id}/status")
-    public ResponseEntity<ResponseBody<ObjectEntityModel<MemberResponse>>> 
-            updateStatus(@PathVariable UUID id, @RequestBody @Validated MemberStatusUpdateRequest memberStatusUpdateRequest, Errors errors) {
-        
+    public ResponseEntity<ResponseBody<ObjectEntityModel<MemberResponse>>>
+    updateStatus(@PathVariable UUID id, @RequestBody @Validated MemberStatusUpdateRequest memberStatusUpdateRequest, Errors errors) {
+
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
         MemberStatus memberStatus = memberStatusUpdateRequest.getMemberStatus();
-        
+
         this.memberService.updateStatus(id, memberStatus);
 
         Member updatedMember = this.memberService.findById(id);
@@ -122,9 +122,9 @@ public class MemberController extends BaseController {
     }
 
     @PatchMapping(value = "/{email}/password")
-    public ResponseEntity<ResponseBody<ObjectEntityModel<MemberResponse>>> 
-            updatePassword(@PathVariable String email, @RequestBody @Validated MemberPasswordUpdateRequest memberPasswordUpdateRequest, Errors errors) {
-        
+    public ResponseEntity<ResponseBody<ObjectEntityModel<MemberResponse>>>
+    updatePassword(@PathVariable String email, @RequestBody @Validated MemberPasswordUpdateRequest memberPasswordUpdateRequest, Errors errors) {
+
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
         String currentPassword = memberPasswordUpdateRequest.getCurrentPassword();

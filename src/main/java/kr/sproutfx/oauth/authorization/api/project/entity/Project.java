@@ -16,9 +16,17 @@ import java.util.List;
 import java.util.UUID;
 
 
-@Getter @Setter @Builder @AllArgsConstructor @NoArgsConstructor(access = AccessLevel.PROTECTED) @EqualsAndHashCode(of = "id", callSuper = false)
-@Entity @Table(name = "projects")
-@DynamicInsert @DynamicUpdate @Audited
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode(of = "id", callSuper = false)
+@Entity
+@Table(name = "projects")
+@DynamicInsert
+@DynamicUpdate
+@Audited
 @SQLDelete(sql = "UPDATE projects SET deleted = true WHERE id = ?")
 @Where(clause = "deleted = false")
 public class Project extends JpaBaseEntity implements Serializable {

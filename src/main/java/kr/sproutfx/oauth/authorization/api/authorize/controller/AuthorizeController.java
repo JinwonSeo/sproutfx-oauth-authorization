@@ -44,7 +44,7 @@ public class AuthorizeController extends BaseController {
         Client authorizedClient = this.clientService.findByCode(clientCode);
 
         this.authorizeService.validateClientStatus(authorizedClient);
-       
+
         String encryptedClientSecret = this.authorizeService.encryptClientSecret(authorizedClient.getSecret());
 
         return new Response<>(GetAuthorizeResponse.builder()
@@ -97,9 +97,9 @@ public class AuthorizeController extends BaseController {
     @PostMapping("/refresh")
     public Response<PostRefreshResponse> postRefresh(@RequestBody PostRefreshRequest postRefreshRequest, Errors errors) {
         if (errors.hasErrors()) throw new InvalidArgumentException();
-        
+
         String encryptedClientSecret = postRefreshRequest.getEncryptedClientSecret();
-        
+
         String decryptedClientSecret = this.authorizeService.decryptClientSecret(encryptedClientSecret);
         Client authorizedClient = this.clientService.findBySecret(decryptedClientSecret);
 
@@ -148,7 +148,7 @@ public class AuthorizeController extends BaseController {
         UUID id = this.memberService.updatePassword(email, currentPassword, newPassword);
 
         return new Response<>(new MemberResponse(this.memberService.findById(id)));
-    } 
+    }
 
     @Builder
     @Data

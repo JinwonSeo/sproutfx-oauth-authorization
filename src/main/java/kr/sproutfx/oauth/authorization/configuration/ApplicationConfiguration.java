@@ -15,8 +15,8 @@ import java.text.SimpleDateFormat;
 @Configuration
 public class ApplicationConfiguration {
     @Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean

@@ -8,5 +8,5 @@ public class MissingAuthenticationException extends BaseException {
     public MissingAuthenticationException() {
         super("missing_authentication", "Missing authentication", HttpStatus.BAD_REQUEST);
     }
-    
+
 }

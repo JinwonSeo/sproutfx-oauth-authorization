@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public class TokenCreationFailedException extends BaseException {
 
-    public TokenCreationFailedException() { 
+    public TokenCreationFailedException() {
         super("token_creation_failed", "Token creation failed", HttpStatus.FOUND);
     }
 }

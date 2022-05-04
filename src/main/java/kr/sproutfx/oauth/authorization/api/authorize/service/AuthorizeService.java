@@ -49,18 +49,18 @@ public class AuthorizeService {
     }
 
     public String extractSubject(String secret, String audience, String token) {
-        String subject  = this.jwtProvider.extractSubject(secret, audience, token);
+        String subject = this.jwtProvider.extractSubject(secret, audience, token);
 
         if (StringUtils.isBlank(token)) {
             throw new ExtractSubjectFailedException();
         }
 
-        return subject; 
+        return subject;
     }
 
     public Long extractTokenExpiresInSeconds(String secret, String audience, String token) {
         Long expiresInSeconds = this.jwtProvider.extractExpiresInSeconds(secret, audience, token);
-        
+
         if (expiresInSeconds.equals(-1L)) {
             throw new ExtractExpiresInSecondsFailedException();
         }
@@ -88,7 +88,7 @@ public class AuthorizeService {
         if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new UnauthorizedException();
         } else if (member.getPasswordExpired().isBefore(LocalDateTime.now())) {
-            throw new PasswordExpiredException();   
+            throw new PasswordExpiredException();
         }
     }
 

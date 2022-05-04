@@ -4,7 +4,9 @@ import kr.sproutfx.oauth.authorization.api.client.entity.Client;
 import org.springframework.data.jpa.domain.Specification;
 
 public class ClientSpecification {
-    private ClientSpecification() { throw new IllegalStateException();}
+    private ClientSpecification() {
+        throw new IllegalStateException();
+    }
 
     public static Specification<Client> equalCode(String code) {
         return (Specification<Client>) ((root, query, builder) -> builder.equal(root.get("code"), code));

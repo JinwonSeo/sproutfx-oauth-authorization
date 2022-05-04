@@ -61,9 +61,9 @@ public class RestControllerAspect {
                 return false;
             }
         }
-    
+
         public String toJsonString() throws JsonProcessingException {
-            return this.objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(this); 
+            return this.objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
         }
     }
 

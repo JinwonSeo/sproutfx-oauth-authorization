@@ -19,15 +19,15 @@ public class CryptoUtils {
     public CryptoUtils(CryptoProperties cryptoProperties) {
         this.cryptoProperties = cryptoProperties;
     }
-    
+
     public String encrypt(String plainText) {
         try {
             String keyStoreLocation = this.cryptoProperties.getLocation().replace("classpath:/", StringUtils.EMPTY);
             ClassPathResource classPathResource = new ClassPathResource(keyStoreLocation);
-            
+
             char[] keyPassword = this.cryptoProperties.getPassword().toCharArray();
             String alias = this.cryptoProperties.getAlias();
-            
+
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(classPathResource.getInputStream(), keyPassword);
 
@@ -52,7 +52,7 @@ public class CryptoUtils {
             keyStore.load(classPathResource.getInputStream(), keyPassword);
 
             Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWITHSHA-256ANDMGF1PADDING");
-            
+
             Key rsakey = keyStore.getKey(alias, keyPassword);
 
             cipher.init(Cipher.DECRYPT_MODE, rsakey);

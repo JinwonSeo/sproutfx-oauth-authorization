@@ -8,5 +8,5 @@ public class ExtractSubjectFailedException extends BaseException {
     public ExtractSubjectFailedException() {
         super("extract_failed", "Extract subject failed.", HttpStatus.UNAUTHORIZED);
     }
-    
+
 }

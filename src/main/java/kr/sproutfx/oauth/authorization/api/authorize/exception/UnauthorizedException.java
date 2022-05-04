@@ -8,5 +8,5 @@ public class UnauthorizedException extends BaseException {
     public UnauthorizedException() {
         super("unauthorized", "Incorrect authentication", HttpStatus.UNAUTHORIZED);
     }
-    
+
 }

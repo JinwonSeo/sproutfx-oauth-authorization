@@ -12,7 +12,7 @@ public class BaseEntity {
     private UUID createdBy;
 
     private LocalDateTime lastModifiedOn;
-    
+
     private UUID lastModifiedBy;
 
     public boolean isDeleted() {

@@ -15,13 +15,15 @@ public class BaseController {
     private static final String SELF_LINK_REL_NAME = "self";
     private static final String UPDATE_LINK_REL_NAME = "update";
     private static final String DELETE_LINK_REL_NAME = "delete";
-    
-    protected Links getSingleItemLinks (Class<?> controller, UUID id, Link... links) {
+
+    protected Links getSingleItemLinks(Class<?> controller, UUID id, Link... links) {
         ArrayList<Link> tempLinks = new ArrayList<>();
 
         if (!Links.of(links).hasLink(SELF_LINK_REL_NAME)) tempLinks.add(linkTo(controller).slash(id).withSelfRel());
-        if (!Links.of(links).hasLink(UPDATE_LINK_REL_NAME)) tempLinks.add(linkTo(controller).slash(id).withRel(UPDATE_LINK_REL_NAME));
-        if (!Links.of(links).hasLink(DELETE_LINK_REL_NAME)) tempLinks.add(linkTo(controller).slash(id).withRel(DELETE_LINK_REL_NAME));
+        if (!Links.of(links).hasLink(UPDATE_LINK_REL_NAME))
+            tempLinks.add(linkTo(controller).slash(id).withRel(UPDATE_LINK_REL_NAME));
+        if (!Links.of(links).hasLink(DELETE_LINK_REL_NAME))
+            tempLinks.add(linkTo(controller).slash(id).withRel(DELETE_LINK_REL_NAME));
 
         for (Link link : links) {
             tempLinks.add(link);

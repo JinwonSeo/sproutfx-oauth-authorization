@@ -18,7 +18,7 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class ClientService {
     private final ClientRepository clientRepository;
-    
+
     public ClientService(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
     }
@@ -58,7 +58,7 @@ public class ClientService {
     @Transactional
     public void update(UUID id, String name, Long accessTokenValidityInSeconds, String description) {
         Client persistenceClient = this.clientRepository.findById(id).orElseThrow(ClientNotFoundException::new);
-        
+
         persistenceClient.setName(name);
         persistenceClient.setAccessTokenValidityInSeconds(accessTokenValidityInSeconds);
         persistenceClient.setDescription(description);

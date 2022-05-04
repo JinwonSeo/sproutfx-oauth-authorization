@@ -8,5 +8,5 @@ public class ValidateFailException extends BaseException {
     public ValidateFailException() {
         super("validate_failed", "Validate failed.", HttpStatus.UNAUTHORIZED);
     }
-    
+
 }

@@ -30,7 +30,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class ClientController extends BaseController {
 
     private final ClientService clientService;
-        
+
     public ClientController(ClientService clientService) {
         this.clientService = clientService;
     }
@@ -44,21 +44,19 @@ public class ClientController extends BaseController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseBody<List<ObjectEntityModel<ClientResponse>>>>
-            findAll() {
+    public ResponseEntity<ResponseBody<List<ObjectEntityModel<ClientResponse>>>> findAll() {
 
         return ResponseEntity.ok(
-            new ResponseBody<>(this.clientService.findAll().stream().map(client -> 
+            new ResponseBody<>(this.clientService.findAll().stream().map(client ->
                 new ObjectEntityModel<>(
                     new ClientResponse(client), links(client))).collect(Collectors.toList())));
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<ResponseBody<ObjectEntityModel<ClientResponse>>>
-            findById(@PathVariable("id") UUID id) {
+    public ResponseEntity<ResponseBody<ObjectEntityModel<ClientResponse>>> findById(@PathVariable("id") UUID id) {
 
         Client client = this.clientService.findById(id);
-        
+
         return ResponseEntity.ok(
             new ResponseBody<>(
                 new ObjectEntityModel<>(
@@ -66,11 +64,10 @@ public class ClientController extends BaseController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseBody<ObjectEntityModel<ClientResponse>>>
-            create(@RequestBody @Validated ClientCreateRequest clientCreateRequest, Errors errors) {
+    public ResponseEntity<ResponseBody<ObjectEntityModel<ClientResponse>>> create(@RequestBody @Validated ClientCreateRequest clientCreateRequest, Errors errors) {
 
         if (errors.hasErrors()) throw new InvalidArgumentException();
-        
+
         UUID id = this.clientService.create(clientCreateRequest.getName(), clientCreateRequest.getDescription());
 
         Client updatedClient = this.clientService.findById(id);
@@ -81,12 +78,11 @@ public class ClientController extends BaseController {
                     new ClientResponse(updatedClient), links(updatedClient))));
     }
 
-    @PutMapping(value="/{id}")
-    public ResponseEntity<ResponseBody<ObjectEntityModel<ClientResponse>>> 
-            update(@PathVariable UUID id, @RequestBody @Validated ClientUpdateRequest clientUpdateRequest, Errors errors) {
-                
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<ResponseBody<ObjectEntityModel<ClientResponse>>> update(@PathVariable UUID id, @RequestBody @Validated ClientUpdateRequest clientUpdateRequest, Errors errors) {
+
         if (errors.hasErrors()) throw new InvalidArgumentException();
-        
+
         String name = clientUpdateRequest.getName();
         Long accessTokenValidityInSeconds = clientUpdateRequest.getAccessTokenValidityInSeconds();
 
@@ -103,8 +99,7 @@ public class ClientController extends BaseController {
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<ResponseBody<ObjectEntityModel<ClientResponse>>>
-            updateStatus(@PathVariable UUID id, @RequestBody ClientStatusUpdateRequest clientStatusUpdateRequest) {
+    public ResponseEntity<ResponseBody<ObjectEntityModel<ClientResponse>>> updateStatus(@PathVariable UUID id, @RequestBody ClientStatusUpdateRequest clientStatusUpdateRequest) {
 
         this.clientService.updateStatus(id, clientStatusUpdateRequest.getClientStatus());
 
@@ -150,7 +145,8 @@ public class ClientController extends BaseController {
     static class ClientUpdateRequest {
         @NotBlank
         private String name;
-        @Min(3600) @Max(7200)
+        @Min(3600)
+        @Max(7200)
         private Long accessTokenValidityInSeconds;
         private String description;
     }
