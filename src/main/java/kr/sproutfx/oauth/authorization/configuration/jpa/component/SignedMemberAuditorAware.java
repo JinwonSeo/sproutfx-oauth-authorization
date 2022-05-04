@@ -16,16 +16,16 @@ public class SignedMemberAuditorAware implements AuditorAware<UUID> {
     public Optional<UUID> getCurrentAuditor() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (null == authentication 
-                || !authentication.isAuthenticated() 
-                || null == authentication.getPrincipal()
-                || authentication.getPrincipal() instanceof String
-                || "anonymousUser".equals(authentication.getPrincipal())) {
+        if (null == authentication
+            || !authentication.isAuthenticated()
+            || null == authentication.getPrincipal()
+            || authentication.getPrincipal() instanceof String
+            || "anonymousUser".equals(authentication.getPrincipal())) {
 
             return Optional.empty();
         }
 
         return Optional.of(UUID.fromString(((User) authentication.getPrincipal()).getUsername()));
     }
-    
+
 }

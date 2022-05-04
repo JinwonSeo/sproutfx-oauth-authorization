@@ -5,12 +5,12 @@ public class BaseResponseBody<T> {
     private boolean succeeded;
     private Object result;
     private Error error;
-        
+
     public BaseResponseBody(T object) {
         if (object instanceof Exception) {
             this.setSucceeded(false);
             this.setError(object);
-        } else  {
+        } else {
             this.setSucceeded(true);
             this.setResult(object);
         }
@@ -43,7 +43,7 @@ public class BaseResponseBody<T> {
     class Error {
         private String value;
         private String reason;
-        
+
         public Error(String value, String reason) {
             this.setValue(value);
             this.setReason(reason);

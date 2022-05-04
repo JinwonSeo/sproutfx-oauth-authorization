@@ -14,14 +14,22 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.UUID;
 
-@Builder @Getter @Setter @NoArgsConstructor @AllArgsConstructor @EqualsAndHashCode(of = "id", callSuper = false)
-@Entity @Table(name = "clients")
-@DynamicInsert @DynamicUpdate @Audited
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(of = "id", callSuper = false)
+@Entity
+@Table(name = "clients")
+@DynamicInsert
+@DynamicUpdate
+@Audited
 @SQLDelete(sql = "UPDATE clients SET deleted = true WHERE id = ?")
 @Where(clause = "deleted = false")
 public class Client extends JpaBaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
@@ -43,7 +51,7 @@ public class Client extends JpaBaseEntity implements Serializable {
 
     @Column(nullable = false, columnDefinition = "integer")
     private Long accessTokenValidityInSeconds;
-        
+
     @Column(nullable = false, columnDefinition = "varchar(255)")
     @Enumerated(EnumType.STRING)
     private ClientStatus status;

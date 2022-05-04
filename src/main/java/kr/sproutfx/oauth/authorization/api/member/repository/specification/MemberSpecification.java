@@ -4,7 +4,7 @@ import kr.sproutfx.oauth.authorization.api.member.entity.Member;
 import org.springframework.data.jpa.domain.Specification;
 
 public class MemberSpecification {
-    private MemberSpecification() { 
+    private MemberSpecification() {
         throw new IllegalStateException();
     }
 

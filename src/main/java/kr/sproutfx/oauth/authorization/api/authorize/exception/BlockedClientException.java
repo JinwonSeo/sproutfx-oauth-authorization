@@ -8,5 +8,5 @@ public class BlockedClientException extends BaseException {
     public BlockedClientException() {
         super("blocked_client", "This client's status is 'blocked'", HttpStatus.UNAUTHORIZED);
     }
-    
+
 }

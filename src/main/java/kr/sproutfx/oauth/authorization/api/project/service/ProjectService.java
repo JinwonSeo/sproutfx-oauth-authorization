@@ -37,13 +37,13 @@ public class ProjectService {
             .name(name)
             .description(description)
             .status(ProjectStatus.PENDING_APPROVAL)
-            .build()); 
+            .build());
 
         return persistenceProject.getId();
     }
 
     @Transactional
-    public void update(UUID id ,String name, String description) {
+    public void update(UUID id, String name, String description) {
         Project persistenceProject = this.projectRepository.findById(id).orElseThrow(ProjectNotFoundException::new);
 
         persistenceProject.setName(name);

@@ -15,13 +15,13 @@ import java.util.TimeZone;
 @SpringBootApplication
 public class AuthorizationApplication {
 
-	@PostConstruct
-	protected void initialize() {
-		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
-	}
+    @PostConstruct
+    protected void initialize() {
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
+    }
 
-	public static void main(String[] args) {
-		SpringApplication.run(AuthorizationApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(AuthorizationApplication.class, args);
+    }
 
 }

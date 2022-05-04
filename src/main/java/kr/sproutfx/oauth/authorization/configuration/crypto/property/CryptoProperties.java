@@ -22,7 +22,7 @@ public class CryptoProperties {
     public void setPassword(String password) {
         this.password = password;
     }
-    
+
     public String getSecret() {
         return secret;
     }
@@ -38,7 +38,7 @@ public class CryptoProperties {
     public void setAlias(String alias) {
         this.alias = alias;
     }
-    
+
     public void setLocation(String location) {
         this.location = location;
     }

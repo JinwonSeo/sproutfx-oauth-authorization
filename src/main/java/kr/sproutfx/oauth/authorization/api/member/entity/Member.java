@@ -13,9 +13,17 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Builder @Getter @Setter @NoArgsConstructor @AllArgsConstructor @EqualsAndHashCode(of = "id", callSuper = false)
-@Entity @Table(name = "members")
-@DynamicInsert @DynamicUpdate @Audited
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(of = "id", callSuper = false)
+@Entity
+@Table(name = "members")
+@DynamicInsert
+@DynamicUpdate
+@Audited
 @SQLDelete(sql = "UPDATE members SET deleted = true WHERE id = ?")
 @Where(clause = "deleted = false")
 public class Member extends JpaBaseEntity implements Serializable {

@@ -19,7 +19,7 @@ import java.util.UUID;
 public class MemberService {
     MemberRepository memberRepository;
     PasswordEncoder passwordEncoder;
-    
+
     public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
@@ -39,15 +39,8 @@ public class MemberService {
 
     @Transactional
     public UUID create(String email, String name, String password, String description) {
-        Member persistenceMember = this.memberRepository.save(
-            Member.builder()
-                .email(email)
-                .name(name)
-                .password(this.passwordEncoder.encode(password)) 
-                .passwordExpired(LocalDateTime.now().plusDays(90)) // To-do: password 90일 하드코딩 password 정책관리 기능 추가 후 변수화
-                .status(MemberStatus.PENDING_APPROVAL)
-                .description(description)
-                .build());
+        Member persistenceMember = this.memberRepository.save(Member.builder().email(email).name(name).password(this.passwordEncoder.encode(password)).passwordExpired(LocalDateTime.now().plusDays(90)) // To-do: password 90일 하드코딩 password 정책관리 기능 추가 후 변수화
+            .status(MemberStatus.PENDING_APPROVAL).description(description).build());
 
         return persistenceMember.getId();
     }
