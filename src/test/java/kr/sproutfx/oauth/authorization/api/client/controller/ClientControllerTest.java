@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -77,8 +76,7 @@ public class ClientControllerTest {
         // when
         ResultActions resultAction = this.mockMvc.perform(get("/clients")
             .contentType(MediaType.APPLICATION_JSON)
-            .characterEncoding(StandardCharsets.UTF_8)
-            .accept(MediaTypes.HAL_JSON));
+            .characterEncoding(StandardCharsets.UTF_8));
 
         // then
         resultAction.andDo(print())
@@ -95,8 +93,7 @@ public class ClientControllerTest {
         // when
         ResultActions resultActions = this.mockMvc.perform(get(String.format("/clients/%s", mockupClient1.getId()))
             .contentType(MediaType.APPLICATION_JSON)
-            .characterEncoding(StandardCharsets.UTF_8)
-            .accept(MediaTypes.HAL_JSON));
+            .characterEncoding(StandardCharsets.UTF_8));
 
         // then
         resultActions.andDo(print())
@@ -122,8 +119,7 @@ public class ClientControllerTest {
         ResultActions resultActions = this.mockMvc.perform(post("/clients")
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
-            .content(objectMapper.writeValueAsString(clientCreateRequest))
-            .accept(MediaTypes.HAL_JSON));
+            .content(objectMapper.writeValueAsString(clientCreateRequest)));
 
         // then
         resultActions.andDo(print())
@@ -154,8 +150,7 @@ public class ClientControllerTest {
         ResultActions resultActions = this.mockMvc.perform(put(String.format("/clients/%s", mockupClient1.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
-            .content(objectMapper.writeValueAsString(clientUpdateRequest))
-            .accept(MediaTypes.HAL_JSON));
+            .content(objectMapper.writeValueAsString(clientUpdateRequest)));
 
         // then
         resultActions.andDo(print())
@@ -182,8 +177,7 @@ public class ClientControllerTest {
         ResultActions resultActions = this.mockMvc.perform(patch(String.format("/clients/%s/status", mockupClient1.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
-            .content(objectMapper.writeValueAsString(clientStatusUpdateRequest))
-            .accept(MediaTypes.HAL_JSON));
+            .content(objectMapper.writeValueAsString(clientStatusUpdateRequest)));
 
         // then
         resultActions.andDo(print())
@@ -200,8 +194,7 @@ public class ClientControllerTest {
         // when
         ResultActions resultActions = this.mockMvc.perform(delete(String.format("/clients/%s", mockupClient1.getId()))
             .contentType(MediaType.APPLICATION_JSON)
-            .characterEncoding(StandardCharsets.UTF_8)
-            .accept(MediaTypes.HAL_JSON));
+            .characterEncoding(StandardCharsets.UTF_8));
 
         // then
         resultActions.andDo(print())

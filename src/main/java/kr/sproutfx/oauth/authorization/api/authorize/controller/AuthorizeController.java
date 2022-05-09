@@ -48,7 +48,7 @@ public class AuthorizeController extends BaseController {
 
         String encryptedClientSecret = this.authorizeService.encryptClientSecret(authorizedClient.getSecret());
 
-        return ResponseEntity.ok(StructuredBody.contents(
+        return ResponseEntity.ok().body(StructuredBody.content(
             GetAuthorizeResponse.builder()
                 .encryptedClientSecret(encryptedClientSecret)
                 .authorizedClient(new AuthorizedClient(authorizedClient))
@@ -86,7 +86,7 @@ public class AuthorizeController extends BaseController {
         String refreshToken = this.authorizeService.createToken(subject, audience, refreshTokenSecret, refreshTokenValidityInSeconds);
         Long refreshTokenExpiresInSeconds = this.authorizeService.extractTokenExpiresInSeconds(refreshTokenSecret, audience, refreshToken);
 
-        return ResponseEntity.ok(StructuredBody.contents(
+        return ResponseEntity.ok().body(StructuredBody.content(
             PostTokenResponse.builder()
                 .tokenType(this.authorizeService.getTokenType())
                 .accessToken(accessToken)
@@ -130,7 +130,7 @@ public class AuthorizeController extends BaseController {
         String accessToken = this.authorizeService.createToken(subject, audience, accessTokenSecret, accessTokenValidityInSeconds);
         Long accessTokenExpiresInSeconds = this.authorizeService.extractTokenExpiresInSeconds(accessTokenSecret, audience, accessToken);
 
-        return ResponseEntity.ok(StructuredBody.contents(
+        return ResponseEntity.ok(StructuredBody.content(
             PostRefreshResponse.builder()
                 .tokenType(this.authorizeService.getTokenType())
                 .accessToken(accessToken)
@@ -151,7 +151,7 @@ public class AuthorizeController extends BaseController {
 
         UUID id = this.memberService.updatePassword(email, currentPassword, newPassword);
 
-        return ResponseEntity.ok(StructuredBody.contents(
+        return ResponseEntity.ok().body(StructuredBody.content(
             new MemberResponse(this.memberService.findById(id))));
     }
 

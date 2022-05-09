@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -127,8 +126,7 @@ public class ProjectControllerTest {
         // when
         ResultActions resultActions = this.mockMvc.perform(get("/projects")
             .contentType(MediaType.APPLICATION_JSON)
-            .characterEncoding(StandardCharsets.UTF_8)
-            .accept(MediaTypes.HAL_JSON));
+            .characterEncoding(StandardCharsets.UTF_8));
 
         // then
         resultActions.andDo(print())
@@ -147,8 +145,7 @@ public class ProjectControllerTest {
         // when
         ResultActions resultActions = this.mockMvc.perform(get("/projects/clients")
             .contentType(MediaType.APPLICATION_JSON)
-            .characterEncoding(StandardCharsets.UTF_8)
-            .accept(MediaTypes.HAL_JSON));
+            .characterEncoding(StandardCharsets.UTF_8));
 
         // then
         resultActions.andDo(print())
@@ -175,8 +172,7 @@ public class ProjectControllerTest {
         ResultActions resultActions = this.mockMvc.perform(post("/projects")
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
-            .content(objectMapper.writeValueAsString(projectCreateRequest))
-            .accept(MediaTypes.HAL_JSON));
+            .content(objectMapper.writeValueAsString(projectCreateRequest)));
 
         // then
         resultActions.andDo(print())
@@ -194,8 +190,7 @@ public class ProjectControllerTest {
         // when
         ResultActions resultActions = this.mockMvc.perform(get(String.format("/projects/%s", mockupProject.getId()))
             .contentType(MediaType.APPLICATION_JSON)
-            .characterEncoding(StandardCharsets.UTF_8)
-            .accept(MediaTypes.HAL_JSON));
+            .characterEncoding(StandardCharsets.UTF_8));
 
         // then
         resultActions.andDo(print())
@@ -221,8 +216,7 @@ public class ProjectControllerTest {
         ResultActions resultActions = this.mockMvc.perform(put(String.format("/projects/%s", mockupProject.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
-            .content(objectMapper.writeValueAsString(request))
-            .accept(MediaTypes.HAL_JSON));
+            .content(objectMapper.writeValueAsString(request)));
 
         // then
         resultActions.andDo(print())
@@ -247,8 +241,7 @@ public class ProjectControllerTest {
         ResultActions resultActions = this.mockMvc.perform(patch(String.format("/projects/%s/status", mockupProject.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
-            .content(objectMapper.writeValueAsString(request))
-            .accept(MediaTypes.HAL_JSON));
+            .content(objectMapper.writeValueAsString(request)));
 
         // then
         resultActions.andDo(print())
@@ -262,8 +255,7 @@ public class ProjectControllerTest {
         // when
         ResultActions resultActions = this.mockMvc.perform(delete(String.format("/projects/%s", mockupProject.getId()))
             .contentType(MediaType.APPLICATION_JSON)
-            .characterEncoding(StandardCharsets.UTF_8)
-            .accept(MediaTypes.HAL_JSON));
+            .characterEncoding(StandardCharsets.UTF_8));
 
         // then
         resultActions.andDo(print())

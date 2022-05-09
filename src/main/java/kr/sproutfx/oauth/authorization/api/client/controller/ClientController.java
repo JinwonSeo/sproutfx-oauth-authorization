@@ -7,8 +7,6 @@ import kr.sproutfx.oauth.authorization.common.base.BaseController;
 import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException;
 import lombok.Data;
 import lombok.Getter;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Links;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
@@ -17,12 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static java.util.stream.Collectors.toList;
 
 @RestController
 @RequestMapping("/clients")
@@ -35,33 +32,21 @@ public class ClientController extends BaseController {
         this.clientService = clientService;
     }
 
-    private Links links(Client client) {
-        Link[] additionalLinks = {
-            linkTo(methodOn(this.getClass()).updateStatus(client.getId(), new ClientStatusUpdateRequest())).withRel("update-status"),
-        };
-
-        return Links.of(getSingleItemLinks(this.getClass(), client.getId(), additionalLinks));
-    }
-
     @GetMapping
-    public ResponseEntity<StructuredBody<List<ObjectEntityModel<ClientResponse>>>> findAll() {
-
-        return ResponseEntity.ok(StructuredBody.contents(
-            this.clientService.findAll().stream().map(client ->
-                new ObjectEntityModel<>(new ClientResponse(client), links(client))).collect(Collectors.toList())));
+    public ResponseEntity<StructuredBody<List<ClientResponse>>> findAll() {
+        return ResponseEntity.ok().body(StructuredBody.content(
+            this.clientService.findAll().stream().map(ClientResponse::new).collect(toList())));
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<StructuredBody<ObjectEntityModel<ClientResponse>>> findById(@PathVariable("id") UUID id) {
+    public ResponseEntity<StructuredBody<ClientResponse>> findById(@PathVariable("id") UUID id) {
+        Client selectedClient = this.clientService.findById(id);
 
-        Client client = this.clientService.findById(id);
-
-        return ResponseEntity.ok(StructuredBody.contents(
-            new ObjectEntityModel<>(new ClientResponse(client), links(client))));
+        return ResponseEntity.ok().body(StructuredBody.content(new ClientResponse(selectedClient)));
     }
 
     @PostMapping
-    public ResponseEntity<StructuredBody<ObjectEntityModel<ClientResponse>>> create(@RequestBody @Validated ClientCreateRequest clientCreateRequest, Errors errors) {
+    public ResponseEntity<StructuredBody<ClientResponse>> create(@RequestBody @Validated ClientCreateRequest clientCreateRequest, Errors errors) {
 
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
@@ -69,12 +54,11 @@ public class ClientController extends BaseController {
 
         Client updatedClient = this.clientService.findById(id);
 
-        return ResponseEntity.created(linkTo(this.getClass()).slash(id).toUri()).body(StructuredBody.contents(
-            new ObjectEntityModel<>(new ClientResponse(updatedClient), links(updatedClient))));
+        return ResponseEntity.created(URI.create(String.format("/clients/%s", id))).body(StructuredBody.content(new ClientResponse(updatedClient)));
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<StructuredBody<ObjectEntityModel<ClientResponse>>> update(@PathVariable UUID id, @RequestBody @Validated ClientUpdateRequest clientUpdateRequest, Errors errors) {
+    public ResponseEntity<StructuredBody<ClientResponse>> update(@PathVariable UUID id, @RequestBody @Validated ClientUpdateRequest clientUpdateRequest, Errors errors) {
 
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
@@ -87,19 +71,17 @@ public class ClientController extends BaseController {
 
         Client updatedClient = this.clientService.findById(id);
 
-        return ResponseEntity.ok(StructuredBody.contents(
-            new ObjectEntityModel<>(new ClientResponse(updatedClient), links(updatedClient))));
+        return ResponseEntity.ok().body(StructuredBody.content(new ClientResponse(updatedClient)));
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<StructuredBody<ObjectEntityModel<ClientResponse>>> updateStatus(@PathVariable UUID id, @RequestBody ClientStatusUpdateRequest clientStatusUpdateRequest) {
+    public ResponseEntity<StructuredBody<ClientResponse>> updateStatus(@PathVariable UUID id, @RequestBody ClientStatusUpdateRequest clientStatusUpdateRequest) {
 
         this.clientService.updateStatus(id, clientStatusUpdateRequest.getClientStatus());
 
         Client updatedClient = this.clientService.findById(id);
 
-        return ResponseEntity.ok(StructuredBody.contents(
-            new ObjectEntityModel<>(new ClientResponse(updatedClient), links(updatedClient))));
+        return ResponseEntity.ok().body(StructuredBody.content(new ClientResponse(updatedClient)));
     }
 
     @DeleteMapping(value = "/{id}")

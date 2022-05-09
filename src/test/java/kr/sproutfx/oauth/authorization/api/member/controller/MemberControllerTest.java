@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
@@ -102,8 +101,7 @@ public class MemberControllerTest {
         ResultActions resultActions = this.mockMvc.perform(post("/members")
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
-            .content(objectMapper.writeValueAsString(request))
-            .accept(MediaTypes.HAL_JSON));
+            .content(objectMapper.writeValueAsString(request)));
 
         // then
         resultActions.andDo(print())
@@ -117,8 +115,7 @@ public class MemberControllerTest {
         // when
         ResultActions perform = this.mockMvc.perform(delete(String.format("/members/%s", mockupMember.getId()))
             .contentType(MediaType.APPLICATION_JSON)
-            .characterEncoding(StandardCharsets.UTF_8)
-            .accept(MediaTypes.HAL_JSON));
+            .characterEncoding(StandardCharsets.UTF_8));
         // then
         perform.andDo(print())
             .andExpect(status().isNoContent());
@@ -133,8 +130,7 @@ public class MemberControllerTest {
         // when
         ResultActions resultActions = this.mockMvc.perform(get("/members")
             .contentType(MediaType.APPLICATION_JSON)
-            .characterEncoding(StandardCharsets.UTF_8)
-            .accept(MediaTypes.HAL_JSON));
+            .characterEncoding(StandardCharsets.UTF_8));
 
         // then
         resultActions.andDo(print())
@@ -152,8 +148,7 @@ public class MemberControllerTest {
         // when
         ResultActions resultActions = this.mockMvc.perform(get(String.format("/members/%s", mockupMember.getId()))
             .contentType(MediaType.APPLICATION_JSON)
-            .characterEncoding(StandardCharsets.UTF_8)
-            .accept(MediaTypes.HAL_JSON));
+            .characterEncoding(StandardCharsets.UTF_8));
 
         // then
         resultActions.andDo(print())
@@ -181,8 +176,7 @@ public class MemberControllerTest {
         ResultActions resultActions = this.mockMvc.perform(put(String.format("/members/%s", mockupMember.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
-            .content(objectMapper.writeValueAsString(request))
-            .accept(MediaTypes.HAL_JSON));
+            .content(objectMapper.writeValueAsString(request)));
 
         // then
         resultActions.andDo(print())
@@ -204,8 +198,7 @@ public class MemberControllerTest {
         ResultActions resultActions = this.mockMvc.perform(patch(String.format("/members/%s/status", mockupMember.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
-            .content(objectMapper.writeValueAsString(request))
-            .accept(MediaTypes.HAL_JSON));
+            .content(objectMapper.writeValueAsString(request)));
 
         // then
         resultActions.andDo(print())
