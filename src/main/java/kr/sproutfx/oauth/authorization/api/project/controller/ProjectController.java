@@ -100,11 +100,11 @@ public class ProjectController extends BaseController {
 
     @Data
     static class ProjectWithClientsResponse {
-        private UUID id;
-        private String name;
-        private String status;
-        private String description;
-        private List<ClientResponse> clients;
+        private final UUID id;
+        private final String name;
+        private final String status;
+        private final String description;
+        private final List<ClientResponse> clients;
 
         public ProjectWithClientsResponse(Project project) {
             this.id = project.getId();
@@ -117,11 +117,13 @@ public class ProjectController extends BaseController {
 
     @Data
     static class ProjectResponse {
-        private String name;
-        private String status;
-        private String description;
+        private final UUID id;
+        private final String name;
+        private final String status;
+        private final String description;
 
         public ProjectResponse(Project project) {
+            this.id = project.getId();
             this.name = project.getName();
             this.status = project.getStatus().toString();
             this.description = project.getDescription();
@@ -139,12 +141,14 @@ public class ProjectController extends BaseController {
 
     @Data
     static class ClientResponse {
-        private String code;
-        private String name;
-        private String status;
-        private String description;
+        private final UUID id;
+        private final String code;
+        private final String name;
+        private final String status;
+        private final String description;
 
         public ClientResponse(Client client) {
+            this.id = client.getId();
             this.code = client.getCode();
             this.name = client.getName();
             this.status = client.getStatus().toString();

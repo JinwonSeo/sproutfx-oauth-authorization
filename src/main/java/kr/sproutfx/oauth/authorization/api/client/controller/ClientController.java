@@ -94,12 +94,14 @@ public class ClientController extends BaseController {
 
     @Getter
     static class ClientResponse {
+        private final UUID id;
         private final String code;
         private final String name;
         private final String status;
         private final String description;
 
         public ClientResponse(Client client) {
+            this.id = client.getId();
             this.code = client.getCode();
             this.name = client.getName();
             this.status = (client.getStatus() == null) ? null : client.getStatus().toString();
