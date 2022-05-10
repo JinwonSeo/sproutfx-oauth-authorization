@@ -16,7 +16,7 @@ import java.util.UUID;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public class JpaBaseEntity {
-    @Column(nullable = false, columnDefinition = "boolean default false")
+    @Column(nullable = false, columnDefinition = "TINYINT", length = 1)
     private boolean deleted = Boolean.FALSE;
 
     @CreatedDate
