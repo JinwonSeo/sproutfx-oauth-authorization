@@ -74,15 +74,15 @@ public class ClientControllerTest {
             .willReturn(Lists.newArrayList(mockupClients));
 
         // when
-        ResultActions resultAction = this.mockMvc.perform(get("/clients")
+        ResultActions perform = this.mockMvc.perform(get("/clients")
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8));
 
         // then
-        resultAction.andDo(print())
+        perform.andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result", Matchers.hasSize(2)));
+            .andExpect(jsonPath("content", Matchers.hasSize(2)));
     }
 
     @Test
@@ -91,15 +91,15 @@ public class ClientControllerTest {
         given(this.clientService.findById(mockupClient1.getId())).willReturn(mockupClient1);
 
         // when
-        ResultActions resultActions = this.mockMvc.perform(get(String.format("/clients/%s", mockupClient1.getId()))
+        ResultActions perform = this.mockMvc.perform(get(String.format("/clients/%s", mockupClient1.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8));
 
         // then
-        resultActions.andDo(print())
+        perform.andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result.code").exists());
+            .andExpect(jsonPath("content.code").exists());
     }
 
     @Test
@@ -116,19 +116,19 @@ public class ClientControllerTest {
             .willReturn(mockupClient1);
 
         // when
-        ResultActions resultActions = this.mockMvc.perform(post("/clients")
+        ResultActions perform = this.mockMvc.perform(post("/clients")
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
             .content(objectMapper.writeValueAsString(clientCreateRequest)));
 
         // then
-        resultActions.andDo(print())
+        perform.andDo(print())
             .andExpect(status().isCreated())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result.code").value(mockupClient1.getCode()))
-            .andExpect(jsonPath("result.name").value(mockupClient1.getName()))
-            .andExpect(jsonPath("result.status").value(mockupClient1.getStatus().toString()))
-            .andExpect(jsonPath("result.description").value(mockupClient1.getDescription()));
+            .andExpect(jsonPath("content.code").value(mockupClient1.getCode()))
+            .andExpect(jsonPath("content.name").value(mockupClient1.getName()))
+            .andExpect(jsonPath("content.status").value(mockupClient1.getStatus().toString()))
+            .andExpect(jsonPath("content.description").value(mockupClient1.getDescription()));
     }
 
     @Test
@@ -147,19 +147,19 @@ public class ClientControllerTest {
             .willReturn(mockupClient1);
 
         // when
-        ResultActions resultActions = this.mockMvc.perform(put(String.format("/clients/%s", mockupClient1.getId()))
+        ResultActions perform = this.mockMvc.perform(put(String.format("/clients/%s", mockupClient1.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
             .content(objectMapper.writeValueAsString(clientUpdateRequest)));
 
         // then
-        resultActions.andDo(print())
+        perform.andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result.code").value(mockupClient1.getCode()))
-            .andExpect(jsonPath("result.name").value(mockupClient1.getName()))
-            .andExpect(jsonPath("result.status").value(mockupClient1.getStatus().toString()))
-            .andExpect(jsonPath("result.description").value(mockupClient1.getDescription()));
+            .andExpect(jsonPath("content.code").value(mockupClient1.getCode()))
+            .andExpect(jsonPath("content.name").value(mockupClient1.getName()))
+            .andExpect(jsonPath("content.status").value(mockupClient1.getStatus().toString()))
+            .andExpect(jsonPath("content.description").value(mockupClient1.getDescription()));
     }
 
     @Test
@@ -174,19 +174,19 @@ public class ClientControllerTest {
             .willReturn(mockupClient1);
 
         // when
-        ResultActions resultActions = this.mockMvc.perform(patch(String.format("/clients/%s/status", mockupClient1.getId()))
+        ResultActions perform = this.mockMvc.perform(patch(String.format("/clients/%s/status", mockupClient1.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
             .content(objectMapper.writeValueAsString(clientStatusUpdateRequest)));
 
         // then
-        resultActions.andDo(print())
+        perform.andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result.code").value(mockupClient1.getCode()))
-            .andExpect(jsonPath("result.name").value(mockupClient1.getName()))
-            .andExpect(jsonPath("result.status").value(mockupClient1.getStatus().toString()))
-            .andExpect(jsonPath("result.description").value(mockupClient1.getDescription()));
+            .andExpect(jsonPath("content.code").value(mockupClient1.getCode()))
+            .andExpect(jsonPath("content.name").value(mockupClient1.getName()))
+            .andExpect(jsonPath("content.status").value(mockupClient1.getStatus().toString()))
+            .andExpect(jsonPath("content.description").value(mockupClient1.getDescription()));
     }
 
     @Test

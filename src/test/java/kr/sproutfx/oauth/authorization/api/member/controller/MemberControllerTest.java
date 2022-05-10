@@ -98,16 +98,16 @@ public class MemberControllerTest {
             .willReturn(mockupMember);
 
         // when
-        ResultActions resultActions = this.mockMvc.perform(post("/members")
+        ResultActions perform = this.mockMvc.perform(post("/members")
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
             .content(objectMapper.writeValueAsString(request)));
 
         // then
-        resultActions.andDo(print())
+        perform.andDo(print())
             .andExpect(status().isCreated())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result.name").value(mockupMember.getName()));
+            .andExpect(jsonPath("content.name").value(mockupMember.getName()));
     }
 
     @Test
@@ -128,15 +128,15 @@ public class MemberControllerTest {
             .willReturn(Lists.newArrayList(mockupMembers));
 
         // when
-        ResultActions resultActions = this.mockMvc.perform(get("/members")
+        ResultActions perform = this.mockMvc.perform(get("/members")
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8));
 
         // then
-        resultActions.andDo(print())
+        perform.andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result", Matchers.hasSize(2)));
+            .andExpect(jsonPath("content", Matchers.hasSize(2)));
     }
 
     @Test
@@ -146,15 +146,15 @@ public class MemberControllerTest {
             .willReturn(mockupMember);
 
         // when
-        ResultActions resultActions = this.mockMvc.perform(get(String.format("/members/%s", mockupMember.getId()))
+        ResultActions perform = this.mockMvc.perform(get(String.format("/members/%s", mockupMember.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8));
 
         // then
-        resultActions.andDo(print())
+        perform.andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result.name").value(mockupMember.getName()));
+            .andExpect(jsonPath("content.name").value(mockupMember.getName()));
     }
 
     @Test
@@ -173,16 +173,16 @@ public class MemberControllerTest {
             .willReturn(mockupMember);
 
         // when
-        ResultActions resultActions = this.mockMvc.perform(put(String.format("/members/%s", mockupMember.getId()))
+        ResultActions perform = this.mockMvc.perform(put(String.format("/members/%s", mockupMember.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
             .content(objectMapper.writeValueAsString(request)));
 
         // then
-        resultActions.andDo(print())
+        perform.andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result.name").value(mockupMember.getName()));
+            .andExpect(jsonPath("content.name").value(mockupMember.getName()));
     }
 
     @Test
@@ -195,15 +195,15 @@ public class MemberControllerTest {
             .willReturn(mockupMember);
 
         // when
-        ResultActions resultActions = this.mockMvc.perform(patch(String.format("/members/%s/status", mockupMember.getId()))
+        ResultActions perform = this.mockMvc.perform(patch(String.format("/members/%s/status", mockupMember.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
             .content(objectMapper.writeValueAsString(request)));
 
         // then
-        resultActions.andDo(print())
+        perform.andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result.name").value(mockupMember.getName()));
+            .andExpect(jsonPath("content.name").value(mockupMember.getName()));
     }
 }
