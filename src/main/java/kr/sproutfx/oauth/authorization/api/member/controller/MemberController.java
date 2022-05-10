@@ -1,6 +1,5 @@
 package kr.sproutfx.oauth.authorization.api.member.controller;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import kr.sproutfx.oauth.authorization.api.member.entity.Member;
 import kr.sproutfx.oauth.authorization.api.member.enumeration.MemberStatus;
 import kr.sproutfx.oauth.authorization.api.member.service.MemberService;
@@ -148,13 +147,12 @@ public class MemberController extends BaseController {
 
     @Data
     static class MemberResponse {
-        @JsonIgnore
-        private UUID id;
-        private String email;
-        private String name;
-        private LocalDateTime passwordExpired;
-        private String status;
-        private String description;
+        private final UUID id;
+        private final String email;
+        private final String name;
+        private final LocalDateTime passwordExpired;
+        private final String status;
+        private final String description;
 
         public MemberResponse(Member member) {
             this.id = member.getId();
