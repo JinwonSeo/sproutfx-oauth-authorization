@@ -50,56 +50,51 @@
 * Dependency
 
   ```xml
-  (생략)
-
-  <!-- Custom logging(using ELK) -->
-  <dependency>
-    <groupId>kr.sproutfx.common</groupId>
-    <artifactId>sproutfx-common-logging-spring-boot-stater</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-  </dependency>
-  <!-- Security -->
-  <dependency>
-    <groupId>kr.sproutfx.common</groupId>
-    <artifactId>sproutfx-common-security-spring-boot-starter</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-  </dependency>
-
-  (생략)
+  <projects>
+    <dependencies>
+        <!-- Custom logging(using ELK) -->
+        <dependency>
+            <groupId>kr.sproutfx.common</groupId>
+            <artifactId>sproutfx-common-logging-spring-boot-stater</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <!-- Security -->
+        <dependency>
+            <groupId>kr.sproutfx.common</groupId>
+            <artifactId>sproutfx-common-security-spring-boot-starter</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+  </projects>
   ```
 
 * gitlab package registry 설정
 
   ```xml
   <!-- {maven_home}/conf/settings.xml -->
+  <settings>
+    <servers>
+        <server>
+            <id>gitlab-maven</id>
+            <configuration>
+                <httpHeaders>
+                    <property>
+                        <name>Private-Token</name>
+                        <value>{PRIVATE_TOKEN}</value>
+                    </property>
+                </httpHeaders>
+            </configuration>
+        </server>
+    </servers>
   
-  (생략)
-
-  <servers>
-    <server>
-        <id>gitlab-maven</id>
-        <configuration>
-          <httpHeaders>
-            <property>
-              <name>Private-Token</name>
-              <value>{PRIVATE_TOKEN}</value>
-            </property>
-          </httpHeaders>
-        </configuration>
-      </server>
-  </servers>
-
-  (중략)
-
-  <mirrors>
-    <mirror>
-      <id>gitlab-maven</id>
-      <mirrorOf>snapshot, release</mirrorOf>
-      <url>https://gitlab.com/api/v4/groups/{GROUP_ID}/-/packages/maven/</url>
-    </mirror>
-  </mirrors>
-
-  (생략)
+    <mirrors>
+        <mirror>
+            <id>gitlab-maven</id>
+            <mirrorOf>snapshot, release</mirrorOf>
+            <url>https://gitlab.com/api/v4/groups/{GROUP_ID}/-/packages/maven/</url>
+        </mirror>
+    </mirrors>
+  </settings>
   ```
 
 * Disable maven ssl validation options

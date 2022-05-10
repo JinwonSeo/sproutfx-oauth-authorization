@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -125,17 +124,16 @@ public class ProjectControllerTest {
             .willReturn(Lists.newArrayList(mockupProjects));
 
         // when
-        ResultActions resultActions = this.mockMvc.perform(get("/projects")
+        ResultActions perform = this.mockMvc.perform(get("/projects")
             .contentType(MediaType.APPLICATION_JSON)
-            .characterEncoding(StandardCharsets.UTF_8)
-            .accept(MediaTypes.HAL_JSON));
+            .characterEncoding(StandardCharsets.UTF_8));
 
         // then
-        resultActions.andDo(print())
+        perform.andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result", Matchers.hasSize(2)))
-            .andExpect(jsonPath("result.$[0].client.name").doesNotExist());
+            .andExpect(jsonPath("content", Matchers.hasSize(2)))
+            .andExpect(jsonPath("content.$[0].client.name").doesNotExist());
     }
 
     @Test
@@ -145,17 +143,16 @@ public class ProjectControllerTest {
             .willReturn(Lists.newArrayList(mockupProjects));
 
         // when
-        ResultActions resultActions = this.mockMvc.perform(get("/projects/clients")
+        ResultActions perform = this.mockMvc.perform(get("/projects/clients")
             .contentType(MediaType.APPLICATION_JSON)
-            .characterEncoding(StandardCharsets.UTF_8)
-            .accept(MediaTypes.HAL_JSON));
+            .characterEncoding(StandardCharsets.UTF_8));
 
         // then
-        resultActions.andDo(print())
+        perform.andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result", Matchers.hasSize(2)))
-            .andExpect(jsonPath("result.$[0].client.name").doesNotExist());
+            .andExpect(jsonPath("content", Matchers.hasSize(2)))
+            .andExpect(jsonPath("content.$[0].client.name").doesNotExist());
     }
 
     @Test
@@ -172,17 +169,16 @@ public class ProjectControllerTest {
             .willReturn(mockupProject);
 
         // when
-        ResultActions resultActions = this.mockMvc.perform(post("/projects")
+        ResultActions perform = this.mockMvc.perform(post("/projects")
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
-            .content(objectMapper.writeValueAsString(projectCreateRequest))
-            .accept(MediaTypes.HAL_JSON));
+            .content(objectMapper.writeValueAsString(projectCreateRequest)));
 
         // then
-        resultActions.andDo(print())
+        perform.andDo(print())
             .andExpect(status().isCreated())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result.name").value(mockupProject.getName()));
+            .andExpect(jsonPath("content.name").value(mockupProject.getName()));
     }
 
     @Test
@@ -192,16 +188,15 @@ public class ProjectControllerTest {
             .willReturn(mockupProject);
 
         // when
-        ResultActions resultActions = this.mockMvc.perform(get(String.format("/projects/%s", mockupProject.getId()))
+        ResultActions perform = this.mockMvc.perform(get(String.format("/projects/%s", mockupProject.getId()))
             .contentType(MediaType.APPLICATION_JSON)
-            .characterEncoding(StandardCharsets.UTF_8)
-            .accept(MediaTypes.HAL_JSON));
+            .characterEncoding(StandardCharsets.UTF_8));
 
         // then
-        resultActions.andDo(print())
+        perform.andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result.name").value(mockupProject.getName()));
+            .andExpect(jsonPath("content.name").value(mockupProject.getName()));
     }
 
     @Test
@@ -218,18 +213,17 @@ public class ProjectControllerTest {
             .willReturn(mockupProject);
 
         // when
-        ResultActions resultActions = this.mockMvc.perform(put(String.format("/projects/%s", mockupProject.getId()))
+        ResultActions perform = this.mockMvc.perform(put(String.format("/projects/%s", mockupProject.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
-            .content(objectMapper.writeValueAsString(request))
-            .accept(MediaTypes.HAL_JSON));
+            .content(objectMapper.writeValueAsString(request)));
 
         // then
-        resultActions.andDo(print())
+        perform.andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result.name").value(request.getName()))
-            .andExpect(jsonPath("result.description").value(request.getDescription()));
+            .andExpect(jsonPath("content.name").value(request.getName()))
+            .andExpect(jsonPath("content.description").value(request.getDescription()));
     }
 
     @Test
@@ -244,29 +238,27 @@ public class ProjectControllerTest {
             .willReturn(mockupProject);
 
         // when
-        ResultActions resultActions = this.mockMvc.perform(patch(String.format("/projects/%s/status", mockupProject.getId()))
+        ResultActions perform = this.mockMvc.perform(patch(String.format("/projects/%s/status", mockupProject.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
-            .content(objectMapper.writeValueAsString(request))
-            .accept(MediaTypes.HAL_JSON));
+            .content(objectMapper.writeValueAsString(request)));
 
         // then
-        resultActions.andDo(print())
+        perform.andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("succeeded").value(true))
-            .andExpect(jsonPath("result.status").value(mockupProject.getStatus().toString()));
+            .andExpect(jsonPath("content.status").value(mockupProject.getStatus().toString()));
     }
 
     @Test
     void testDelete() throws Exception {
         // when
-        ResultActions resultActions = this.mockMvc.perform(delete(String.format("/projects/%s", mockupProject.getId()))
+        ResultActions perform = this.mockMvc.perform(delete(String.format("/projects/%s", mockupProject.getId()))
             .contentType(MediaType.APPLICATION_JSON)
-            .characterEncoding(StandardCharsets.UTF_8)
-            .accept(MediaTypes.HAL_JSON));
+            .characterEncoding(StandardCharsets.UTF_8));
 
         // then
-        resultActions.andDo(print())
+        perform.andDo(print())
             .andExpect(status().isNoContent());
     }
 }

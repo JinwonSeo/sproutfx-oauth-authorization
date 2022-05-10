@@ -1,9 +1,12 @@
 package kr.sproutfx.oauth.authorization.common.base;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class BaseResponseBody<T> {
 
     private boolean succeeded;
-    private Object result;
+    private Object content;
     private Error error;
 
     public BaseResponseBody(T object) {
@@ -12,7 +15,7 @@ public class BaseResponseBody<T> {
             this.setError(object);
         } else {
             this.setSucceeded(true);
-            this.setResult(object);
+            this.setContent(object);
         }
     }
 
@@ -24,12 +27,12 @@ public class BaseResponseBody<T> {
         this.succeeded = succeeded;
     }
 
-    public Object getResult() {
-        return this.result;
+    public Object getContent() {
+        return this.content;
     }
 
-    public void setResult(Object result) {
-        this.result = result;
+    public void setContent(Object content) {
+        this.content = content;
     }
 
     public Error getError() {
@@ -40,7 +43,7 @@ public class BaseResponseBody<T> {
         this.error = new Error(((BaseException) object).getValue(), ((BaseException) object).getReason());
     }
 
-    class Error {
+    static class Error {
         private String value;
         private String reason;
 

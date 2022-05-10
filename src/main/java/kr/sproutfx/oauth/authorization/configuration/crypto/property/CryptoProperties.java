@@ -15,20 +15,8 @@ public class CryptoProperties {
         return location;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getSecret() {
-        return secret;
-    }
-
-    public void setSecret(String secret) {
-        this.secret = secret;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public String getAlias() {
@@ -39,7 +27,19 @@ public class CryptoProperties {
         this.alias = alias;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
