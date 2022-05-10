@@ -31,14 +31,14 @@ public class ProjectController extends BaseController {
     @GetMapping
     public ResponseEntity<StructuredBody<List<ProjectResponse>>> findAll() {
 
-        return ResponseEntity.ok(StructuredBody.content(
+        return ResponseEntity.ok().body(StructuredBody.content(
             this.projectService.findAll().stream().map(ProjectResponse::new).collect(toList())));
     }
 
     @GetMapping(value = "/clients")
     public ResponseEntity<StructuredBody<List<ProjectWithClientsResponse>>> findAllWithClients() {
 
-        return ResponseEntity.ok(StructuredBody.content(
+        return ResponseEntity.ok().body(StructuredBody.content(
             this.projectService.findAllWithClients().stream().map(ProjectWithClientsResponse::new).collect(toList())));
     }
 
@@ -47,7 +47,7 @@ public class ProjectController extends BaseController {
 
         Project selectedProject = this.projectService.findById(id);
 
-        return ResponseEntity.ok(StructuredBody.content(
+        return ResponseEntity.ok().body(StructuredBody.content(
             new ProjectResponse(selectedProject)));
     }
 
@@ -73,7 +73,7 @@ public class ProjectController extends BaseController {
 
         Project selectedProject = this.projectService.findById(id);
 
-        return ResponseEntity.ok(StructuredBody.content(
+        return ResponseEntity.ok().body(StructuredBody.content(
             new ProjectResponse(selectedProject)));
     }
 
@@ -86,7 +86,7 @@ public class ProjectController extends BaseController {
 
         Project selectedProject = this.projectService.findById(id);
 
-        return ResponseEntity.ok(StructuredBody.content(
+        return ResponseEntity.ok().body(StructuredBody.content(
             new ProjectResponse(selectedProject)));
     }
 
