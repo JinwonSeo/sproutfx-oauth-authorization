@@ -12,7 +12,7 @@
     <artifactId>sproutfx-oauth-authorization</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>sproutfx-oauth-authorization</name>
-    <description>SproutFx oatuh authorization server</description>
+    <description>SproutFx oauth authorization server</description>
     <properties>
         <java.version>11</java.version>
         <spring-cloud.version>2020.0.5</spring-cloud.version>
@@ -40,17 +40,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <!-- HATEOAS -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-hateoas</artifactId>
-        </dependency>
         <!-- Actuator -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-        <!-- Configruation -->
+        <!-- Configuration -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>

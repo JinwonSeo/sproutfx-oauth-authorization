@@ -1,13 +1,12 @@
 package kr.sproutfx.oauth.authorization.api.member.controller;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import kr.sproutfx.oauth.authorization.api.member.entity.Member;
 import kr.sproutfx.oauth.authorization.api.member.enumeration.MemberStatus;
 import kr.sproutfx.oauth.authorization.api.member.service.MemberService;
 import kr.sproutfx.oauth.authorization.common.base.BaseController;
 import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException;
 import lombok.Data;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Links;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
@@ -15,77 +14,53 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static java.util.stream.Collectors.toList;
 
 @RestController
-@RequestMapping("/members")
-@Validated
+@RequestMapping(value = "/members")
 public class MemberController extends BaseController {
-    private MemberService memberService;
+    private final MemberService memberService;
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
     }
 
-    private Links links(Member member) {
-        Link[] additionalLinks = {
-            linkTo(methodOn(this.getClass()).updatePassword(member.getEmail(), new MemberPasswordUpdateRequest(), null)).withRel("update-password"),
-            linkTo(methodOn(this.getClass()).updateStatus(member.getId(), new MemberStatusUpdateRequest(), null)).withRel("update-status"),
-        };
-
-        return Links.of(getSingleItemLinks(this.getClass(), member.getId(), additionalLinks));
-    }
-
     @GetMapping
-    public ResponseEntity<ResponseBody<List<ObjectEntityModel<MemberResponse>>>>
-    findAll() {
+    public ResponseEntity<StructuredBody<List<MemberResponse>>> findAll() {
 
-        return ResponseEntity.ok().body(
-            new ResponseBody<>(this.memberService.findAll().stream().map(member ->
-                new ObjectEntityModel<>(
-                    new MemberResponse(member), links(member))).collect(Collectors.toList())));
+        return ResponseEntity.ok(StructuredBody.content(
+            this.memberService.findAll().stream().map(MemberResponse::new).collect(toList())));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseBody<ObjectEntityModel<MemberResponse>>> findById(@PathVariable UUID id) {
+    public ResponseEntity<StructuredBody<MemberResponse>> findById(@PathVariable UUID id) {
 
         Member selectedMember = this.memberService.findById(id);
 
-        return ResponseEntity.ok(
-            new ResponseBody<>(
-                new ObjectEntityModel<>(
-                    new MemberResponse(selectedMember), links(selectedMember))));
+        return ResponseEntity.ok(StructuredBody.content(
+            new MemberResponse(selectedMember)));
     }
 
     @PostMapping
-    public ResponseEntity<ResponseBody<ObjectEntityModel<MemberResponse>>>
-    create(@RequestBody @Validated MemberCreateRequest memberCreateRequest, Errors errors) {
+    public ResponseEntity<StructuredBody<MemberResponse>> create(@RequestBody @Validated MemberCreateRequest memberCreateRequest, Errors errors) {
 
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
-        UUID id = this.memberService.create(
-            memberCreateRequest.getEmail(),
-            memberCreateRequest.getName(),
-            memberCreateRequest.getPassword(),
-            memberCreateRequest.getDescription());
+        UUID id = this.memberService.create(memberCreateRequest.getEmail(), memberCreateRequest.getName(), memberCreateRequest.getPassword(), memberCreateRequest.getDescription());
 
         Member createdMember = this.memberService.findById(id);
 
-        return ResponseEntity.created(linkTo(methodOn(this.getClass()).findById(createdMember.getId())).toUri()).body(
-            new ResponseBody<>(
-                new ObjectEntityModel<>(
-                    new MemberResponse(createdMember), links(createdMember))));
+        return ResponseEntity.created(URI.create(String.format("/members/%s", id))).body(StructuredBody.content(
+            new MemberResponse(createdMember)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseBody<ObjectEntityModel<MemberResponse>>>
-    update(@PathVariable UUID id, @RequestBody @Validated MemberUpdateRequest memberUpdateRequest, Errors errors) {
+    public ResponseEntity<StructuredBody<MemberResponse>> update(@PathVariable UUID id, @RequestBody @Validated MemberUpdateRequest memberUpdateRequest, Errors errors) {
 
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
@@ -97,15 +72,12 @@ public class MemberController extends BaseController {
 
         Member updatedMember = this.memberService.findById(id);
 
-        return ResponseEntity.ok(
-            new ResponseBody<>(
-                new ObjectEntityModel<>(
-                    new MemberResponse(updatedMember), links(updatedMember))));
+        return ResponseEntity.ok(StructuredBody.content(
+            new MemberResponse(updatedMember)));
     }
 
     @PatchMapping(value = "/{id}/status")
-    public ResponseEntity<ResponseBody<ObjectEntityModel<MemberResponse>>>
-    updateStatus(@PathVariable UUID id, @RequestBody @Validated MemberStatusUpdateRequest memberStatusUpdateRequest, Errors errors) {
+    public ResponseEntity<StructuredBody<MemberResponse>> updateStatus(@PathVariable UUID id, @RequestBody @Validated MemberStatusUpdateRequest memberStatusUpdateRequest, Errors errors) {
 
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
@@ -115,15 +87,12 @@ public class MemberController extends BaseController {
 
         Member updatedMember = this.memberService.findById(id);
 
-        return ResponseEntity.ok(
-            new ResponseBody<>(
-                new ObjectEntityModel<>(
-                    new MemberResponse(updatedMember), links(updatedMember))));
+        return ResponseEntity.ok(StructuredBody.content(
+            new MemberResponse(updatedMember)));
     }
 
     @PatchMapping(value = "/{email}/password")
-    public ResponseEntity<ResponseBody<ObjectEntityModel<MemberResponse>>>
-    updatePassword(@PathVariable String email, @RequestBody @Validated MemberPasswordUpdateRequest memberPasswordUpdateRequest, Errors errors) {
+    public ResponseEntity<StructuredBody<MemberResponse>> updatePassword(@PathVariable String email, @RequestBody @Validated MemberPasswordUpdateRequest memberPasswordUpdateRequest, Errors errors) {
 
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
@@ -134,10 +103,8 @@ public class MemberController extends BaseController {
 
         Member updatedMember = this.memberService.findById(id);
 
-        return ResponseEntity.ok(
-            new ResponseBody<>(
-                new ObjectEntityModel<>(
-                    new MemberResponse(updatedMember), links(updatedMember))));
+        return ResponseEntity.ok(StructuredBody.content(
+            new MemberResponse(updatedMember)));
     }
 
     @DeleteMapping("/{id}")
@@ -181,6 +148,8 @@ public class MemberController extends BaseController {
 
     @Data
     static class MemberResponse {
+        @JsonIgnore
+        private UUID id;
         private String email;
         private String name;
         private LocalDateTime passwordExpired;
@@ -188,6 +157,7 @@ public class MemberController extends BaseController {
         private String description;
 
         public MemberResponse(Member member) {
+            this.id = member.getId();
             this.email = member.getEmail();
             this.name = member.getName();
             this.passwordExpired = member.getPasswordExpired();
