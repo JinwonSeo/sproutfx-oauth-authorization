@@ -32,7 +32,7 @@ public class MemberController extends BaseController {
     @GetMapping
     public ResponseEntity<StructuredBody<List<MemberResponse>>> findAll() {
 
-        return ResponseEntity.ok(StructuredBody.content(
+        return ResponseEntity.ok().body(StructuredBody.content(
             this.memberService.findAll().stream().map(MemberResponse::new).collect(toList())));
     }
 
@@ -41,7 +41,7 @@ public class MemberController extends BaseController {
 
         Member selectedMember = this.memberService.findById(id);
 
-        return ResponseEntity.ok(StructuredBody.content(
+        return ResponseEntity.ok().body(StructuredBody.content(
             new MemberResponse(selectedMember)));
     }
 
@@ -71,7 +71,7 @@ public class MemberController extends BaseController {
 
         Member updatedMember = this.memberService.findById(id);
 
-        return ResponseEntity.ok(StructuredBody.content(
+        return ResponseEntity.ok().body(StructuredBody.content(
             new MemberResponse(updatedMember)));
     }
 
@@ -86,7 +86,7 @@ public class MemberController extends BaseController {
 
         Member updatedMember = this.memberService.findById(id);
 
-        return ResponseEntity.ok(StructuredBody.content(
+        return ResponseEntity.ok().body(StructuredBody.content(
             new MemberResponse(updatedMember)));
     }
 
@@ -102,7 +102,7 @@ public class MemberController extends BaseController {
 
         Member updatedMember = this.memberService.findById(id);
 
-        return ResponseEntity.ok(StructuredBody.content(
+        return ResponseEntity.ok().body(StructuredBody.content(
             new MemberResponse(updatedMember)));
     }
 
