@@ -10,7 +10,6 @@ import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +39,7 @@ public class AuthorizeController extends BaseController {
     private Long refreshTokenValidityInSeconds;
 
     @GetMapping("/authorize")
-    public ResponseEntity<StructuredBody<GetAuthorizeResponse>> getAuthorize(@RequestParam String clientCode) {
+    public StructuredBody<GetAuthorizeResponse> getAuthorize(@RequestParam String clientCode) {
 
         Client authorizedClient = this.clientService.findByCode(clientCode);
 
@@ -48,15 +47,15 @@ public class AuthorizeController extends BaseController {
 
         String encryptedClientSecret = this.authorizeService.encryptClientSecret(authorizedClient.getSecret());
 
-        return ResponseEntity.ok().body(StructuredBody.content(
+        return StructuredBody.content(
             GetAuthorizeResponse.builder()
                 .encryptedClientSecret(encryptedClientSecret)
                 .authorizedClient(new AuthorizedClient(authorizedClient))
-                .build()));
+                .build());
     }
 
     @PostMapping("/token")
-    public ResponseEntity<StructuredBody<PostTokenResponse>> postToken(@RequestBody @Validated PostTokenRequest postTokenRequest, Errors errors) {
+    public StructuredBody<PostTokenResponse> postToken(@RequestBody @Validated PostTokenRequest postTokenRequest, Errors errors) {
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
         String encryptedClientSecret = postTokenRequest.getEncryptedClientSecret();
@@ -86,7 +85,7 @@ public class AuthorizeController extends BaseController {
         String refreshToken = this.authorizeService.createToken(subject, audience, refreshTokenSecret, refreshTokenValidityInSeconds);
         Long refreshTokenExpiresInSeconds = this.authorizeService.extractTokenExpiresInSeconds(refreshTokenSecret, audience, refreshToken);
 
-        return ResponseEntity.ok().body(StructuredBody.content(
+        return StructuredBody.content(
             PostTokenResponse.builder()
                 .tokenType(this.authorizeService.getTokenType())
                 .accessToken(accessToken)
@@ -94,11 +93,11 @@ public class AuthorizeController extends BaseController {
                 .refreshToken(refreshToken)
                 .refreshTokenExpiresIn(refreshTokenExpiresInSeconds)
                 .signedMember(new SignedMember(signedMember))
-                .build()));
+                .build());
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<StructuredBody<PostRefreshResponse>> postRefresh(@RequestBody PostRefreshRequest postRefreshRequest, Errors errors) {
+    public StructuredBody<PostRefreshResponse> postRefresh(@RequestBody PostRefreshRequest postRefreshRequest, Errors errors) {
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
         String encryptedClientSecret = postRefreshRequest.getEncryptedClientSecret();
@@ -130,7 +129,7 @@ public class AuthorizeController extends BaseController {
         String accessToken = this.authorizeService.createToken(subject, audience, accessTokenSecret, accessTokenValidityInSeconds);
         Long accessTokenExpiresInSeconds = this.authorizeService.extractTokenExpiresInSeconds(accessTokenSecret, audience, accessToken);
 
-        return ResponseEntity.ok(StructuredBody.content(
+        return StructuredBody.content(
             PostRefreshResponse.builder()
                 .tokenType(this.authorizeService.getTokenType())
                 .accessToken(accessToken)
@@ -138,11 +137,11 @@ public class AuthorizeController extends BaseController {
                 .refreshToken(refreshToken)
                 .refreshTokenExpiresIn(refreshTokenExpiresInSeconds)
                 .signedMember(new SignedMember(signedMember))
-                .build()));
+                .build());
     }
 
     @PutMapping("/password")
-    public ResponseEntity<StructuredBody<MemberResponse>> updateMemberPassword(@RequestBody @Validated UpdateMemberPasswordRequest updateMemberPasswordRequest, Errors errors) {
+    public StructuredBody<MemberResponse> updateMemberPassword(@RequestBody @Validated UpdateMemberPasswordRequest updateMemberPasswordRequest, Errors errors) {
         if (errors.hasErrors()) throw new InvalidArgumentException();
 
         String email = updateMemberPasswordRequest.getEmail();
@@ -151,8 +150,8 @@ public class AuthorizeController extends BaseController {
 
         UUID id = this.memberService.updatePassword(email, currentPassword, newPassword);
 
-        return ResponseEntity.ok().body(StructuredBody.content(
-            new MemberResponse(this.memberService.findById(id))));
+        return StructuredBody.content(
+            new MemberResponse(this.memberService.findById(id)));
     }
 
     @Builder
