@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 public class ExtractSubjectFailedException extends BaseException {
 
     public ExtractSubjectFailedException() {
-        super("extract_failed", "Extract subject failed.", HttpStatus.UNAUTHORIZED);
+        super("extract_failed", "Extract subject failed", HttpStatus.UNAUTHORIZED);
     }
 
 }

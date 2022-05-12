@@ -7,6 +7,8 @@ import kr.sproutfx.oauth.authorization.api.client.repository.specification.Clien
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @Transactional(readOnly = true)
 public class ClientService {
@@ -16,6 +18,14 @@ public class ClientService {
         this.clientRepository = clientRepository;
     }
 
+    public Client findByIdWithProject(UUID id) {
+        return this.clientRepository.findByIdWithProject(id).orElseThrow(ClientNotFoundException::new);
+    }
+
+    public Client findByCodeWithProject(String code) {
+        return this.clientRepository.findByCodeWithProject(code).orElseThrow(ClientNotFoundException::new);
+    }
+
     public Client findByCode(String code) {
         return this.clientRepository.findOne(ClientSpecification.equalCode(code)).orElseThrow(ClientNotFoundException::new);
     }
@@ -23,4 +33,6 @@ public class ClientService {
     public Client findBySecret(String secret) {
         return this.clientRepository.findOne(ClientSpecification.equalSecret(secret)).orElseThrow(ClientNotFoundException::new);
     }
+
+
 }

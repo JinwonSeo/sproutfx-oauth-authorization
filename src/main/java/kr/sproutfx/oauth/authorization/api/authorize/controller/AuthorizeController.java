@@ -5,6 +5,7 @@ import kr.sproutfx.oauth.authorization.api.client.entity.Client;
 import kr.sproutfx.oauth.authorization.api.client.service.ClientService;
 import kr.sproutfx.oauth.authorization.api.member.entity.Member;
 import kr.sproutfx.oauth.authorization.api.member.service.MemberService;
+import kr.sproutfx.oauth.authorization.api.project.service.ProjectService;
 import kr.sproutfx.oauth.authorization.common.base.BaseController;
 import kr.sproutfx.oauth.authorization.common.exception.InvalidArgumentException;
 import lombok.Builder;
@@ -23,13 +24,15 @@ import java.util.UUID;
 @RequestMapping("/")
 public class AuthorizeController extends BaseController {
     private final AuthorizeService authorizeService;
+    private final ProjectService projectService;
     private final ClientService clientService;
     private final MemberService memberService;
 
-    public AuthorizeController(AuthorizeService authorizeService, ClientService clientService, MemberService memberService) {
+    public AuthorizeController(AuthorizeService authorizeService, ProjectService projectService, ClientService clientService, MemberService memberService) {
         this.authorizeService = authorizeService;
         this.clientService = clientService;
         this.memberService = memberService;
+        this.projectService = projectService;
     }
 
     @Value("${sproutfx.security.authorization.refresh-token-secret}")
@@ -41,8 +44,10 @@ public class AuthorizeController extends BaseController {
     @GetMapping("/authorize")
     public StructuredBody<GetAuthorizeResponse> getAuthorize(@RequestParam String clientCode) {
 
-        Client authorizedClient = this.clientService.findByCode(clientCode);
+//        Client authorizedClient = this.clientService.findByCode(clientCode);
+        Client authorizedClient = this.clientService.findByCodeWithProject(clientCode);
 
+        this.authorizeService.validateProjectStatus(authorizedClient.getProject());
         this.authorizeService.validateClientStatus(authorizedClient);
 
         String encryptedClientSecret = this.authorizeService.encryptClientSecret(authorizedClient.getSecret());

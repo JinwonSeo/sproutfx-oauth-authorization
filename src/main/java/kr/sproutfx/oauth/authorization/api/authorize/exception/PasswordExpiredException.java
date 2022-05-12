@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 public class PasswordExpiredException extends BaseException {
 
     public PasswordExpiredException() {
-        super("password_expired", "Member password expired.", HttpStatus.UNAUTHORIZED);
+        super("password_expired", "Member password expired", HttpStatus.UNAUTHORIZED);
     }
 
 }
