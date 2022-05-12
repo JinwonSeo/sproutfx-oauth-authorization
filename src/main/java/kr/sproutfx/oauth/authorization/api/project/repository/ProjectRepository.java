@@ -13,8 +13,8 @@ import java.util.UUID;
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, UUID>, JpaSpecificationExecutor<Project> {
     @Query("SELECT distinct p FROM Project p left join fetch p.clients c")
-    public List<Project> findAllWithClients();
+    List<Project> findAllWithClients();
 
     @Query("SELECT distinct p FROM Project p left join fetch p.clients c WHERE p.id = ?1")
-    public Optional<Project> findByIdWithClients(UUID id);
+    Optional<Project> findByIdWithClients(UUID id);
 }
