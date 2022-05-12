@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 public class PendingApprovalClientException extends BaseException {
 
     public PendingApprovalClientException() {
-        super("pending_approval_client", "This client's status is 'pending approval'", HttpStatus.UNAUTHORIZED);
+        super("pending_approval_client", "Client status is 'pending approval'", HttpStatus.UNAUTHORIZED);
     }
 
 }

@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 public class BlockedClientException extends BaseException {
 
     public BlockedClientException() {
-        super("blocked_client", "This client's status is 'blocked'", HttpStatus.UNAUTHORIZED);
+        super("blocked_client", "Client status is 'blocked'", HttpStatus.UNAUTHORIZED);
     }
 
 }

@@ -6,6 +6,8 @@ import kr.sproutfx.oauth.authorization.api.client.entity.Client;
 import kr.sproutfx.oauth.authorization.api.client.enumeration.ClientStatus;
 import kr.sproutfx.oauth.authorization.api.member.entity.Member;
 import kr.sproutfx.oauth.authorization.api.member.enumeration.MemberStatus;
+import kr.sproutfx.oauth.authorization.api.project.entity.Project;
+import kr.sproutfx.oauth.authorization.api.project.enumeration.ProjectStatus;
 import kr.sproutfx.oauth.authorization.configuration.crypto.CryptoUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -72,35 +74,63 @@ public class AuthorizeService {
         return this.jwtProvider.validateToken(secret, audience, token);
     }
 
-    public void validateClientStatus(Client client) {
-        if (ClientStatus.BLOCKED.equals(client.getStatus())) {
-            throw new BlockedClientException();
-        } else if (ClientStatus.DEACTIVATED.equals(client.getStatus())) {
-            throw new DeactivatedClientException();
-        } else if (ClientStatus.PENDING_APPROVAL.equals(client.getStatus())) {
-            throw new PendingApprovalClientException();
-        } else if (!ClientStatus.ACTIVE.equals(client.getStatus())) {
-            throw new ClientAccessDeniedException();
+    public void validateProjectStatus(Project project) {
+        if (project == null) {
+            throw new AccessDeniedException();
+        }
+
+        if ( ProjectStatus.BLOCKED == project.getStatus()) {
+            throw new BlockedProjectException();
+        } else if ( ProjectStatus.DEACTIVATED == project.getStatus()) {
+            throw new DeactivatedProjectException();
+        } else if ( ProjectStatus.PENDING_APPROVAL == project.getStatus()) {
+            throw new PendingApprovalProjectException();
+        } else if ( ProjectStatus.ACTIVE != project.getStatus()) {
+            throw new AccessDeniedException();
         }
     }
 
-    public void validateMemberPassword(Member member, String password) {
-        if (!passwordEncoder.matches(password, member.getPassword())) {
-            throw new UnauthorizedException();
-        } else if (member.getPasswordExpired().isBefore(LocalDateTime.now())) {
-            throw new PasswordExpiredException();
+    public void validateClientStatus(Client client) {
+        if (client == null) {
+            throw new AccessDeniedException();
+        }
+
+        if (ClientStatus.BLOCKED == client.getStatus()) {
+            throw new BlockedClientException();
+        } else if (ClientStatus.DEACTIVATED == client.getStatus()) {
+            throw new DeactivatedClientException();
+        } else if (ClientStatus.PENDING_APPROVAL == client.getStatus()) {
+            throw new PendingApprovalClientException();
+        } else if (ClientStatus.ACTIVE != client.getStatus()) {
+            throw new AccessDeniedException();
         }
     }
 
     public void validateMemberStatus(Member member) {
-        if (MemberStatus.BLOCKED.equals(member.getStatus())) {
+        if (member == null) {
+            throw new AccessDeniedException();
+        }
+
+        if (MemberStatus.BLOCKED == member.getStatus()) {
             throw new BlockedMemberException();
-        } else if (MemberStatus.DEACTIVATED.equals(member.getStatus())) {
+        } else if (MemberStatus.DEACTIVATED == member.getStatus()) {
             throw new DeactivatedMemberException();
-        } else if (MemberStatus.PENDING_APPROVAL.equals(member.getStatus())) {
+        } else if (MemberStatus.PENDING_APPROVAL == member.getStatus()) {
             throw new PendingApprovalMemberException();
-        } else if (!MemberStatus.ACTIVE.equals(member.getStatus())) {
-            throw new MemberAccessDeniedException();
+        } else if (MemberStatus.ACTIVE != member.getStatus()) {
+            throw new AccessDeniedException();
+        }
+    }
+
+    public void validateMemberPassword(Member member, String password) {
+        if (member == null) {
+            throw new UnauthorizedException();
+        }
+
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new UnauthorizedException();
+        } else if (member.getPasswordExpired().isBefore(LocalDateTime.now())) {
+            throw new PasswordExpiredException();
         }
     }
 }

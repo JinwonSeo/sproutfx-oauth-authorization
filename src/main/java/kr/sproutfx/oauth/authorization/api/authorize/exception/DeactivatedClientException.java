@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 public class DeactivatedClientException extends BaseException {
 
     public DeactivatedClientException() {
-        super("deactivated_client", "This client's status is 'deactivated'", HttpStatus.UNAUTHORIZED);
+        super("deactivated_client", "Client status is 'deactivated'", HttpStatus.UNAUTHORIZED);
     }
 
 }

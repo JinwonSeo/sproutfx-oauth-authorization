@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 public class ExtractExpiresInSecondsFailedException extends BaseException {
 
     public ExtractExpiresInSecondsFailedException() {
-        super("extract_failed", "Extract expires in seconds failed.", HttpStatus.UNAUTHORIZED);
+        super("extract_failed", "Extract expires in seconds failed", HttpStatus.UNAUTHORIZED);
     }
 
 }
