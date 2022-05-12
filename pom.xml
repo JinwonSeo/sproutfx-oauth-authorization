@@ -28,6 +28,16 @@
                 <enabled>true</enabled>
             </releases>
         </repository>
+        <repository>
+            <id>sproutfx-maven</id>
+            <url>http://nexus.sproutfx.kr/repository/maven-public/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
     </repositories>
     <dependencies>
         <!-- Cloud stater -->
