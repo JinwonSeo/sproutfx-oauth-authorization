@@ -137,13 +137,13 @@
         <dependency>
             <groupId>kr.sproutfx.common</groupId>
             <artifactId>sproutfx-common-logging-spring-boot-stater</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.3-SNAPSHOT</version>
         </dependency>
         <!-- Security -->
         <dependency>
             <groupId>kr.sproutfx.common</groupId>
             <artifactId>sproutfx-common-security-spring-boot-starter</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
+            <version>0.0.3-SNAPSHOT</version>
         </dependency>
 
         <!-- Test -->
